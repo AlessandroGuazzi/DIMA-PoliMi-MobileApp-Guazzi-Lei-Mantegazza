@@ -1,16 +1,19 @@
-# dima_project
+# DIMA Project by Guazzi A., Lei L., Mantegazza N.
 
-A new Flutter project.
+**Course:** Design and Implementation of Mobile Applications  
+**Team Members:** Guazzi A., Lei L., Mantegazza N.  
+**Technologies:** Flutter, Dart
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 📱 About the App
 
-A few resources to get you started if this is your first Flutter project:
+[App Name] is a mobile application developed as part of the "Design and Implementation of Mobile Applications" course. The app focuses on simplifying travel planning.  
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 💻 Tech Stack
+
+- **Flutter & Dart**: For building a cross-platform application with a single codebase.  
+- **[Optional Tools]**: [e.g., Firebase for authentication, database, or storage, REST APIs, etc.]  
+- **Version Control**: Git and GitHub for team collaboration and project management.  
