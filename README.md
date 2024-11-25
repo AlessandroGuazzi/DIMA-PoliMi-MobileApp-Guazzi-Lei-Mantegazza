@@ -8,7 +8,7 @@
 
 ## 📱 About the App
 
-[App Name] is a mobile application developed as part of the "Design and Implementation of Mobile Applications" course. The app focuses on simplifying travel planning.  
+[App Name] is a mobile application developed as part of the "Design and Implementation of Mobile Applications" course. The app focuses on simplifying travel planning by introducing a simple and innovative way of planning trip over the world.  
 
 ---
 
