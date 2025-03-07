@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "912617253342",
+    "project_id": "dima-68033",
+    "storage_bucket": "dima-68033.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:912617253342:android:5494b5b6f4ca6b76dd954f",
+        "android_client_info": {
+          "package_name": "us.GuazziLeiMantegazza.dima_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBV4DeNFO9tArz4LCdaBKgaI6OPFeUZOOg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
