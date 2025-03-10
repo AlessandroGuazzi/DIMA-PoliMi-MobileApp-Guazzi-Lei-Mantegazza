@@ -1,4 +1,4 @@
-import 'package:dima_project/services/auth.dart';
+import 'package:dima_project/services/authService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,13 +17,13 @@ class _AuthPageState extends State<AuthPage> {
 
   Future<void> signIn() async{
     try{
-      await Auth().signInWithEmailAndPassword(email: _email.text, password: _password.text);
+      await AuthService().signInWithEmailAndPassword(email: _email.text, password: _password.text);
     }on FirebaseAuthException catch (error){}
   }
 
   Future<void> createUser() async{
     try{
-      await Auth().createUserWithEmailAndPassword(email: _email.text, password: _password.text);
+      await AuthService().createUserWithEmailAndPassword(email: _email.text, password: _password.text);
     }on FirebaseAuthException catch (error){}
   }
 

@@ -1,5 +1,5 @@
 import 'package:dima_project/screens/authenticationPage.dart';
-import 'package:dima_project/services/auth.dart';
+import 'package:dima_project/services/authService.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
       ),
       //home: const MyHomePage(title: 'Flutter Demo Home Page'),
       home: StreamBuilder(
-          stream: Auth().authStateChanges,
+          stream: AuthService().authStateChanges,
           builder: (context, snapshot){
             if(snapshot.hasData){
               return const MyHomePage(title: 'Flutter Demo Home Page');
