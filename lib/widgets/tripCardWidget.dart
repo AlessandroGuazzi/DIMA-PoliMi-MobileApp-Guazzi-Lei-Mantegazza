@@ -1,30 +1,92 @@
-import 'package:dima_project/utils/screenSize.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../models/tripModel.dart';
 
-class TripCardWidget extends StatefulWidget {
-  TripModel trip;
+class TripCardWidget extends StatelessWidget {
+  final TripModel trip;
 
-  TripCardWidget(this.trip, {super.key});
-
-  @override
-  State<TripCardWidget> createState() => _TripCardWidgetState();
-}
-
-class _TripCardWidgetState extends State<TripCardWidget> {
-  late TripModel _trip;
-
-  @override
-  void initState() {
-    super.initState();
-    _trip = widget.trip;
-  }
+  const TripCardWidget(this.trip, {super.key});
 
   @override
   Widget build(BuildContext context) {
 
+    // Generated code for this Container Widget...
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white,
+          )
+        ],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: 200,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: ShaderMask(
+                      shaderCallback: (Rect bounds) {
+                        return LinearGradient(
+                          begin: Alignment.center,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.white, Colors.transparent],
+                        ).createShader(bounds);
+                      },
+                      blendMode: BlendMode.dstIn,
+                      child: Image.network(
+                        'https://picsum.photos/900',
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(16, 12, 16, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${trip.title}',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  SizedBox(height: 4),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Icon(
+                        Icons.place,
+                        size: 16,
+                      ),
+                      SizedBox(width: 4,),
+                      Text(trip.cities?.join(' - ') ?? 'No cities available'),
+
+                    ]
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+
+    /*
     return Container(
 
       decoration: BoxDecoration(
@@ -78,5 +140,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
         ),
       ),
     );
+
+     */
   }
 }

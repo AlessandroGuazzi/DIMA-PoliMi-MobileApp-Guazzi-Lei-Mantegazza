@@ -1,5 +1,4 @@
 import 'package:dima_project/services/authService.dart';
-import 'package:dima_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/screens/myTripsPage.dart';
 import 'package:dima_project/screens/profilePage.dart';
@@ -34,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               profilePage(),
               MyTripsPage(),
-              explorerPage()
+              ExplorerPage()
             ]),
         bottomNavigationBar: const BottomAppBar(
             color: Colors.white,
