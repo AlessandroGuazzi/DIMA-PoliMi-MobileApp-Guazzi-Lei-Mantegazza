@@ -31,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: const TabBarView(
             children: [
-              profilePage(),
+              ProfilePage(),
               MyTripsPage(),
               ExplorerPage()
             ]),
