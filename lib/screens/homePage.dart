@@ -26,23 +26,23 @@ class _MyHomePageState extends State<MyHomePage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-            title: Text("Dima Project"),
+            title: const Text("Dima Project"),
             backgroundColor: Theme.of(context).primaryColor
         ),
         body: const TabBarView(
             children: [
-              ProfilePage(),
+              ExplorerPage(),
               MyTripsPage(),
-              ExplorerPage()
+              ProfilePage()
             ]),
         bottomNavigationBar: const BottomAppBar(
             color: Colors.white,
             child: TabBar(
                 indicatorColor: Colors.blueGrey,
                 tabs: [
-                  Tab(icon: Icon(Icons.account_box)),
-                  Tab(icon: Icon(Icons.home)),
                   Tab(icon: Icon(Icons.search)),
+                  Tab(icon: Icon(Icons.home)),
+                  Tab(icon: Icon(Icons.account_box))
                 ])
         ),
       ),

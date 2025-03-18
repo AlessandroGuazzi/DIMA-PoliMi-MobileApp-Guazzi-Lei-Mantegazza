@@ -6,24 +6,24 @@ import 'package:flutter/material.dart';
 class MyThemeData {
   static ThemeData appTheme = ThemeData(
     brightness: Brightness.light,
-    primaryColor: Color(0xFF6200EE),
+    primaryColor: const Color(0xFF6200EE),
     // Primary color
-    secondaryHeaderColor: Color(0xFF03DAC6),
+    secondaryHeaderColor: const Color(0xFF03DAC6),
     // Secondary color
-    scaffoldBackgroundColor: Color(0xFFF5F5F5),
+    scaffoldBackgroundColor: const Color(0xFFF5F5F5),
     // Background color
-    cardColor: Color(0xFFFFFFFF),
+    cardColor: const Color(0xFFFFFFFF),
     // Card color
     dividerColor: Colors.grey.shade300,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFF6200EE),
       foregroundColor: Colors.white,
     ),
-    buttonTheme: ButtonThemeData(
+    buttonTheme: const ButtonThemeData(
       buttonColor: Color(0xFF6200EE), // Button color
       textTheme: ButtonTextTheme.primary,
     ),
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       displayLarge: TextStyle(
           fontSize: 57, fontWeight: FontWeight.bold, color: Colors.black),
       // H1

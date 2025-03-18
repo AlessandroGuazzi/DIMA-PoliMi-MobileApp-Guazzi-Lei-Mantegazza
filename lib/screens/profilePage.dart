@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:dima_project/services/authService.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -11,7 +9,11 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  @override
+
+  Future<void> signOut() async{
+    await AuthService().signOut();
+  }
+
   /* Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -96,6 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }*/
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -154,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           TextButton(
                             onPressed: () {},
                             style: TextButton.styleFrom(
-                              backgroundColor: Colors.blue, // Sfondo blu
+                              backgroundColor: Theme.of(context).primaryColor, // Sfondo blu
                               shape: RoundedRectangleBorder( // Bordi arrotondati
                                 borderRadius: BorderRadius.circular(15),
                               ),
@@ -178,7 +181,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           TextButton(
                             onPressed: () {},
                             style: TextButton.styleFrom(
-                              backgroundColor: Colors.blue, // Sfondo blu
+                              backgroundColor: Theme.of(context).primaryColor, // Sfondo blu
                               shape: RoundedRectangleBorder( // Bordi arrotondati
                                 borderRadius: BorderRadius.circular(15),
                               ),
@@ -202,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           TextButton(
                             onPressed: () {},
                             style: TextButton.styleFrom(
-                              backgroundColor: Colors.blue, // Sfondo blu
+                              backgroundColor: Theme.of(context).primaryColor, // Sfondo blu
                               shape: RoundedRectangleBorder( // Bordi arrotondati
                                 borderRadius: BorderRadius.circular(15),
                               ),
@@ -224,9 +227,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           const SizedBox(height: 10), // Spazio tra bottoni
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              signOut();
+                            },
                             style: TextButton.styleFrom(
-                              backgroundColor: Colors.blue, // Sfondo blu
+                              backgroundColor: Theme.of(context).primaryColor, // Sfondo blu
                               shape: RoundedRectangleBorder( // Bordi arrotondati
                                 borderRadius: BorderRadius.circular(15),
                               ),

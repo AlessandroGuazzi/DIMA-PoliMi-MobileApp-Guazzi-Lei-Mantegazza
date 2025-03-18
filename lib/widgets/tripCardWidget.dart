@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../models/tripModel.dart';
@@ -14,7 +13,7 @@ class TripCardWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.white,
           )
@@ -22,20 +21,20 @@ class TripCardWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
             Stack(
               children: [
-                Container(
+                SizedBox(
                     width: double.infinity,
                     height: 200,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: ShaderMask(
                         shaderCallback: (Rect bounds) {
-                          return LinearGradient(
+                          return const LinearGradient(
                             begin: Alignment.center,
                             end: Alignment.bottomCenter,
                             colors: [Colors.white, Colors.transparent],
@@ -53,7 +52,7 @@ class TripCardWidget extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(16, 5, 16, 16),
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 5, 16, 16),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,14 +61,14 @@ class TripCardWidget extends StatelessWidget {
                     '${trip.title}',
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Row(mainAxisSize: MainAxisSize.max, children: [
                     Icon(
                       Icons.place,
                       size: 20,
                       color: Theme.of(context).primaryColor,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
@@ -77,7 +76,7 @@ class TripCardWidget extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ]),
-                  SizedBox(
+                  const SizedBox(
                     height: 4,
                   ),
                   Row(mainAxisSize: MainAxisSize.max, children: [
@@ -91,7 +90,7 @@ class TripCardWidget extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 4,
                     ),
                     Text(
