@@ -3,7 +3,7 @@ import 'package:dima_project/models/activityModel.dart';
 
 class TripModel {
   final String? id;
-  final String? creatorId;
+  final Map<String, dynamic>? creatorInfo;
   final String? title;
   final List<String>? nations;
   final List<String>? cities;
@@ -18,7 +18,7 @@ class TripModel {
   //constructor
   TripModel({
     this.id,
-    this.creatorId,
+    this.creatorInfo,
     this.title,
     this.nations,
     this.cities,
@@ -41,7 +41,7 @@ class TripModel {
 
     return TripModel(
         id: data?['id'],
-        creatorId: data?['creatorId'],
+        creatorInfo: data?['creatorInfo'],
         title: data?['title'],
         nations: data?['nations'] is Iterable ? List<String>.from(data?['nations']) : null,
         cities: data?['cities'] is Iterable ? List<String>.from(data?['cities']) : null,
@@ -53,13 +53,14 @@ class TripModel {
         expenses: data?['expenses'],
         isConfirmed: data?['isConfirmed'],
         isPast: data?['isPast'],
-        isPrivate: data?['isPrivate']);
+        isPrivate: data?['isPrivate']
+    );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
       if (id != null) 'id': id,
-      if (creatorId != null) 'creatorId': creatorId,
+      if (creatorInfo != null) 'creatorInfo': creatorInfo,
       if (title != null) 'title': title,
       if (nations != null) 'nations': nations,
       if (cities != null) 'cities': cities,

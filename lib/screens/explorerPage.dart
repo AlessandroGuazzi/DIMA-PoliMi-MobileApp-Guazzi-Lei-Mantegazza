@@ -50,13 +50,14 @@ class _ExplorerPageState extends State<ExplorerPage> {
                         _searchQuery = query;
                       });
                     },
-                    leading: const Icon(Icons.search),
+                    leading: Icon(Icons.search, color: Theme.of(context).primaryColor,),
                     backgroundColor: Theme.of(context).searchBarTheme.backgroundColor,
                   ),
                 ),
                 IconButton(
                     onPressed: null,
-                    icon: Icon(Icons.sort),
+                    icon: Icon(Icons.sort, color: Theme.of(context).primaryColor,),
+
                 )
               ],
             ),

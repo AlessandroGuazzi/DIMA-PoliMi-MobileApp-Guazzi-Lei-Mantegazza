@@ -27,7 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         appBar: AppBar(
             title: Text("Dima Project"),
-            backgroundColor: Colors.lightBlue
+            backgroundColor: Theme.of(context).primaryColor
         ),
         body: const TabBarView(
             children: [

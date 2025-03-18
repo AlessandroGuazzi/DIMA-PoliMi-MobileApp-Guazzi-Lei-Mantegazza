@@ -26,7 +26,7 @@ class DatabaseService {
 
     try {
       QuerySnapshot<TripModel> querySnapshot = await tripCollection
-          .where("creatorId", isNotEqualTo: currentUserId)
+          .where("creatorInfo.id", isNotEqualTo: currentUserId)
           .get();
 
       print("Successfully completed");

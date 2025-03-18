@@ -11,7 +11,6 @@ class TripCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    // Generated code for this Container Widget...
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -30,32 +29,31 @@ class TripCardWidget extends StatelessWidget {
             Stack(
               children: [
                 Container(
-                  width: double.infinity,
-                  height: 200,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: ShaderMask(
-                      shaderCallback: (Rect bounds) {
-                        return LinearGradient(
-                          begin: Alignment.center,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.white, Colors.transparent],
-                        ).createShader(bounds);
-                      },
-                      blendMode: BlendMode.dstIn,
-                      child: Image.network(
-                        'https://picsum.photos/900',
-                        width: double.infinity,
-                        height: 200,
-                        fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 200,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return LinearGradient(
+                            begin: Alignment.center,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.white, Colors.transparent],
+                          ).createShader(bounds);
+                        },
+                        blendMode: BlendMode.dstIn,
+                        child: Image.network(
+                          'https://picsum.photos/200',
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                  )
-                ),
+                    )),
               ],
             ),
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(16, 12, 16, 16),
+              padding: EdgeInsetsDirectional.fromSTEB(16, 5, 16, 16),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,18 +63,42 @@ class TripCardWidget extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   SizedBox(height: 4),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Icon(
-                        Icons.place,
-                        size: 16,
-                      ),
-                      SizedBox(width: 4,),
-                      Text(trip.cities?.join(' - ') ?? 'No cities available'),
-
-                    ]
+                  Row(mainAxisSize: MainAxisSize.max, children: [
+                    Icon(
+                      Icons.place,
+                      size: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    SizedBox(
+                      width: 4,
+                    ),
+                    Text(
+                      trip.cities?.join(' - ') ?? 'No cities available',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ]),
+                  SizedBox(
+                    height: 4,
                   ),
+                  Row(mainAxisSize: MainAxisSize.max, children: [
+                    //profile Image
+                    ClipOval(
+                      child: Image.network(
+                        //placeholder image
+                        'https://picsum.photos/30',
+                        width: 20,
+                        height: 20,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 4,
+                    ),
+                    Text(
+                      '@${trip.creatorInfo!['username'] ?? 'user'}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ]),
                 ],
               ),
             ),
@@ -84,7 +106,6 @@ class TripCardWidget extends StatelessWidget {
         ),
       ),
     );
-
 
     /*
     return Container(
