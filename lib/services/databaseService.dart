@@ -19,7 +19,6 @@ class DatabaseService {
 
 
 
-
   //Method for retrieval of all  'Trips' documents that are not created by the current user
   Future<List<TripModel>> getExplorerTrips() async {
     List<TripModel> trips = [];
@@ -40,5 +39,40 @@ class DatabaseService {
 
     return trips;
   }
+
+
+  //Method for retrieval of all  'Trips' documents that are created by the current user
+  Future<List<TripModel>> getHomePageTrips() async {
+    List<TripModel> trips = [];
+
+    try {
+      QuerySnapshot<TripModel> querySnapshot = await tripCollection
+          .where("creatorInfo.id", isEqualTo: currentUserId)
+          .get();
+
+      print("Successfully completed");
+
+      for (var docSnapshot in querySnapshot.docs) {
+        trips.add(docSnapshot.data());
+      }
+    } catch (e) {
+      print("Error completing: $e");
+    }
+
+    return trips;
+  }
+
+
+  Future<void> createTrip(TripModel trip) async{
+    try {
+      await db.collection('Trips').add(trip.toFirestore());
+      print('Successfully added a new trip!');
+
+    } catch (e) {
+      print("Error completing: $e");
+    }
+  }
+
+
 
 }
