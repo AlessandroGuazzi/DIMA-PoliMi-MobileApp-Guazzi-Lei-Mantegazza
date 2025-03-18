@@ -40,9 +40,9 @@ class _MyHomePageState extends State<MyHomePage> {
             child: TabBar(
                 indicatorColor: Colors.blueGrey,
                 tabs: [
-                  Tab(icon: Icon(Icons.search)),
-                  Tab(icon: Icon(Icons.home)),
                   Tab(icon: Icon(Icons.account_box)),
+                  Tab(icon: Icon(Icons.home)),
+                  Tab(icon: Icon(Icons.search)),
                 ])
         ),
       ),
