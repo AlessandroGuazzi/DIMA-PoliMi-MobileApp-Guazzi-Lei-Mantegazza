@@ -1,6 +1,10 @@
 import 'package:dima_project/utils/screenSize.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/services/authService.dart';
+import 'package:dima_project/services/databaseService.dart';
+
+import '../models/userModel.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -10,6 +14,21 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late Future<UserModel?> _currentUserFuture;
+
+  Future<UserModel?> _loadCurrentUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      return await DatabaseService().getUserByUid(user.uid);
+    }
+    return null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUserFuture = _loadCurrentUser();
+  }
 
   Future<void> signOut() async{
     await AuthService().signOut();
@@ -83,9 +102,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -112,8 +128,6 @@ class _ProfilePageState extends State<ProfilePage> {
               Container(
                 width: ScreenSize.screenWidth(context)*0.35,
                 height: ScreenSize.screenHeight(context)*0.15,
-                //width: 150,
-                //height: 150,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
@@ -127,23 +141,40 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               const SizedBox(height: 16),
-              Column(
-                children: [
-                  const Text(
-                    'Marco Rossi',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    '@marco_rossi',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600], // Colore grigio per lo username
-                    ),
-                  ),
-                ],
+              FutureBuilder<UserModel?>(
+                future: _currentUserFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: Text('Caricamento...'));
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Errore: ${snapshot.error}'));
+                  }
+
+                  if (snapshot.data == null) {
+                    return const Center(child: Text('Utente non trovato'));
+                  }
+
+                  return Column(
+                    children: [
+                      Text(
+                        '${snapshot.data!.name} ${snapshot.data!.surname}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '@${snapshot.data!.username}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600], // Colore grigio per lo username
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 24),
               TabBar(

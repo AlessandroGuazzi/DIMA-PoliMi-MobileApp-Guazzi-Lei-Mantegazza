@@ -29,6 +29,20 @@ class DatabaseService {
     return await userCollection.doc(currentUserId).set(user);
   }
 
+  Future<UserModel?> getUserByUid(String uid) async {
+    try {
+      DocumentSnapshot<UserModel> doc = await userCollection.doc(uid).get();
+
+      if (doc.exists) {
+        return doc.data();
+      }
+      return null;
+    } catch (e) {
+      print('Errore recupero utente: $e');
+      return null;
+    }
+  }
+
 
   //Method for retrieval of all  'Trips' documents that are not created by the current user
   Future<List<TripModel>> getExplorerTrips() async {
