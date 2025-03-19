@@ -36,7 +36,9 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             IconButton(
               icon: const Icon(Icons.settings, color: Colors.black),
-              onPressed: () {},
+              onPressed: () {
+                signOut();
+              },
             )
           ],
         ),

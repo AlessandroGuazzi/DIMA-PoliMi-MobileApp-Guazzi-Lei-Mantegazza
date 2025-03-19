@@ -1,11 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/models/userModel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'authService.dart';
 
 class DatabaseService {
   final db = FirebaseFirestore.instance;
   final String? currentUserId = AuthService().currentUser?.uid;
+
+  final userCollection = FirebaseFirestore.instance
+      .collection('Users')
+      .withConverter(
+      fromFirestore: UserModel.fromFirestore,
+      toFirestore: (UserModel user, _) => user.toFirestore()
+  );
 
   //reference to the 'Trips' collection of document in the db
   final tripCollection = FirebaseFirestore.instance
@@ -16,7 +25,9 @@ class DatabaseService {
   );
 
 
-
+  Future initializeUserData(UserModel user) async {
+    return await userCollection.doc(currentUserId).set(user);
+  }
 
 
   //Method for retrieval of all  'Trips' documents that are not created by the current user
