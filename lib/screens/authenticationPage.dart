@@ -325,7 +325,7 @@ class _AuthPageState extends State<AuthPage> {
                       isLogin
                           ? 'Non hai un account? Registrati'
                           : 'Hai un account? Accedi',
-                      style: const TextStyle(color: Colors.indigo),
+                      style: const TextStyle(color: Colors.indigoAccent),
                     ),
                   )
                 ],

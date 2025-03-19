@@ -15,6 +15,77 @@ class _ProfilePageState extends State<ProfilePage> {
     await AuthService().signOut();
   }
 
+  void _showSettingsModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Container(
+          height: 300, // Altezza della sheet
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // Centra verticalmente
+              children: [
+                // Lista delle impostazioni
+                Expanded(
+                  child: ListView(
+                    shrinkWrap: true, // Per evitare errori di overflow
+                    children: [
+                      ListTile(
+                        title: const Text('Account', style: TextStyle(fontSize: 18)),
+                        leading: const Icon(Icons.person, color: Colors.black),
+                        onTap: () {
+                          // Aggiungi azione per "Account"
+                          Navigator.of(context).pop(); // Chiudi la sheet
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Preferenze', style: TextStyle(fontSize: 18)),
+                        leading: const Icon(Icons.tune, color: Colors.black),
+                        onTap: () {
+                          // Aggiungi azione per "Preferenze"
+                          Navigator.of(context).pop(); // Chiudi la sheet
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Feedback', style: TextStyle(fontSize: 18)),
+                        leading: const Icon(Icons.feedback, color: Colors.black),
+                        onTap: () {
+                          // Aggiungi azione per "Feedback"
+                          Navigator.of(context).pop(); // Chiudi la sheet
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Log Out', style: TextStyle(fontSize: 18)),
+                        leading: const Icon(Icons.logout, color: Colors.red),
+                        onTap: () async {
+                          await signOut();
+                          Navigator.of(context).pop(); // Chiudi la sheet
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -25,19 +96,11 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
-          title: const Text(
-            'Profilo',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.settings, color: Colors.black),
               onPressed: () {
-                signOut();
+                _showSettingsModal();
               },
             )
           ],
@@ -45,9 +108,9 @@ class _ProfilePageState extends State<ProfilePage> {
         body: SafeArea(
           child: Column(
             children: [
-              const SizedBox(height: 24),
+              const SizedBox(height: 0),
               Container(
-                width: ScreenSize.screenWidth(context)*0.30,
+                width: ScreenSize.screenWidth(context)*0.35,
                 height: ScreenSize.screenHeight(context)*0.15,
                 //width: 150,
                 //height: 150,
@@ -64,12 +127,23 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Marco Rossi',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
+              Column(
+                children: [
+                  const Text(
+                    'Marco Rossi',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    '@marco_rossi',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600], // Colore grigio per lo username
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
               TabBar(
