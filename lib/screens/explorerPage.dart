@@ -1,4 +1,5 @@
 import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/screens/tripDetailPage.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/widgets/tripCardWidget.dart';
 import 'package:flutter/material.dart';
@@ -89,6 +90,8 @@ class _ExplorerPageState extends State<ExplorerPage> {
                       child: GestureDetector(
                         onTap: () {
                           // TODO: Handle click
+                          print('go to TripPage');
+                          Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage(trip: trip)));
                         },
                         child: TripCardWidget(trip),
                       ),

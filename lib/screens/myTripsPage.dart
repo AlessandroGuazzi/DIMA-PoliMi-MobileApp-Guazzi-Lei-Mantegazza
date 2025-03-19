@@ -22,6 +22,12 @@ class _MyTripsPageState extends State<MyTripsPage> {
     _futureTrips = DatabaseService().getHomePageTrips();
   }
 
+  void refreshTrips() {
+    setState(() {
+      _futureTrips = DatabaseService().getHomePageTrips();
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +53,16 @@ class _MyTripsPageState extends State<MyTripsPage> {
               itemBuilder: (context, index) {
                 final trip = trips[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                  child: InkWell(
-                      onTap: () {
-                        print('go to TripPage');
-                        Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage()));
-
-                      },
-                      child: TripCardWidget(trip)
+                  padding: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 4.0),
+                  child: Material(
+                    child: InkWell(
+                        onTap: () {
+                          print('go to TripPage');
+                          Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage(trip: trip)));
+                    
+                        },
+                        child: TripCardWidget(trip)
+                    ),
                   ),
                 );
               },
@@ -74,7 +82,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
               Navigator.push(context, MaterialPageRoute<void>(builder: (context) => Createnewtrippage()));
               print("Create New Trip");
             },
-            backgroundColor: Colors.green,
+            backgroundColor: Theme.of(context).secondaryHeaderColor,
             child: const Icon(Icons.add),
           ),
         ),
