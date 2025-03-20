@@ -5,7 +5,6 @@ import 'package:dima_project/models/transportModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/widgets/accomodationCardWidget.dart';
-import 'package:dima_project/widgets/activityCardWidget.dart';
 import 'package:dima_project/widgets/attractionCardWidget.dart';
 import 'package:dima_project/widgets/flightCardWidget.dart';
 import 'package:dima_project/widgets/transportCardWidget.dart';
@@ -26,14 +25,16 @@ class tripDetailPage extends StatefulWidget {
 
 class _tripDetailPageState extends State<tripDetailPage> {
 
-  late TripModel trip; // Store trip data in state
+  //late TripModel trip; // Store trip data in state
   late Future<List<ActivityModel>> _futureActivities;
 
   @override
   void initState() {
     super.initState();
-    trip = widget.trip; // Initialize with passed data
-    _futureActivities = DatabaseService().getTripActivities(trip);
+    //trip = widget.trip; // Initialize with passed data
+    _futureActivities = DatabaseService().getTripActivities(widget.trip);
+
+    print(widget.trip.id);  //TODO PRINT CHECK CAPIRE PERCHE' RITORNA SEMPRE LE STESSE ATTIVITA'
   }
 
   @override
@@ -84,7 +85,7 @@ class _tripDetailPageState extends State<tripDetailPage> {
                 child: Column(
                   children: [
                     Text(
-                      '${trip.title}',
+                      '${widget.trip.title}',
                       style: Theme.of(context).textTheme.displayMedium,
                     ),
 
@@ -96,7 +97,7 @@ class _tripDetailPageState extends State<tripDetailPage> {
                           color: Theme.of(context).primaryColor,
                         ),
                         Text(
-                          trip.cities?.join(' - ') ?? 'No cities available',
+                          widget.trip.cities?.join(' - ') ?? 'No cities available',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       ],
@@ -118,45 +119,54 @@ class _tripDetailPageState extends State<tripDetailPage> {
             ),
           ),
 
-          //TODO LISTA ATTIVITA'
-          /*Expanded(
-            child: FutureBuilder<List<ActivityModel>>(
-              future: _futureactivity,
-            ),
-          ),*/
 
-
-
+          // activities list
           Expanded(
-            child: FutureBuilder(
-              future: _futureActivities,
-              builder: (context, snapshot){
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No activities created'));
-                }
+            child: Stack(
+              children: [
 
-                List<ActivityModel> activities = snapshot.data!;
-                print('List of Activities');
+                // Linea verticale di sfondo
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: ScreenSize.screenWidth(context) * 0.18, // Spessore della linea
+                      color: Theme.of(context).primaryColor.withOpacity(0.1), // Colore della linea
+                    ),
+                  ),
+                ),
 
-                return ListView.builder(
-                  itemCount: activities.length,
-                  itemBuilder: (context, index) {
-                    final activity = activities[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 4.0),
-                      child: _buildActivityCard(activity),
+
+
+                FutureBuilder(
+                  future: _futureActivities,
+                  builder: (context, snapshot){
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No activities created'));
+                    }
+
+                    List<ActivityModel> activities = snapshot.data!;
+                    print('List of Activities');
+
+                    return ListView.builder(
+                      itemCount: activities.length,
+                      itemBuilder: (context, index) {
+                        final activity = activities[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                              horizontal: 4.0),
+                          child: _buildActivityCard(activity),
+                        );
+                      },
                     );
-                  },
-                );
-
-              }
-
+                  }
+                ),
+              ]
             ),
           )
 

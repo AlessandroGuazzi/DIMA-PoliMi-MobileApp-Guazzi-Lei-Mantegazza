@@ -13,9 +13,6 @@ class Flightcardwidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
-    print(flight.id);
-    print(flight.departureAirPort);
-    
     return Row(
       children: [
         Container(
@@ -31,13 +28,18 @@ class Flightcardwidget extends StatelessWidget {
           ),
         ),
 
-        VerticalDivider(
-          width: ScreenSize.screenWidth(context) * 0.01,
-          thickness: 2.5,
+        SizedBox(
+          height: ScreenSize.screenHeight(context) * 0.02,
+          child: VerticalDivider(
+            width: ScreenSize.screenWidth(context) * 0.01,
+            thickness: 2.5,
+          ),
         ),
+
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 10, 10),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'From: ${flight.departureAirPort ?? 'N/A'}',
@@ -53,7 +55,8 @@ class Flightcardwidget extends StatelessWidget {
                     color: Theme.of(context).primaryColor,
                   ),
 
-                  Text('${(flight.departureDate)?.day} ?? N/A')
+                  Text(flight.departureDate != null ? '${flight.departureDate!.day}' : 'N/A')
+
 
                 ],
               )

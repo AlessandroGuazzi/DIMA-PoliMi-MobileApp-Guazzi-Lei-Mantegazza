@@ -29,6 +29,7 @@ class AttractionModel extends ActivityModel{
   }) : super(id: id, tripId: tripId, type: type);
 
   // Factory method to convert Firestore snapshot to ActivityModel
+  @override
   factory AttractionModel.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,
       SnapshotOptions? options,
@@ -53,6 +54,7 @@ class AttractionModel extends ActivityModel{
     );
   }
 
+  @override
   Map<String, dynamic> toFirestore() {
     return {
       if (id != null) 'id': id,

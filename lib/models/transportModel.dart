@@ -24,6 +24,7 @@ class TransportModel extends ActivityModel{
   }): super(id: id, tripId: tripId, type: type);
 
   // Factory method to convert Firestore snapshot to TransportModel
+  @override
   factory TransportModel.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,
       SnapshotOptions? options,
@@ -45,7 +46,7 @@ class TransportModel extends ActivityModel{
     );
   }
 
-
+  @override
   Map<String, dynamic> toFirestore() {
     return {
       if (id != null) 'id': id,
