@@ -153,11 +153,28 @@ class _AuthPageState extends State<AuthPage> {
     'Altro'
   ];
 
-  Future<void> signIn() async{
-    try{
-      await AuthService().signInWithEmailAndPassword(email: _email.text, password: _password.text);
-    }on FirebaseAuthException catch (error){}
+  Future<void> signIn() async {
+    try {
+      await AuthService().signInWithEmailAndPassword(
+          email: _email.text, password: _password.text);
+    } on FirebaseAuthException catch (error) {}
   }
+
+  final snackBar = SnackBar(
+    content: const Row(
+      children: [
+        Icon(Icons.warning, color: Colors.white), // Aggiungi un'icona
+        SizedBox(width: 10),
+        Text('Compila tutti i campi obbligatori'), // Messaggio
+      ],
+    ),
+    backgroundColor: Colors.red, // Colore di sfondo
+    action: SnackBarAction(
+      label: 'OK', // Etichetta del pulsante
+      onPressed: () {}, // Azione al click
+      textColor: Colors.white, // Colore del testo del pulsante
+    ),
+  );
 
   Future<void> createUser() async {
     try {
@@ -213,14 +230,70 @@ class _AuthPageState extends State<AuthPage> {
             margin: const EdgeInsets.symmetric(horizontal: 30),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (!isLogin) ...[
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!isLogin) ...[
+                      TextField(
+                        controller: _name,
+                        decoration: InputDecoration(
+                          labelText: 'Nome',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _surname,
+                        decoration: InputDecoration(
+                          labelText: 'Cognome',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _username,
+                        decoration: InputDecoration(
+                          labelText: 'Username',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _birthDate,
+                        readOnly: true,
+                        onTap: () => _selectDate(context),
+                        decoration: InputDecoration(
+                          labelText: 'Data di Nascita',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixIcon: const Icon(Icons.calendar_today),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _nationality,
+                        decoration: InputDecoration(
+                          labelText: 'Nazionalità',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                     TextField(
-                      controller: _name,
+                      controller: _email,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: 'Nome',
+                        labelText: 'Email',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -228,107 +301,51 @@ class _AuthPageState extends State<AuthPage> {
                     ),
                     const SizedBox(height: 12),
                     TextField(
-                      controller: _surname,
+                      controller: _password,
+                      obscureText: true,
                       decoration: InputDecoration(
-                        labelText: 'Cognome',
+                        labelText: 'Password',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _username,
-                      decoration: InputDecoration(
-                        labelText: 'Username',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _birthDate,
-                      readOnly: true,
-                      onTap: () => _selectDate(context),
-                      decoration: InputDecoration(
-                        labelText: 'Data di Nascita',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        suffixIcon: const Icon(Icons.calendar_today),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    TextField(
-                      controller: _nationality,
-                      decoration: InputDecoration(
-                        labelText: 'Nazionalità',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-                  ],
-                  TextField(
-                    controller: _email,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _password,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (isLogin) {
-                        signIn();
-                      } else {
-                        if (_validateFields()) {
-                          createUser();
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (isLogin) {
+                          signIn();
+                        } else {
+                          if (_validateFields()) {
+                            createUser();
+                          }
                         }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
+                      child: Text(isLogin ? 'Accedi' : 'Registrati'),
                     ),
-                    child: Text(isLogin ? 'Accedi' : 'Registrati'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        isLogin = !isLogin;
-                      });
-                    },
-                    child: Text(
-                      isLogin
-                          ? 'Non hai un account? Registrati'
-                          : 'Hai un account? Accedi',
-                      style: const TextStyle(color: Colors.indigoAccent),
-                    ),
-                  )
-                ],
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          isLogin = !isLogin;
+                        });
+                      },
+                      child: Text(
+                        isLogin
+                            ? 'Non hai un account? Registrati'
+                            : 'Hai un account? Accedi',
+                        style: const TextStyle(color: Colors.indigoAccent),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -343,9 +360,7 @@ class _AuthPageState extends State<AuthPage> {
         _username.text.isEmpty ||
         selectedBirthDate == null ||
         _nationality.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Compila tutti i campi obbligatori')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return false;
     }
     return true;

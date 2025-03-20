@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
+import 'package:dima_project/screens/accountSettings.dart';
 
 import '../models/userModel.dart';
 
@@ -64,7 +65,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         leading: const Icon(Icons.person, color: Colors.black),
                         onTap: () {
                           // Aggiungi azione per "Account"
-                          Navigator.of(context).pop(); // Chiudi la sheet
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AccountSettings(currentUserFuture: _currentUserFuture)),
+                          );
                         },
                       ),
                       ListTile(
@@ -121,81 +125,84 @@ class _ProfilePageState extends State<ProfilePage> {
             )
           ],
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 0),
-              Container(
-                width: ScreenSize.screenWidth(context)*0.35,
-                height: ScreenSize.screenHeight(context)*0.15,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Theme.of(context).primaryColor,
-                    width: 2,
-                  ),
-                  image: const DecorationImage(
-                    image: AssetImage('assets/profile.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              FutureBuilder<UserModel?>(
-                future: _currentUserFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: Text('Caricamento...'));
-                  }
+        body: FutureBuilder(
+            future: _currentUserFuture,
+            builder: (context, snapshot) {
 
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Errore: ${snapshot.error}'));
-                  }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                  if (snapshot.data == null) {
-                    return const Center(child: Text('Utente non trovato'));
-                  }
+              if (snapshot.hasError) {
+                return Center(child: Text('Errore: ${snapshot.error}'));
+              }
 
-                  return Column(
-                    children: [
-                      Text(
-                        '${snapshot.data!.name} ${snapshot.data!.surname}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
+              if (snapshot.data == null) {
+                return const Center(child: Text('Utente non trovato'));
+              }
+
+              return SafeArea(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 0),
+                    Container(
+                      width: ScreenSize.screenWidth(context)*0.35,
+                      height: ScreenSize.screenHeight(context)*0.15,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Theme.of(context).primaryColor,
+                          width: 2,
                         ),
+                        image: DecorationImage(
+                          image: snapshot.data!.profilePic == null
+                              ? const AssetImage('assets/profile.png')
+                              : NetworkImage(snapshot.data!.profilePic!),
+                          fit: BoxFit.cover,
+                        )
                       ),
-                      Text(
-                        '@${snapshot.data!.username}',
-                        style: TextStyle(
+                    ),
+                    const SizedBox(height: 16),
+                    Column(
+                      children: [
+                        Text(
+                          '${snapshot.data!.name} ${snapshot.data!.surname}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          '@${snapshot.data!.username}',
+                          style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey[600], // Colore grigio per lo username
+                          ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    TabBar(
+                      indicatorColor: Theme.of(context).primaryColor,
+                      labelColor: Colors.black,
+                      unselectedLabelColor: Colors.grey,
+                      tabs: const [
+                        Tab(text: 'Viaggi Salvati'),
+                        Tab(text: 'I Tuoi Viaggi'),
+                      ],
+                    ),
+                    const Expanded(
+                      child: TabBarView(
+                        children: [
+                          Center(child: Text('Lista dei Viaggi Salvati')),
+                          Center(child: Text('Lista dei Tuoi Viaggi')),
+                        ],
                       ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              TabBar(
-                indicatorColor: Theme.of(context).primaryColor,
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-                tabs: const [
-                  Tab(text: 'Viaggi Salvati'),
-                  Tab(text: 'I Tuoi Viaggi'),
-                ],
-              ),
-              const Expanded(
-                child: TabBarView(
-                  children: [
-                    Center(child: Text('Lista dei Viaggi Salvati')),
-                    Center(child: Text('Lista dei Tuoi Viaggi')),
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
+              );
+            }
         ),
       ),
     );
