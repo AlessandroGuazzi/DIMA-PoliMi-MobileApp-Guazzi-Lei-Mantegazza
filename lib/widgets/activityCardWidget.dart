@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../models/tripModel.dart';
 
+
+//TODO WIDGET DI TEST
 class ActivityCardWidget extends StatelessWidget {
   const ActivityCardWidget({super.key});
 

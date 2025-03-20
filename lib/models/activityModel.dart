@@ -1,51 +1,59 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-enum ActivityType { sightseeing, adventure, relaxation, cultural, other }
+import 'package:dima_project/models/accomodationModel.dart';
+import 'package:dima_project/models/attractionModel.dart';
+import 'package:dima_project/models/flightModel.dart';
+import 'package:dima_project/models/transportModel.dart';
 
 class ActivityModel {
   final String? id;
   final String? tripId;
-  final String? name;
-  final DateTime? startDate;
-  final DateTime? endDate;
-  final String? description;
-  final num? cost;
   final String? type;
 
-  // Constructor
   ActivityModel({
     this.id,
     this.tripId,
-    this.name,
-    this.startDate,
-    this.endDate,
-    this.description,
-    this.cost,
-    this.type,
+    this.type
   });
 
-  // Factory method to convert Firestore snapshot to ActivityModel
+
   factory ActivityModel.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,
       SnapshotOptions? options,
       ) {
     final data = snapshot.data();
-    if (data == null) return ActivityModel(); // Handle null case
+    if (data == null) return ActivityModel();
 
-    Timestamp? startTimestamp = data['startDate'] as Timestamp?;
-    Timestamp? endTimestamp = data['endDate'] as Timestamp?;
-
+    /*
     return ActivityModel(
-      id: snapshot.id, // Firestore document ID
+      id: snapshot.id,
       tripId: data['tripId'] as String?,
-      name: data['name'] as String?,
-      startDate: startTimestamp?.toDate(), // Convert Timestamp to DateTime
-      endDate: endTimestamp?.toDate(), // Convert Timestamp to DateTime
-      description: data['description'] as String?,
-      cost: data['cost'] as num?,
-      type: data['type'] as String?, // Convert String to Enum
-    );
+      type: data['type'] as String?
+    );*/
+
+
+    switch (data['type']) {
+      case 'flight':
+        return FlightModel.fromFirestore(snapshot, null);
+      case 'accommodation':
+        return AccommodationModel.fromFirestore(snapshot, null);
+      case 'transport':
+        return TransportModel.fromFirestore(snapshot, null);
+      case 'attraction':
+        return AttractionModel.fromFirestore(snapshot, null);
+      default:
+        return ActivityModel(id: snapshot.id, tripId: data['tripId'] as String?);
+    }
+
   }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      if (id != null) 'id': id,
+      if (tripId != null) 'tripId': tripId,
+      if (type != null)  'type': type
+    };
+  }
+
 
 
 }

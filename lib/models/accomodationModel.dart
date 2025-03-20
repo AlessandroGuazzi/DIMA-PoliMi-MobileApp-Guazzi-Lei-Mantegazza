@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/activityModel.dart';
 
-class AccommodationModel {
-  final String? id;
+class AccommodationModel extends ActivityModel{
+  //final String? id;
   final String? name;
-  final String? tripId;
   final String? address;
   final DateTime? checkIn;
   final DateTime? checkOut;
@@ -12,17 +12,19 @@ class AccommodationModel {
 
   // Constructor
   AccommodationModel({
-    this.id,
+    String? id,
+    String? tripId,
+    String? type,
     this.name,
-    this.tripId,
     this.address,
     this.checkIn,
     this.checkOut,
     this.cost,
     this.contacts,
-  });
+  }) : super(id: id, tripId: tripId, type: type);
 
   // Factory method to convert Firestore snapshot to AccommodationModel
+  @override
   factory AccommodationModel.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,
       SnapshotOptions? options,
@@ -37,6 +39,7 @@ class AccommodationModel {
       id: snapshot.id, // Firestore document ID
       name: data['name'] as String?,
       tripId: data['tripId'] as String?,
+      type: data['type'] as String?,
       address: data['address'] as String?,
       checkIn: checkInTimestamp?.toDate(), // Convert Timestamp to DateTime
       checkOut: checkOutTimestamp?.toDate(), // Convert Timestamp to DateTime
@@ -45,5 +48,20 @@ class AccommodationModel {
           ? Map<String, dynamic>.from(data['contacts'] as Map) // Ensure it's a map
           : {}, // Default to an empty map if null
     );
+  }
+
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (tripId != null) 'tripId': tripId,
+      if (type != null) 'type': 'flight',
+      if (address != null) 'address': address,
+      if (checkIn != null) 'checkIn': Timestamp.fromDate(checkIn!),
+      if (checkOut != null) 'checkOut': Timestamp.fromDate(checkOut!),
+      if (cost != null) 'cost': cost,
+      if (contacts != null) 'contacts': contacts,
+    };
   }
 }
