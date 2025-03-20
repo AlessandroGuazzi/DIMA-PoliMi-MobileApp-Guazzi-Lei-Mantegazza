@@ -42,7 +42,7 @@ class TripCardWidget extends StatelessWidget {
                         },
                         blendMode: BlendMode.dstIn,
                         child: Image.network(
-                          'https://picsum.photos/200',
+                          'https://picsum.photos/2000',
                           width: double.infinity,
                           height: 200,
                           fit: BoxFit.cover,

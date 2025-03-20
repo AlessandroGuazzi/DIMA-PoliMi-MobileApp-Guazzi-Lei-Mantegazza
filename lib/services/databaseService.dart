@@ -108,13 +108,13 @@ class DatabaseService {
           .where("creatorInfo.id", isNotEqualTo: currentUserId)
           .get();
 
-      print("Successfully completed");
+      print("Trip retrieval completed");
 
       for (var docSnapshot in querySnapshot.docs) {
         trips.add(docSnapshot.data());
       }
     } catch (e) {
-      print("Error completing: $e");
+      print("Error retrieving trip: $e");
     }
 
     return trips;
@@ -167,7 +167,7 @@ class DatabaseService {
 
   Future<void> createTrip(TripModel trip) async{
     try {
-      await db.collection('Trips').add(trip.toFirestore());
+      await tripCollection.add(trip);
       print('Successfully added a new trip!');
 
     } catch (e) {

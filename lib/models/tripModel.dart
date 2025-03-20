@@ -4,7 +4,7 @@ class TripModel {
   final String? id;
   final Map<String, dynamic>? creatorInfo;
   final String? title;
-  final List<String>? nations;
+  final List<Map<String, dynamic>>? nations;
   final List<String>? cities;
   final DateTime? startDate;
   final DateTime? endDate;
@@ -42,8 +42,12 @@ class TripModel {
         id: data?['id'],
         creatorInfo: data?['creatorInfo'],
         title: data?['title'],
-        nations: data?['nations'] is Iterable ? List<String>.from(data?['nations']) : null,
-        cities: data?['cities'] is Iterable ? List<String>.from(data?['cities']) : null,
+        nations: data?['nations'] is Iterable
+            ? List<Map<String, dynamic>>.from(data?['nations'])
+            : null,
+        cities: data?['cities'] is Iterable
+            ? List<String>.from(data?['cities'])
+            : null,
         startDate: startDate.toDate(),
         endDate: endDate.toDate(),
         activities: data?['activities'] is Iterable
@@ -52,8 +56,7 @@ class TripModel {
         expenses: data?['expenses'],
         isConfirmed: data?['isConfirmed'],
         isPast: data?['isPast'],
-        isPrivate: data?['isPrivate']
-    );
+        isPrivate: data?['isPrivate']);
   }
 
   Map<String, dynamic> toFirestore() {
@@ -61,12 +64,18 @@ class TripModel {
       if (id != null) 'id': id,
       if (creatorInfo != null) 'creatorInfo': creatorInfo,
       if (title != null) 'title': title,
-      if (nations != null) 'nations': nations,
+      if (nations != null)
+        'nations': nations!
+            .map((country) => {
+                  'name': country['name'],
+                  'flag': country['flag']
+                })
+            .toList(),
       if (cities != null) 'cities': cities,
       if (startDate != null) 'startDate': Timestamp.fromDate(startDate!),
       if (endDate != null) 'endDate': Timestamp.fromDate(endDate!),
       if (activities != null) 'activities': activities,
-      if (expenses != null) 'creatorId': expenses,
+      if (expenses != null) 'expenses': expenses,
       if (isConfirmed != null) 'isConfirmed': isConfirmed,
       if (isPast != null) 'isPast': isPast,
       if (isPrivate != null) 'isPrivate': isPrivate,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:dima_project/screens/createNewTripPage.dart';
+import 'package:dima_project/screens/newTripPage.dart';
 import 'package:dima_project/widgets/tripCardWidget.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/databaseService.dart';
@@ -79,7 +79,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
           child: FloatingActionButton(
             onPressed: () {
               // Action when the button is pressed
-              Navigator.push(context, MaterialPageRoute<void>(builder: (context) => Createnewtrippage()));
+              Navigator.push(context, MaterialPageRoute<void>(builder: (context) => NewTripPage()));
               print("Create New Trip");
             },
             backgroundColor: Theme.of(context).secondaryHeaderColor,
