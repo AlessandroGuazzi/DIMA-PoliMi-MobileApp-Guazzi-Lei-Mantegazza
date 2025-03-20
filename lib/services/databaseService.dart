@@ -84,6 +84,10 @@ class DatabaseService {
     return await userCollection.doc(currentUserId).set(user);
   }
 
+  Future updateUserData(UserModel user) async {
+    return await userCollection.doc(user.id).update(user.toFirestore());
+  }
+
   Future<UserModel?> getUserByUid(String uid) async {
     try {
       DocumentSnapshot<UserModel> doc = await userCollection.doc(uid).get();

@@ -44,6 +44,37 @@ class AuthService {
     }
   }
 
+  Future<void> updateUserWithEmailAndPassword({required String? name,
+    required String? surname,
+    required String? email,
+    required String? username,
+    required String? description,
+    required DateTime? birthDate,
+    required String? nationality}) async{
+    try{
+      final updatedFields = <String, dynamic>{};
+      if(name != null) {updatedFields['name'] = name;}
+      if (surname != null) updatedFields['surname'] = surname;
+      if (username != null) updatedFields['username'] = username;
+      if (birthDate != null) updatedFields['birthDate'] = birthDate;
+      if (email != null) updatedFields['mail'] = email;
+      if (nationality != null) updatedFields['birthCountry'] = nationality;
+      if (description != null) updatedFields['description'] = description;
+      await DatabaseService().updateUserData(UserModel(
+        id: currentUser!.uid ?? 'null',
+        name: name,
+        surname: surname,
+        username: username,
+        birthDate: birthDate,
+        mail: email,
+        birthCountry: nationality,
+        description: description,
+      ));
+    } on Exception catch (e){
+      rethrow;
+    }
+  }
+
   Future<void> signOut() async{
     try{
       await _firebaseAuth.signOut();

@@ -65,10 +65,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         leading: const Icon(Icons.person, color: Colors.black),
                         onTap: () {
                           // Aggiungi azione per "Account"
+                          Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => AccountSettings(currentUserFuture: _currentUserFuture)),
-                          );
+                          ).then((value) => setState(() {_currentUserFuture = _loadCurrentUser();}));
                         },
                       ),
                       ListTile(
