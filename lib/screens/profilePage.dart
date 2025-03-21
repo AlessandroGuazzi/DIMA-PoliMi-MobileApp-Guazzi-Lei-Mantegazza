@@ -1,10 +1,13 @@
+import 'package:dima_project/screens/tripDetailPage.dart';
 import 'package:dima_project/utils/screenSize.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/screens/accountSettings.dart';
+import 'package:intl/intl.dart';
 
+import '../models/tripModel.dart';
 import '../models/userModel.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -16,12 +19,13 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late Future<UserModel?> _currentUserFuture;
+  late Future<List<TripModel>> _futureTrips;
 
   Future<UserModel?> _loadCurrentUser() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       return await DatabaseService().getUserByUid(user.uid);
-    }
+    };
     return null;
   }
 
@@ -29,6 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     _currentUserFuture = _loadCurrentUser();
+    _futureTrips = DatabaseService().getHomePageTrips();
   }
 
   Future<void> signOut() async{
@@ -192,11 +197,94 @@ class _ProfilePageState extends State<ProfilePage> {
                         Tab(text: 'I Tuoi Viaggi'),
                       ],
                     ),
-                    const Expanded(
+                    Expanded(
                       child: TabBarView(
                         children: [
-                          Center(child: Text('Lista dei Viaggi Salvati')),
-                          Center(child: Text('Lista dei Tuoi Viaggi')),
+                          const Center(
+                              child: Text('Lista dei Viaggi Salvati'),
+                          ),
+                          FutureBuilder<List<TripModel>>(
+                            future: _futureTrips,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(child: CircularProgressIndicator());
+                              }
+
+                              if (snapshot.hasError) {
+                                return const Center(child: Text('Errore nel caricamento dei viaggi'));
+                              }
+
+                              final trips = snapshot.data!;
+
+                              if (trips.isEmpty) {
+                                return const Center(child: Text('Nessun viaggio creato'));
+                              }
+
+                              return ListView.builder(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: trips.length,
+                                itemBuilder: (context, index) {
+                                  final trip = trips[index];
+                                  return Card(
+                                    margin: const EdgeInsets.only(bottom: 16),
+                                    elevation: 4, // Aggiungi un'ombra per dare profondità
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8), // Angoli arrotondati
+                                    ),
+                                    child: ListTile(
+                                      contentPadding: const EdgeInsets.all(16),
+                                      leading: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).primaryColor.withAlpha(100), // Sfondo del cerchio
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.travel_explore,
+                                          color: Colors.white, // Colore dell'icona
+                                        ),
+                                      ),
+                                      title: Text(
+                                        trip.title ?? 'Viaggio senza titolo',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18, // Dimensione del titolo
+                                        ),
+                                      ),
+                                      subtitle: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Nazioni: ${trip.nations?.map((n) => n['name']).join(', ')}',
+                                            style: TextStyle(
+                                              fontSize: 14, // Dimensione del testo
+                                              color: Theme.of(context).hintColor, // Colore del testo
+                                            ),
+                                          ),
+                                          Text(
+                                            'Date: ${DateFormat('dd/MM/yyyy').format(trip.startDate!)} - '
+                                                '${DateFormat('dd/MM/yyyy').format(trip.endDate!)}',
+                                            style: TextStyle(
+                                              fontSize: 14, // Dimensione del testo
+                                              color: Theme.of(context).hintColor, // Colore del testo
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      trailing: Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: Theme.of(context).primaryColor, // Colore della freccia
+                                      ),
+                                      onTap: () {
+                                        Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage(trip: trip)));
+                                      },
+                                    ),
+                                  );
+                                },
+                              );
+
+                            },
+                          ),
                         ],
                       ),
                     ),

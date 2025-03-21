@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima_project/models/tripModel.dart';
 
 class UserModel {
   final String? id;
@@ -10,8 +11,8 @@ class UserModel {
   final String? mail;
   final String? birthCountry;
   final String? description;
-  final List<String>? createdTrip;
-  final List<String>? savedTrip;
+  final List<TripModel>? createdTrip;
+  final List<TripModel>? savedTrip;
   final List<String>? visitedCountry;
   final DateTime? joinDate;
 
@@ -51,10 +52,10 @@ class UserModel {
       birthCountry: data?['birthCountry'],
       description: data?['description'],
       createdTrip: data?['createdTrip'] is Iterable
-          ? List<String>.from(data?['createdTrip'])
+          ? List<TripModel>.from(data?['createdTrip'])
           : null,
       savedTrip: data?['savedTrip'] is Iterable
-          ? List<String>.from(data?['savedTrip'])
+          ? List<TripModel>.from(data?['savedTrip'])
           : null,
       visitedCountry: data?['visitedCountry'] is Iterable
           ? List<String>.from(data?['visitedCountry'])
