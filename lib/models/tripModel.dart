@@ -4,6 +4,7 @@ class TripModel {
   String? id;
   final Map<String, dynamic>? creatorInfo;
   final String? title;
+  //nations is a map of {'name': String, 'flag': String}
   final List<Map<String, dynamic>>? nations;
   final List<String>? cities;
   final DateTime? startDate;

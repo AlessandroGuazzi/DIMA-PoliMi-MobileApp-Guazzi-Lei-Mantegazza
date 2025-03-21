@@ -18,14 +18,13 @@ class ExplorerPage extends StatefulWidget {
 class _ExplorerPageState extends State<ExplorerPage> {
   late Future<List<TripModel>> _futureTrips;
   String _searchQuery = "";
-  late Future<UserModel?> _futureCurrentUser;
-  List<String> _savedTrips = []; // ✅ Store saved trips locally
+  List<String> _savedTrips = [];
 
   @override
   void initState() {
     super.initState();
     _futureTrips = DatabaseService().getExplorerTrips();
-    _loadCurrentUser(); // ✅ Load saved trips initially
+    _loadCurrentUser();
   }
 
   Future<void> _loadCurrentUser() async {
@@ -114,7 +113,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
                     bool isSaved = _savedTrips.contains(trip.id);
 
                     return Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 11),
                       child: GestureDetector(
                         onTap: () {
                           Navigator.push(

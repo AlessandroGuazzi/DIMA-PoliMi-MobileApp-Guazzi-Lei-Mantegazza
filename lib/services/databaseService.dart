@@ -153,6 +153,7 @@ class DatabaseService {
     return activities;
   }
 
+  //updated method assign id to the trip and add it to the user that created it
   Future<void> createTrip(TripModel trip) async {
     //Do not use tripCollection directly for problem with transaction and withConverter
     DocumentReference tripDoc =

@@ -1,4 +1,4 @@
-import 'package:dima_project/services/databaseService.dart';
+
 import 'package:flutter/material.dart';
 
 import '../models/tripModel.dart';
@@ -27,7 +27,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
