@@ -1,3 +1,5 @@
+import 'package:dima_project/screens/gamePage.dart';
+import 'package:dima_project/screens/gamePage2.dart';
 import 'package:dima_project/screens/tripDetailPage.dart';
 import 'package:dima_project/utils/screenSize.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,7 +8,6 @@ import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/screens/accountSettings.dart';
 import 'package:intl/intl.dart';
-
 import '../models/tripModel.dart';
 import '../models/userModel.dart';
 
@@ -40,69 +41,71 @@ class _ProfilePageState extends State<ProfilePage> {
     await AuthService().signOut();
   }
 
+
   void _showSettingsModal() {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      isScrollControlled: true,
+      isScrollControlled: false, // Impostalo su false per evitare problemi di altezza
       builder: (BuildContext context) {
         return Container(
-          height: 300, // Altezza della sheet
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+              topLeft: Radius.circular(15),
+              topRight: Radius.circular(15),
             ),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // Centra verticalmente
+              mainAxisSize: MainAxisSize.min, // Questo fa sì che la colonna abbia solo l'altezza necessaria
               children: [
                 // Lista delle impostazioni
-                Expanded(
-                  child: ListView(
-                    shrinkWrap: true, // Per evitare errori di overflow
-                    children: [
-                      ListTile(
-                        title: const Text('Account', style: TextStyle(fontSize: 18)),
-                        leading: const Icon(Icons.person, color: Colors.black),
-                        onTap: () {
-                          // Aggiungi azione per "Account"
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => AccountSettings(currentUserFuture: _currentUserFuture)),
-                          ).then((value) => setState(() {_currentUserFuture = _loadCurrentUser();}));
-                        },
-                      ),
-                      ListTile(
-                        title: const Text('Preferenze', style: TextStyle(fontSize: 18)),
-                        leading: const Icon(Icons.tune, color: Colors.black),
-                        onTap: () {
-                          // Aggiungi azione per "Preferenze"
-                          Navigator.of(context).pop(); // Chiudi la sheet
-                        },
-                      ),
-                      ListTile(
-                        title: const Text('Feedback', style: TextStyle(fontSize: 18)),
-                        leading: const Icon(Icons.feedback, color: Colors.black),
-                        onTap: () {
-                          // Aggiungi azione per "Feedback"
-                          Navigator.of(context).pop(); // Chiudi la sheet
-                        },
-                      ),
-                      ListTile(
-                        title: const Text('Log Out', style: TextStyle(fontSize: 18)),
-                        leading: const Icon(Icons.logout, color: Colors.red),
-                        onTap: () async {
-                          await signOut();
-                          Navigator.of(context).pop(); // Chiudi la sheet
-                        },
-                      ),
-                    ],
-                  ),
+                ListView(
+                  shrinkWrap: true, // Per evitare errori di overflow
+                  physics: const NeverScrollableScrollPhysics(), // Disabilita lo scrolling della lista
+                  children: [
+                    ListTile(
+                      title: const Text('Modifica Profilo', style: TextStyle(fontSize: 18)),
+                      leading: const Icon(Icons.person, color: Colors.black),
+                      onTap: () {
+                        // Aggiungi azione per "Account"
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => AccountSettings(currentUserFuture: _currentUserFuture)),
+                        ).then((value) => setState(() {_currentUserFuture = _loadCurrentUser();}));
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('Nazioni Visitate', style: TextStyle(fontSize: 18)),
+                      leading: const Icon(Icons.travel_explore_outlined, color: Colors.black),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const GamePage2()),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('Preferenze', style: TextStyle(fontSize: 18)),
+                      leading: const Icon(Icons.tune, color: Colors.black),
+                      onTap: () {
+                        // Aggiungi azione per "Preferenze"
+                        Navigator.of(context).pop(); // Chiudi la sheet
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('Log Out', style: TextStyle(fontSize: 18)),
+                      leading: const Icon(Icons.logout, color: Colors.red),
+                      onTap: () async {
+                        await signOut();
+                        Navigator.of(context).pop(); // Chiudi la sheet
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -111,6 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
