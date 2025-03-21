@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TripModel {
-  final String? id;
+  String? id;
   final Map<String, dynamic>? creatorInfo;
   final String? title;
   final List<Map<String, dynamic>>? nations;

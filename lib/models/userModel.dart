@@ -11,8 +11,8 @@ class UserModel {
   final String? mail;
   final String? birthCountry;
   final String? description;
-  final List<TripModel>? createdTrip;
-  final List<TripModel>? savedTrip;
+  final List<String>? createdTrip;
+  final List<String>? savedTrip;
   final List<String>? visitedCountry;
   final DateTime? joinDate;
 
@@ -52,10 +52,10 @@ class UserModel {
       birthCountry: data?['birthCountry'],
       description: data?['description'],
       createdTrip: data?['createdTrip'] is Iterable
-          ? List<TripModel>.from(data?['createdTrip'])
+          ? List<String>.from(data?['createdTrip'])
           : null,
       savedTrip: data?['savedTrip'] is Iterable
-          ? List<TripModel>.from(data?['savedTrip'])
+          ? List<String>.from(data?['savedTrip'])
           : null,
       visitedCountry: data?['visitedCountry'] is Iterable
           ? List<String>.from(data?['visitedCountry'])

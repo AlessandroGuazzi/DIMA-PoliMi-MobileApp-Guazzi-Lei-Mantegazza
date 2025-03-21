@@ -15,7 +15,6 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
   List<Country> _allCountries = [];
   List<Country> _filteredCountries = [];
   List<Country> _selectedCountries = [];
-  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -30,6 +29,7 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
   Widget build(BuildContext context) {
     return Container(
         height: ScreenSize.screenHeight(context) * 0.9,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           children: [
             Padding(
@@ -49,15 +49,18 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                      onPressed: null,
-                      icon: Icon(Icons.keyboard_backspace_rounded)),
+                  SizedBox(
+                    width: ScreenSize.screenWidth(context) * 0.2,
+                  ),
                   Icon(
                     Icons.flag_circle_sharp,
                     color: Theme.of(context).primaryColor,
                   ),
-                  TextButton(
-                      onPressed: () => _confirmCountries(), child: Text('Done'))
+                  SizedBox(
+                    width: ScreenSize.screenWidth(context) * 0.2,
+                    child: TextButton(
+                        onPressed: () => _confirmCountries(), child: Text('Done')),
+                  )
                 ],
               ),
             ),
@@ -85,22 +88,24 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
 
                     return Column(
                       children: [
-                        ListTile(
-                          onTap: () => _selectCountry(country, isSelected),
-                          tileColor: isSelected
+                        Container(
+                          color: isSelected
                               ? Theme.of(context).highlightColor
-                              : null,
-                          leading: Text('${country.flagEmoji}',
-                              style: Theme.of(context).textTheme.headlineSmall),
-                          title: Text('${country.name}'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 0, top: 0, right: 0, bottom: 0),
-                          child: Divider(
-                            color: Theme.of(context).dividerColor,
+                              : Theme.of(context).scaffoldBackgroundColor,
+                          child: ListTile(
+                            onTap: () => _selectCountry(country, isSelected),
+                            leading: Text('${country.flagEmoji}',
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall),
+                            title: Text('${country.name}'),
+
                           ),
-                        )
+                        ),
+                        Divider(
+                          color: Theme.of(context).dividerColor,
+                          height: 1,
+                          thickness: 1,
+                        ),
                       ],
                     );
                   }),

@@ -1,5 +1,7 @@
 import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/models/userModel.dart';
 import 'package:dima_project/screens/tripDetailPage.dart';
+import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/widgets/tripCardWidget.dart';
 import 'package:flutter/material.dart';
@@ -16,23 +18,49 @@ class ExplorerPage extends StatefulWidget {
 class _ExplorerPageState extends State<ExplorerPage> {
   late Future<List<TripModel>> _futureTrips;
   String _searchQuery = "";
+  late Future<UserModel?> _futureCurrentUser;
+  List<String> _savedTrips = []; // ✅ Store saved trips locally
 
   @override
   void initState() {
     super.initState();
     _futureTrips = DatabaseService().getExplorerTrips();
+    _loadCurrentUser(); // ✅ Load saved trips initially
+  }
+
+  Future<void> _loadCurrentUser() async {
+    UserModel? user =
+    await DatabaseService().getUserByUid(AuthService().currentUser!.uid);
+    if (user != null) {
+      setState(() {
+        _savedTrips = List<String>.from(user.savedTrip ?? []);
+      });
+    }
+  }
+
+  void _handleTripSave(bool isSaved, String tripId) async {
+    print('handling click');
+    await DatabaseService().handleTripSave(isSaved, tripId);
+
+    setState(() {
+      if (isSaved) {
+        _savedTrips.remove(tripId);
+      } else {
+        _savedTrips.add(tripId);
+      }
+    });
   }
 
   List<TripModel> _filterTrips(List<TripModel> trips) {
     return trips
-        .where((trip) => trip.title!
-        .toLowerCase()
-        .contains(_searchQuery.toLowerCase()))
+        .where((trip) =>
+        trip.title!.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('Build odf explorer page...');
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
@@ -56,14 +84,12 @@ class _ExplorerPageState extends State<ExplorerPage> {
                   ),
                 ),
                 IconButton(
-                    onPressed: null,
-                    icon: Icon(Icons.sort, color: Theme.of(context).primaryColor,),
-
+                  onPressed: null,
+                  icon: Icon(Icons.sort, color: Theme.of(context).primaryColor,),
                 )
               ],
             ),
           ),
-
           Expanded(
             child: FutureBuilder<List<TripModel>>(
               future: _futureTrips,
@@ -85,15 +111,23 @@ class _ExplorerPageState extends State<ExplorerPage> {
                   itemCount: filteredTrips.length,
                   itemBuilder: (context, index) {
                     final trip = filteredTrips[index];
+                    bool isSaved = _savedTrips.contains(trip.id);
+
                     return Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                       child: GestureDetector(
                         onTap: () {
-                          // TODO: Handle click
-                          print('go to TripPage');
-                          Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage(trip: trip)));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                  builder: (context) =>
+                                      tripDetailPage(trip: trip)));
                         },
-                        child: TripCardWidget(trip),
+                        child: TripCardWidget(
+                          trip,
+                          isSaved,
+                          onSave: _handleTripSave, // callback to handle saving trips
+                        ),
                       ),
                     );
                   },

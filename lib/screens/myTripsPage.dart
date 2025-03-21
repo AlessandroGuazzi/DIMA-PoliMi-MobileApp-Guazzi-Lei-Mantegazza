@@ -61,7 +61,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
                           Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage(trip: trip)));
                     
                         },
-                        child: TripCardWidget(trip)
+                        child: TripCardWidget(trip, false, onSave: (bool , String ) {  },)
                     ),
                   ),
                 );
