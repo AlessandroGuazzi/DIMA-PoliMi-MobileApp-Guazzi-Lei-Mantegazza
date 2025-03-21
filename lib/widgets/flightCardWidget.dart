@@ -1,4 +1,5 @@
 import 'package:dima_project/models/flightModel.dart';
+import 'package:dima_project/widgets/activityDecorationsWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/utils/screenSize.dart';
 
@@ -22,19 +23,13 @@ class Flightcardwidget extends StatelessWidget {
             color: Theme.of(context).primaryColor.withOpacity(0.1), // Background color
           ),
           child: Icon(
-            Icons.airplane_ticket_outlined,
-            size: 40,
+            Icons.airplane_ticket,
+            size: ScreenSize.screenWidth(context) * 0.1,
             color: Theme.of(context).secondaryHeaderColor,
           ),
         ),
 
-        SizedBox(
-          height: ScreenSize.screenHeight(context) * 0.02,
-          child: VerticalDivider(
-            width: ScreenSize.screenWidth(context) * 0.01,
-            thickness: 2.5,
-          ),
-        ),
+        const activityDivider(),
 
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 10, 10),

@@ -39,7 +39,7 @@ class TripModel {
     Timestamp endDate = data?['endDate'];
 
     return TripModel(
-        id: data?['id'],
+        id: snapshot.id,
         creatorInfo: data?['creatorInfo'],
         title: data?['title'],
         nations: data?['nations'] is Iterable

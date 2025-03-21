@@ -2,6 +2,8 @@ import 'package:dima_project/models/accomodationModel.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/utils/screenSize.dart';
 
+import 'activityDecorationsWidget.dart';
+
 class Accomodationcardwidget extends StatelessWidget {
   const Accomodationcardwidget(this.accomodation, {super.key});
 
@@ -20,18 +22,12 @@ class Accomodationcardwidget extends StatelessWidget {
           ),
           child: Icon(
             Icons.holiday_village,
-            size: 40,
+            size: ScreenSize.screenWidth(context) * 0.1,
             color: Theme.of(context).secondaryHeaderColor,
           ),
         ),
 
-        SizedBox(
-          height: ScreenSize.screenHeight(context) * 0.02,
-          child: VerticalDivider(
-            width: ScreenSize.screenWidth(context) * 0.01,
-            thickness: 2.5,
-          ),
-        ),
+        const activityDivider(),
 
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 10, 10),

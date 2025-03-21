@@ -41,8 +41,17 @@ class _tripDetailPageState extends State<tripDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text("Dima Project"),
-          backgroundColor: Theme.of(context).primaryColor,
+        title: Text("Dima Project"),
+        backgroundColor: Theme.of(context).primaryColor,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.edit), // Icona a forma di pennino
+            onPressed: () {
+              // Azione quando l'icona viene premuta
+              print("Modifica attivata");
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -103,7 +112,6 @@ class _tripDetailPageState extends State<tripDetailPage> {
                       ],
                     ),
 
-
                   ],
                 ),
               )
@@ -152,6 +160,9 @@ class _tripDetailPageState extends State<tripDetailPage> {
                     List<ActivityModel> activities = snapshot.data!;
                     print('List of Activities');
 
+                    //ordinare le attività in base al timestamp
+                    activitiesSort(activities);
+
                     return ListView.builder(
                       itemCount: activities.length,
                       itemBuilder: (context, index) {
@@ -175,6 +186,7 @@ class _tripDetailPageState extends State<tripDetailPage> {
     );
   }
 
+
   Widget _buildActivityCard(ActivityModel activity) {
     switch (activity.type) {
       case 'flight':
@@ -190,4 +202,29 @@ class _tripDetailPageState extends State<tripDetailPage> {
         return Placeholder(); // Widget di default se il tipo non è riconosciuto
     }
   }
+
+
+  void activitiesSort(List<ActivityModel> activities) {
+    activities.sort((a, b) {
+      DateTime dateA = getActivityDate(a);
+      DateTime dateB = getActivityDate(b);
+      return dateA.compareTo(dateB);
+    });
+  }
+
+
+  DateTime getActivityDate(ActivityModel activity) {
+    if (activity is FlightModel ) {
+      return activity.departureDate ?? DateTime(1970, 1, 1);   //TODO MI RICHIEDE IL NULL CHECK, MA NELL'APP RENDEREMO LA DATA OBBLIGGATORIA
+    } else if (activity is TransportModel){
+      return activity.departureDate ?? DateTime(1970, 1, 1);
+    } else if (activity is AccommodationModel) {
+      return activity.checkIn ?? DateTime(1970, 1, 1);
+    } else if (activity is AttractionModel) {
+      return activity.startDate ?? DateTime(1970, 1, 1);
+    }
+    throw Exception("Tipo di attività non supportato");
+  }
+
+
 }
