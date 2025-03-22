@@ -216,7 +216,8 @@ class _NewTripPageState extends State<NewTripPage> {
       List<Map<String, dynamic>> countriesMap = _selectedCountries.map((country) => {
         'name': country.name,
         'flag': country.flagEmoji,
-        'code': country.countryCode,
+        //convert the first letter to lowercase for consistency with another plugin
+        'code': country.countryCode[0].toLowerCase() + country.countryCode.substring(1),
       }).toList();
       final trip = TripModel(
           title: titleController.text,
