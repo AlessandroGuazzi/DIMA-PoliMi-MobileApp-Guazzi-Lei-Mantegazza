@@ -196,6 +196,7 @@ class _NewTripPageState extends State<NewTripPage> {
   void _submitForm() async {
 
     //query db to get user info first
+    //TODO: get a Current user model reference on launch of app to optimize, also with explorer page
     UserModel? currentUser = await DatabaseService().getUserByUid(AuthService().currentUser!.uid);
     Map<String, dynamic> creatorInfo = {
       'id': 'null',
@@ -215,6 +216,7 @@ class _NewTripPageState extends State<NewTripPage> {
       List<Map<String, dynamic>> countriesMap = _selectedCountries.map((country) => {
         'name': country.name,
         'flag': country.flagEmoji,
+        'code': country.countryCode,
       }).toList();
       final trip = TripModel(
           title: titleController.text,
