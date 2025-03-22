@@ -1,13 +1,18 @@
 import 'package:dima_project/models/attractionModel.dart';
-import 'package:dima_project/widgets/activityDecorationsWidget.dart';
+import 'package:dima_project/widgets/activityDividerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/utils/screenSize.dart';
 
-class Attractioncardwidget extends StatelessWidget {
+class Attractioncardwidget extends StatefulWidget {
   const Attractioncardwidget(this.attraction, {super.key});
 
   final AttractionModel attraction;
 
+  @override
+  State<Attractioncardwidget> createState() => _AttractioncardwidgetState();
+}
+
+class _AttractioncardwidgetState extends State<Attractioncardwidget> {
   @override
   Widget build(BuildContext context) {
 
@@ -20,7 +25,7 @@ class Attractioncardwidget extends StatelessWidget {
             color: Theme.of(context).primaryColor.withOpacity(0.1), // Background color
           ),
           child: Icon(
-            iconSelector(attraction.attractionType ?? 'default'),
+            iconSelector(widget.attraction.attractionType ?? 'default'),
             size: ScreenSize.screenWidth(context) * 0.1,
             color: Theme.of(context).secondaryHeaderColor,
           ),
@@ -34,21 +39,25 @@ class Attractioncardwidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${attraction.name ?? 'N/A'}',
-                style: Theme.of(context).textTheme.headlineLarge,
+                '${widget.attraction.name ?? 'N/A'}',
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
 
               Row(
                 children: [
-                  const Text('Time '),
+
                   Icon(
                     Icons.access_time_filled_outlined,
                     size: 20,
                     color: Theme.of(context).primaryColor,
                   ),
 
-                  Text('${attraction.startDate?.day ?? 'N/A'}')
-
+                  Text(
+                    widget.attraction.startDate != null && widget.attraction.endDate != null
+                        ? 'Time: ${widget.attraction.startDate!.hour.toString().padLeft(2, '0')}:${widget.attraction.startDate!.minute.toString().padLeft(2, '0')} - '
+                        '${widget.attraction.endDate!.hour.toString().padLeft(2, '0')}:${widget.attraction.endDate!.minute.toString().padLeft(2, '0')}'
+                        : 'Time: N/A',
+                  )
 
                 ],
               )
@@ -59,7 +68,6 @@ class Attractioncardwidget extends StatelessWidget {
       ],
     );
   }
-
 
   //SCELTA ICONA
   IconData iconSelector(String activityType) {
@@ -82,7 +90,6 @@ class Attractioncardwidget extends StatelessWidget {
         return Icons.photo; // Icona di default per attività generali
     }
   }
-
 }
 
 

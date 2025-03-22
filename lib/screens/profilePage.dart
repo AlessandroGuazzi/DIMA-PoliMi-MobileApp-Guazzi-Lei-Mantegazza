@@ -280,7 +280,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         color: Theme.of(context).primaryColor, // Colore della freccia
                                       ),
                                       onTap: () {
-                                        Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage(trip: trip)));
+                                        Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage(trip: trip, isMyTrip: true)));
                                       },
                                     ),
                                   );

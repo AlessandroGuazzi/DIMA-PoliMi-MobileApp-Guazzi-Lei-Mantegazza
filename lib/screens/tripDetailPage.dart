@@ -3,6 +3,7 @@ import 'package:dima_project/models/activityModel.dart';
 import 'package:dima_project/models/attractionModel.dart';
 import 'package:dima_project/models/transportModel.dart';
 import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/screens/editActivityPage.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/widgets/accomodationCardWidget.dart';
 import 'package:dima_project/widgets/attractionCardWidget.dart';
@@ -15,9 +16,10 @@ import 'package:dima_project/utils/screenSize.dart';
 import '../models/flightModel.dart';
 
 class tripDetailPage extends StatefulWidget {
-  const tripDetailPage({super.key, required this.trip});
+  const tripDetailPage({super.key, required this.trip, required this.isMyTrip});
 
   final TripModel trip;  //TODO FORSE UN OTTIMIZZAZIONE E' PASSARE SOLO L'ID DEL TRIP
+  final bool isMyTrip;
 
   @override
   State<tripDetailPage> createState() => _tripDetailPageState();
@@ -41,7 +43,7 @@ class _tripDetailPageState extends State<tripDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Dima Project"),
+        title: Text("Simply Travel"),
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(
@@ -55,76 +57,77 @@ class _tripDetailPageState extends State<tripDetailPage> {
       ),
       body: Column(
         children: [
-          Row(
-            children: [
-              Expanded(
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 100,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: ShaderMask(
-                        shaderCallback: (Rect bounds) {
-                          return const LinearGradient(
-                            begin: Alignment.center,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.white, Colors.transparent],
-                          ).createShader(bounds);
-                        },
-                        blendMode: BlendMode.dstIn,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0), // Mantiene il padding
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12), // Arrotonda i bordi
-                            child: Image.network(
-                              'https://picsum.photos/200',
-                              width: double.infinity,
-                              height: 100,
-                              fit: BoxFit.cover,
+          Container(
+            color: Theme.of(context).primaryColor.withOpacity(0.15),
+            child: Row(
+              children: [
+                Expanded(
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 95,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: ShaderMask(
+                          shaderCallback: (Rect bounds) {
+                            return const LinearGradient(
+                              begin: Alignment.center,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.white, Colors.transparent],
+                            ).createShader(bounds);
+                          },
+                          blendMode: BlendMode.dstIn,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0), // Mantiene il padding
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12), // Arrotonda i bordi
+                              child: Image.network(
+                                'https://picsum.photos/200',
+                                width: double.infinity, //TODO CAMBIARE
+                                height: 95,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    )
-                  ),
-              ),
-              
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16, 5, 16, 16),
-                child: Column(
-                  children: [
-                    Text(
-                      '${widget.trip.title}',
-                      style: Theme.of(context).textTheme.displayMedium,
+                      )
                     ),
-
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.place,
-                          size: 20,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        Text(
-                          widget.trip.cities?.join(' - ') ?? 'No cities available',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-
-                  ],
                 ),
-              )
-            ],
+
+                //TODO ADD EXPANDED
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 5, 16, 16),
+                  child: Column(
+                    children: [
+                      Text(
+                        '${widget.trip.title}',
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ),
+
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.place,
+                            size: 20,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          Text(
+                            widget.trip.cities?.join(' - ') ?? 'No cities available',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ],
+                      ),
+
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
 
-          Padding(
-            padding: const EdgeInsets.only(top: 3.0, left: 8.0, right: 8.0, bottom: 5.0),
-            child: Divider(
-              color: Theme.of(context).primaryColor, // Colore della linea
-              thickness: 2.5, // Spessore della linea
-              height: ScreenSize.screenHeight(context) * 0.05, // Altezza complessiva
-            ),
+          Divider(
+            color: Theme.of(context).dividerColor, // Colore della linea
+            thickness: 2.5, // Spessore della linea
+            height: ScreenSize.screenHeight(context) * 0.05, // Altezza complessiva
           ),
 
 
@@ -133,16 +136,6 @@ class _tripDetailPageState extends State<tripDetailPage> {
             child: Stack(
               children: [
 
-                // Linea verticale di sfondo
-                Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: ScreenSize.screenWidth(context) * 0.18, // Spessore della linea
-                      color: Theme.of(context).primaryColor.withOpacity(0.1), // Colore della linea
-                    ),
-                  ),
-                ),
 
 
 
@@ -163,18 +156,98 @@ class _tripDetailPageState extends State<tripDetailPage> {
                     //ordinare le attività in base al timestamp
                     activitiesSort(activities);
 
+                    Map<String, List<ActivityModel>> groupedActivities = {};
+
+                    for (var activity in activities) {
+                      DateTime date = getActivityDate(activity);
+                      String dateKey = "${date.day}/${date.month}"; // Formattazione per il raggruppamento
+
+                      if (!groupedActivities.containsKey(dateKey)) {
+                        groupedActivities[dateKey] = [];
+                      }
+                      groupedActivities[dateKey]!.add(activity);
+                    }
+
                     return ListView.builder(
-                      itemCount: activities.length,
+                      itemCount: groupedActivities.length,
                       itemBuilder: (context, index) {
-                        final activity = activities[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8.0,
-                              horizontal: 4.0),
-                          child: _buildActivityCard(activity),
+                        String dateKey = groupedActivities.keys.elementAt(index);
+                        List<ActivityModel> dayActivities = groupedActivities[dateKey]!;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // **Intestazione con la data**
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                              child: Text(
+                                dateKey,  // Data formattata (Es: "24/03/2025")
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ),
+
+                            ...dayActivities.map((activity) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      color: Theme.of(context).cardColor,
+                                      child: _buildActivityCard(activity),
+                                    ),
+                                    if (widget.isMyTrip)
+                                      Positioned(
+                                        top: ScreenSize.screenHeight(context) * 0.001,
+                                        right: ScreenSize.screenWidth(context) * 0.003,
+                                        child: PopupMenuButton<int>(
+                                          icon: const Icon(Icons.more_horiz),
+                                          onSelected: (value) {
+                                            if (value == 1) {
+                                              // Azione Modifica
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute<void>(
+                                                  builder: (context) => EditActivityPage(activity: activity),
+                                                ),
+                                              );
+                                            } else if (value == 2) {
+                                              // Azione Elimina
+                                              _showDeleteConfirmationDialog(context);
+                                            }
+                                          },
+                                          itemBuilder: (context) => [
+                                            const PopupMenuItem<int>(
+                                              value: 1,
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.edit, color: Colors.black),
+                                                  SizedBox(width: 8),
+                                                  Text("Modifica"),
+                                                ],
+                                              ),
+                                            ),
+                                            const PopupMenuItem<int>(
+                                              value: 2,
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.delete, color: Colors.red),
+                                                  SizedBox(width: 8),
+                                                  Text("Elimina"),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ],
                         );
                       },
                     );
+
                   }
                 ),
               ]
@@ -192,7 +265,7 @@ class _tripDetailPageState extends State<tripDetailPage> {
       case 'flight':
         return Flightcardwidget(activity as FlightModel);
       case 'accommodation':
-        return Accomodationcardwidget(activity as AccommodationModel);
+        return AccommodationCardWidget(activity as AccommodationModel);
       case 'transport':
         return Transportcardwidget(activity as TransportModel);
       case 'attraction':
@@ -225,6 +298,85 @@ class _tripDetailPageState extends State<tripDetailPage> {
     }
     throw Exception("Tipo di attività non supportato");
   }
+
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Conferma eliminazione"),
+          content: const Text("Sei sicuro di voler eliminare questa attività?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Chiude il popup senza eliminare
+              },
+              child: const Text("Annulla"),
+            ),
+            TextButton(
+              onPressed: () {
+                //TODO Funzione per eliminare l'attività
+                Navigator.of(context).pop(); // Chiude il popup
+              },
+              child: const Text("Conferma", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+//alternativa al popupmenu
+/*void _showActivityOption() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Align(
+          alignment: Alignment.topRight, // Allinea in alto a destra
+          child: Container(
+            margin: const EdgeInsets.only(top: 50, right: 10), // Distanza dall'icona
+            width: 200,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.edit),
+                  title: const Text('Modifica'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // Azione di modifica
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.delete),
+                  title: const Text('Elimina'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // Azione di eliminazione
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }*/
+
+
 
 
 }

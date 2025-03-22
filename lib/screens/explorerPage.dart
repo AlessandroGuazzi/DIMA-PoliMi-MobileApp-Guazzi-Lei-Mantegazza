@@ -120,7 +120,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
                               context,
                               MaterialPageRoute<void>(
                                   builder: (context) =>
-                                      tripDetailPage(trip: trip)));
+                                      tripDetailPage(trip: trip, isMyTrip: false)));
                         },
                         child: TripCardWidget(
                           trip,

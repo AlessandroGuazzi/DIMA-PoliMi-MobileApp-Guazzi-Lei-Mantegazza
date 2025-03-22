@@ -58,7 +58,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
                     child: InkWell(
                         onTap: () {
                           print('go to TripPage');
-                          Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage(trip: trip)));
+                          Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage(trip: trip, isMyTrip: true,)));
                     
                         },
                         child: TripCardWidget(trip, false, onSave: (bool , String ) {  },)

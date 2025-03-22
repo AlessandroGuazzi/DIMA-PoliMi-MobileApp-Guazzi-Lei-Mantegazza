@@ -1,13 +1,18 @@
 import 'package:dima_project/models/transportModel.dart';
-import 'package:dima_project/widgets/activityDecorationsWidget.dart';
+import 'package:dima_project/widgets/activityDividerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/utils/screenSize.dart';
 
-class Transportcardwidget extends StatelessWidget {
+class Transportcardwidget extends StatefulWidget {
   const Transportcardwidget(this.transport, {super.key});
 
   final TransportModel transport;
 
+  @override
+  State<Transportcardwidget> createState() => _TransportcardwidgetState();
+}
+
+class _TransportcardwidgetState extends State<Transportcardwidget> {
   @override
   Widget build(BuildContext context) {
 
@@ -33,25 +38,40 @@ class Transportcardwidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'From: ${transport.departurePlace ?? 'N/A'}',
-                style: Theme.of(context).textTheme.headlineLarge,
+              Row(
+                children: [
+                  Text('From: ', style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    '${widget.transport.departurePlace ?? 'N/A'}',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ],
               ),
 
               Row(
                 children: [
-                  const Text('Departure Time'),
                   Icon(
                     Icons.access_time_filled_outlined,
                     size: 20,
                     color: Theme.of(context).primaryColor,
                   ),
 
-                  Text(transport.departureDate != null ? '${transport.departureDate!.day}' : 'N/A')
-
-
+                Text('Departure Time: ${widget.transport.departureDate != null ? '${widget.transport.departureDate!.hour.toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}'),
                 ],
               )
+
+              /* //TODO PER ORA IL TRASPORTO NON HA UJN ARRIVAL DATE MA SOLO DURATA
+              Row(
+                children: [
+                  Icon(
+                    Icons.access_time_filled_outlined,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ),
+
+                  Text('Arrival Time: ${transport.arrivalDate != null ? '${transport.arrivalDate!.hour.toString().padLeft(2, '0')}:${flight.arrivalDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}')
+                ],
+              )*/
 
             ],
           ),

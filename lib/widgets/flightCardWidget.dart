@@ -1,19 +1,21 @@
 import 'package:dima_project/models/flightModel.dart';
-import 'package:dima_project/widgets/activityDecorationsWidget.dart';
+import 'package:dima_project/widgets/activityDividerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/utils/screenSize.dart';
 
-class Flightcardwidget extends StatelessWidget {
+class Flightcardwidget extends StatefulWidget {
   const Flightcardwidget(this.flight, {super.key});
 
   final FlightModel flight;
 
+  @override
+  State<Flightcardwidget> createState() => _FlightcardwidgetState();
+}
 
-
-
+class _FlightcardwidgetState extends State<Flightcardwidget> {
   @override
   Widget build(BuildContext context) {
-    
+
     return Row(
       children: [
         Container(
@@ -36,23 +38,37 @@ class Flightcardwidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'From: ${flight.departureAirPort ?? 'N/A'}',
-                style: Theme.of(context).textTheme.headlineLarge,
+              Row(
+                children: [
+                  Text('From: ', style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    '${widget.flight.departureAirPort ?? 'N/A'}',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ],
               ),
 
               Row(
                 children: [
-                  const Text('Departure Time'),
                   Icon(
                     Icons.access_time_filled_outlined,
                     size: 20,
                     color: Theme.of(context).primaryColor,
                   ),
 
-                  Text(flight.departureDate != null ? '${flight.departureDate!.day}' : 'N/A')
+                  Text('Departure Time: ${widget.flight.departureDate != null ? '${widget.flight.departureDate!.hour.toString().padLeft(2, '0')}:${widget.flight.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}'),
+                ],
+              ),
 
+              Row(
+                children: [
+                  Icon(
+                    Icons.access_time_filled_outlined,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ),
 
+                  Text('Arrival Time: ${widget.flight.arrivalDate != null ? '${widget.flight.arrivalDate!.hour.toString().padLeft(2, '0')}:${widget.flight.arrivalDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}')
                 ],
               )
 
@@ -62,5 +78,4 @@ class Flightcardwidget extends StatelessWidget {
       ],
     );
   }
-
 }
