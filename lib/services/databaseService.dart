@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/accomodationModel.dart';
 import 'package:dima_project/models/activityModel.dart';
@@ -120,6 +119,27 @@ class DatabaseService {
     try {
       QuerySnapshot<TripModel> querySnapshot = await tripCollection
           .where("creatorInfo.id", isEqualTo: currentUserId)
+          .get();
+
+      print("Successfully completed");
+
+      for (var docSnapshot in querySnapshot.docs) {
+        trips.add(docSnapshot.data());
+      }
+    } catch (e) {
+      print("Error completing: $e");
+    }
+
+    return trips;
+  }
+
+  Future<List<TripModel>> getCompletedTrips() async {
+    List<TripModel> trips = [];
+
+    try {
+      QuerySnapshot<TripModel> querySnapshot = await tripCollection
+          .where("creatorInfo.id", isEqualTo: currentUserId)
+          .where("endDate", isLessThan: Timestamp.now())
           .get();
 
       print("Successfully completed");

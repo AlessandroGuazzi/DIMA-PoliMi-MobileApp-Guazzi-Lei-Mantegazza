@@ -1,5 +1,3 @@
-import 'package:dima_project/screens/gamePage.dart';
-import 'package:dima_project/screens/gamePage2.dart';
 import 'package:dima_project/screens/tripDetailPage.dart';
 import 'package:dima_project/utils/screenSize.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,6 +8,7 @@ import 'package:dima_project/screens/accountSettings.dart';
 import 'package:intl/intl.dart';
 import '../models/tripModel.dart';
 import '../models/userModel.dart';
+import 'gamePage.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -85,7 +84,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Navigator.pop(context);
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const GamePage2()),
+                          MaterialPageRoute(builder: (context) => const GamePage()),
                         );
                       },
                     ),
