@@ -4,7 +4,7 @@ import 'package:dima_project/screens/newTripPage.dart';
 import 'package:dima_project/widgets/tripCardWidget.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/databaseService.dart';
-import 'package:dima_project/screens/tripDetailPage.dart';
+import 'package:dima_project/screens/tripPage.dart';
 
 class MyTripsPage extends StatefulWidget {
   const MyTripsPage({super.key});

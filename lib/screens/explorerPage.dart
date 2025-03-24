@@ -1,6 +1,6 @@
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/userModel.dart';
-import 'package:dima_project/screens/tripDetailPage.dart';
+import 'package:dima_project/screens/tripPage.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/widgets/tripCardWidget.dart';

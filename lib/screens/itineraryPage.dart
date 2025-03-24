@@ -1,0 +1,300 @@
+import 'package:dima_project/models/accomodationModel.dart';
+import 'package:dima_project/models/activityModel.dart';
+import 'package:dima_project/models/attractionModel.dart';
+import 'package:dima_project/models/flightModel.dart';
+import 'package:dima_project/models/transportModel.dart';
+import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/screens/editActivityPage.dart';
+import 'package:dima_project/services/databaseService.dart';
+import 'package:dima_project/utils/screenSize.dart';
+import 'package:dima_project/widgets/accomodationCardWidget.dart';
+import 'package:dima_project/widgets/attractionCardWidget.dart';
+import 'package:dima_project/widgets/flightCardWidget.dart';
+import 'package:dima_project/widgets/transportCardWidget.dart';
+import 'package:flutter/material.dart';
+
+
+class Itinerarypage extends StatefulWidget {
+  const Itinerarypage({super.key, required this.trip, required this.isMyTrip});
+
+  final TripModel trip;  //TODO FORSE UN OTTIMIZZAZIONE E' PASSARE SOLO L'ID DEL TRIP
+  final bool isMyTrip;
+
+  @override
+  State<Itinerarypage> createState() => _ItinerarypageState();
+}
+
+class _ItinerarypageState extends State<Itinerarypage> {
+  late Future<List<ActivityModel>> _futureActivities;
+  //scrollController per le date
+  //final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    //trip = widget.trip; // Initialize with passed data
+    _futureActivities = DatabaseService().getTripActivities(widget.trip);
+
+    //print(widget.trip.id);  //TODO PRINT CHECK CAPIRE PERCHE' RITORNA SEMPRE LE STESSE ATTIVITA'
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+        children: [
+          FutureBuilder(
+              future: _futureActivities,
+              builder: (context, snapshot){
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No activities created'));
+                }
+
+                List<ActivityModel> activities = snapshot.data!;
+                print('List of Activities');
+
+                //ordinare le attività in base al timestamp
+                activitiesSort(activities);
+
+                Map<String, List<ActivityModel>> groupedActivities = {};
+
+                for (var activity in activities) {
+                  DateTime date = getActivityDate(activity);
+                  // Formattazione della data per il raggruppamento
+                  String dateKey = "${getItalianWeekday(date.weekday)} ${date.day}/${date.month}";
+
+                  if (!groupedActivities.containsKey(dateKey)) {
+                    groupedActivities[dateKey] = [];
+                  }
+                  groupedActivities[dateKey]!.add(activity);
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Lista scrollabile orizzontale sopra con le date
+                    Container(
+                      height: ScreenSize.screenHeight(context) * 0.08,
+                      //color: Colors.green, //TODO COLOR MESSO PER EVIDENZIARE DOV'è IL CONTAINER
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            // const Icon(Icons.calendar_today),
+                            //lista di date
+                            for(int i = 0; i < groupedActivities.length; i++)
+                              Container(
+                                /*decoration: BoxDecoration(
+                                    color: Colors.primaries[i % Colors.primaries.length].withOpacity(0.3), // Colori diversi
+                                    borderRadius: BorderRadius.circular(12), // Bordo arrotondato
+                                    border: Border.all(color: Colors.black, width: 2),
+                                  ),*/
+                                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 3),
+                                child: ElevatedButton(
+                                  onPressed: (){
+
+                                  },
+                                  child: Text(
+                                    groupedActivities.keys.elementAt(i),
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ),
+                              )
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    Divider(
+                      color: Theme.of(context).dividerColor, // Colore della linea
+                      thickness: 2.5, // Spessore della linea
+                      //height: ScreenSize.screenHeight(context) * 0.05, // Altezza complessiva
+                    ),
+
+                    // Lista principale scrollabile verticale
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: groupedActivities.length,
+                        itemBuilder: (context, index) {
+                          String dateKey = groupedActivities.keys.elementAt(index);
+                          List<ActivityModel> dayActivities = groupedActivities[dateKey]!;
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // **Intestazione con la data**
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                child: Text(
+                                  dateKey, // Data formattata (Es: "24/03/2025")
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
+
+                              ...dayActivities.map((activity) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.5, horizontal: 4.0),
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        color: Theme.of(context).cardColor,
+                                        child: _buildActivityCard(activity),
+                                      ),
+                                      if (widget.isMyTrip)
+                                        Positioned(
+                                          top: ScreenSize.screenHeight(context) * 0.001,
+                                          right: ScreenSize.screenWidth(context) * 0.003,
+                                          child: PopupMenuButton<int>(
+                                            icon: const Icon(Icons.more_horiz),
+                                            onSelected: (value) {
+                                              if (value == 1) {
+                                                // Azione Modifica
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute<void>(
+                                                    builder: (context) => EditActivityPage(activity: activity),
+                                                  ),
+                                                );
+                                              } else if (value == 2) {
+                                                // Azione Elimina
+                                                _showDeleteConfirmationDialog(context);
+                                              }
+                                            },
+                                            itemBuilder: (context) => [
+                                              const PopupMenuItem<int>(
+                                                value: 1,
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.edit, color: Colors.black),
+                                                    SizedBox(width: 8),
+                                                    Text("Modifica"),
+                                                  ],
+                                                ),
+                                              ),
+                                              const PopupMenuItem<int>(
+                                                value: 2,
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.delete, color: Colors.red),
+                                                    SizedBox(width: 8),
+                                                    Text("Elimina"),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+
+
+              }
+          ),
+
+          Positioned(
+              bottom: 25,
+              right: 25,
+              child: FloatingActionButton(
+                onPressed: (){},
+                child: const Icon(Icons.add),
+              )
+          )
+        ]
+    );
+  }
+
+
+  Widget _buildActivityCard(ActivityModel activity) {
+    switch (activity.type) {
+      case 'flight':
+        return Flightcardwidget(activity as FlightModel);
+      case 'accommodation':
+        return AccommodationCardWidget(activity as AccommodationModel);
+      case 'transport':
+        return Transportcardwidget(activity as TransportModel);
+      case 'attraction':
+        return Attractioncardwidget(activity as AttractionModel);
+      default:
+        print('no attività');
+        return Placeholder(); // Widget di default se il tipo non è riconosciuto
+    }
+  }
+
+
+  void activitiesSort(List<ActivityModel> activities) {
+    activities.sort((a, b) {
+      DateTime dateA = getActivityDate(a);
+      DateTime dateB = getActivityDate(b);
+      return dateA.compareTo(dateB);
+    });
+  }
+
+
+  DateTime getActivityDate(ActivityModel activity) {
+    if (activity is FlightModel ) {
+      return activity.departureDate ?? DateTime(1970, 1, 1);   //TODO MI RICHIEDE IL NULL CHECK, MA NELL'APP RENDEREMO LA DATA OBBLIGGATORIA
+    } else if (activity is TransportModel){
+      return activity.departureDate ?? DateTime(1970, 1, 1);
+    } else if (activity is AccommodationModel) {
+      return activity.checkIn ?? DateTime(1970, 1, 1);
+    } else if (activity is AttractionModel) {
+      return activity.startDate ?? DateTime(1970, 1, 1);
+    }
+    throw Exception("Tipo di attività non supportato");
+  }
+
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Conferma eliminazione"),
+          content: const Text("Sei sicuro di voler eliminare questa attività?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Chiude il popup senza eliminare
+              },
+              child: const Text("Annulla"),
+            ),
+            TextButton(
+              onPressed: () {
+                //TODO Funzione per eliminare l'attività
+                Navigator.of(context).pop(); // Chiude il popup
+              },
+              child: const Text("Conferma", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String getItalianWeekday(int weekday) {
+    const giorni = {
+      1: "Lun",
+      2: "Mar",
+      3: "Mer",
+      4: "Gio",
+      5: "Ven",
+      6: "Sab",
+      7: "Dom",
+    };
+    return giorni[weekday] ?? "N/A";
+  }
+}

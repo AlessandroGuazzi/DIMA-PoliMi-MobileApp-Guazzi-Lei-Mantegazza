@@ -13,70 +13,112 @@ class Transportcardwidget extends StatefulWidget {
 }
 
 class _TransportcardwidgetState extends State<Transportcardwidget> {
+  bool isExpanded = false;
+
+
   @override
   Widget build(BuildContext context) {
-
-    return Row(
+    return Stack(
       children: [
-        Container(
-          padding: const EdgeInsets.all(12), // Adjust padding to control size
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Theme.of(context).primaryColor.withOpacity(0.1), // Background color
-          ),
-          child: Icon(
-            Icons.directions_bus,   //TODO VOGLIAMO DISTINGUERE TRA BUS, TAXI, TRAGHETTO etc?
-            size: ScreenSize.screenWidth(context) * 0.1,
-            color: Theme.of(context).secondaryHeaderColor,
-          ),
-        ),
-
-        const activityDivider(),
-
         Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(10, 5, 10, 10),
+          padding: const EdgeInsets.only(left: 0.2, top: 10.0, right: 3.0, bottom: 11.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // **Prima riga con info base**
               Row(
                 children: [
-                  Text('From: ', style: Theme.of(context).textTheme.titleLarge),
-                  Text(
-                    '${widget.transport.departurePlace ?? 'N/A'}',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    ),
+                    child: Icon(
+                      Icons.directions_bus, // Icona dinamica
+                      size: MediaQuery.of(context).size.width * 0.1,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                  ),
+
+                  const activityDivider(),
+
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text('From: ', style: Theme.of(context).textTheme.titleLarge),
+                            Text(
+                              widget.transport.departurePlace ?? 'N/A',
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.access_time, size: 20, color: Theme.of(context).primaryColor),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Departure Time: ${widget.transport.departureDate != null ? '${widget.transport.departureDate!.hour.toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
 
-              Row(
-                children: [
-                  Icon(
-                    Icons.access_time_filled_outlined,
-                    size: 20,
-                    color: Theme.of(context).primaryColor,
+              // **Espansione con dettagli aggiuntivi**
+              if (isExpanded) ...[
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Dettagli Extra:",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.timelapse, size: 20, color: Theme.of(context).primaryColor),
+                          const SizedBox(width: 5),
+                          Text('Duration: ${widget.transport.duration ?? "N/A"}'),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, size: 20, color: Theme.of(context).primaryColor),
+                          const SizedBox(width: 5),
+                          Text('Destination: ${widget.transport.arrivalPlace ?? "N/A"}'),
+                        ],
+                      ),
+
+                    ],
                   ),
-
-                Text('Departure Time: ${widget.transport.departureDate != null ? '${widget.transport.departureDate!.hour.toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}'),
-                ],
-              )
-
-              /* //TODO PER ORA IL TRASPORTO NON HA UJN ARRIVAL DATE MA SOLO DURATA
-              Row(
-                children: [
-                  Icon(
-                    Icons.access_time_filled_outlined,
-                    size: 20,
-                    color: Theme.of(context).primaryColor,
-                  ),
-
-                  Text('Arrival Time: ${transport.arrivalDate != null ? '${transport.arrivalDate!.hour.toString().padLeft(2, '0')}:${flight.arrivalDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}')
-                ],
-              )*/
-
+                ),
+              ]
             ],
           ),
-        )
-      ],
+        ),
+
+        Positioned(
+          bottom: ScreenSize.screenHeight(context) * 0.0001,
+          right: ScreenSize.screenWidth(context) * 0.003,
+          child: IconButton(
+            icon: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+            onPressed: () {
+              setState(() {
+                isExpanded = !isExpanded;
+              });
+            },
+          ),
+        ),
+    ]
     );
   }
 }

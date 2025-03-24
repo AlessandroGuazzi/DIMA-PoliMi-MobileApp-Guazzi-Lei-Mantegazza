@@ -1,4 +1,4 @@
-import 'package:dima_project/screens/tripDetailPage.dart';
+import 'package:dima_project/screens/tripPage.dart';
 import 'package:dima_project/utils/screenSize.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
