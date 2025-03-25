@@ -1,4 +1,4 @@
-
+import 'package:dima_project/screens/profilePage.dart';
 import 'package:flutter/material.dart';
 
 import '../models/tripModel.dart';
@@ -8,20 +8,14 @@ class TripCardWidget extends StatefulWidget {
   final bool isSaved;
   final Function(bool, String) onSave; // Callback to update ExplorerPage
 
-
-  const TripCardWidget(this.trip, this.isSaved, {required this.onSave, super.key});
+  const TripCardWidget(this.trip, this.isSaved,
+      {required this.onSave, super.key});
 
   @override
   State<TripCardWidget> createState() => _TripCardWidgetState();
 }
 
 class _TripCardWidgetState extends State<TripCardWidget> {
-
-  void _handleSaveButton () async {
-    String tripId = widget.trip.id ?? 'null';
-    widget.onSave(widget.isSaved, tripId); //notify parent
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -75,9 +69,14 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     const SizedBox(
                       width: 4,
                     ),
-                    Text(
-                      widget.trip.cities?.join(' · ') ?? ' ',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    Expanded(
+                      child: Wrap(spacing: 4, runSpacing: 4, children: [
+                        Text(
+                          widget.trip.cities?.join(' · ') ?? ' ',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          softWrap: true,
+                        ),
+                      ]),
                     ),
                   ]),
                   const SizedBox(
@@ -91,22 +90,32 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                         Container(
                           child: Row(
                             children: [
-                              ClipOval(
-                                child: Image.network(
-                                  //placeholder image
-                                  'https://picsum.photos/30',
-                                  width: 30,
-                                  height: 30,
-                                  fit: BoxFit.cover,
+                              GestureDetector(
+                                onTap: () {
+                                  _goToProfilePage();
+                                },
+                                child: Row(
+                                  children: [
+                                    ClipOval(
+                                      child: Image.network(
+                                        //placeholder image
+                                        'https://picsum.photos/30',
+                                        width: 30,
+                                        height: 30,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 4,
+                                    ),
+                                    //username
+                                    Text(
+                                      '@${widget.trip.creatorInfo!['username'] ?? 'user'}',
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              //username
-                              Text(
-                                '@${widget.trip.creatorInfo!['username'] ?? 'user'}',
-                                style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
                           ),
@@ -116,7 +125,10 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                               _handleSaveButton();
                             },
                             icon: widget.isSaved
-                                ? Icon(Icons.favorite, color: Theme.of(context).primaryColor,)
+                                ? Icon(
+                                    Icons.favorite,
+                                    color: Theme.of(context).primaryColor,
+                                  )
                                 : Icon(Icons.favorite_border)),
                       ]),
                   //space for icons
@@ -126,6 +138,18 @@ class _TripCardWidgetState extends State<TripCardWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  void _handleSaveButton() async {
+    String tripId = widget.trip.id ?? 'null';
+    widget.onSave(widget.isSaved, tripId); //notify parent
+  }
+
+  void _goToProfilePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfilePage()),
     );
   }
 }

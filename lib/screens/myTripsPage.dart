@@ -28,12 +28,16 @@ class _MyTripsPageState extends State<MyTripsPage> {
     });
   }
 
+  void _goToNewTripPage()  {
+    Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const NewTripPage())).then((value) => refreshTrips());
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-
         FutureBuilder<List<TripModel>>(
           future: _futureTrips,
           builder: (context, snapshot) {
@@ -53,24 +57,30 @@ class _MyTripsPageState extends State<MyTripsPage> {
               itemBuilder: (context, index) {
                 final trip = trips[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 7.0, horizontal: 4.0),
                   child: Material(
                     child: InkWell(
                         onTap: () {
-                          print('go to TripPage');
-                          Navigator.push(context, MaterialPageRoute<void>(builder: (context) => tripDetailPage(trip: trip, isMyTrip: true,)));
-                    
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                  builder: (context) => tripDetailPage(
+                                        trip: trip,
+                                        isMyTrip: true,
+                                      )));
                         },
-                        child: TripCardWidget(trip, false, onSave: (bool , String ) {  },)
-                    ),
+                        child: TripCardWidget(
+                          trip,
+                          false,
+                          onSave: (bool, String) {},
+                        )),
                   ),
                 );
               },
             );
-
           },
         ),
-
 
         // Fixed positioned button
         Positioned(
@@ -78,9 +88,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
           right: 20,
           child: FloatingActionButton(
             onPressed: () {
-              // Action when the button is pressed
-              Navigator.push(context, MaterialPageRoute<void>(builder: (context) => NewTripPage()));
-              print("Create New Trip");
+              _goToNewTripPage();
             },
             backgroundColor: Theme.of(context).secondaryHeaderColor,
             child: const Icon(Icons.add),
@@ -90,7 +98,3 @@ class _MyTripsPageState extends State<MyTripsPage> {
     );
   }
 }
-
-
-
-

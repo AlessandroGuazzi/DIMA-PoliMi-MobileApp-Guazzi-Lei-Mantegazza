@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 
 class CountryPickerWidget extends StatefulWidget {
   final Function(List<Country>) onCountriesSelected;
+  final List<Country> selectedCountries;
 
-  const CountryPickerWidget({super.key, required this.onCountriesSelected});
+  const CountryPickerWidget(this.selectedCountries, {super.key, required this.onCountriesSelected});
 
   @override
   State<CountryPickerWidget> createState() => _CountryPickerWidgetState();
@@ -22,6 +23,7 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
     setState(() {
       _allCountries = CountryService().getAll();
       _filteredCountries = List.from(_allCountries);
+      _selectedCountries = widget.selectedCountries;
     });
   }
 
@@ -124,14 +126,18 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
   }
 
   _selectCountry(Country country, bool isSelected) {
-    isSelected
-        ? _selectedCountries.remove(country)
-        : _selectedCountries.add(country);
+
+    if (!isSelected && _selectedCountries.length < 5) {
+      _selectedCountries.add(country);
+    } else if (isSelected) {
+      _selectedCountries.remove(country);
+    }
+
     setState(() {});
   }
 
   _confirmCountries() {
-    widget.onCountriesSelected(_selectedCountries);
+    widget.onCountriesSelected(List.from(_selectedCountries));
     Navigator.pop(context);
   }
 }
