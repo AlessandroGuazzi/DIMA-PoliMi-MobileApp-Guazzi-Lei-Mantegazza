@@ -56,7 +56,7 @@ class AccommodationModel extends ActivityModel{
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (tripId != null) 'tripId': tripId,
-      if (type != null) 'type': 'flight',
+      if (type != null) 'type': 'accommodation',
       if (address != null) 'address': address,
       if (checkIn != null) 'checkIn': Timestamp.fromDate(checkIn!),
       if (checkOut != null) 'checkOut': Timestamp.fromDate(checkOut!),

@@ -34,7 +34,7 @@ class _AccommodationCardWidgetState extends State<AccommodationCardWidget> {
                       color: Theme.of(context).primaryColor.withOpacity(0.1),
                     ),
                     child: Icon(
-                      Icons.holiday_village,
+                      Icons.hotel,
                       size: MediaQuery.of(context).size.width * 0.1,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),

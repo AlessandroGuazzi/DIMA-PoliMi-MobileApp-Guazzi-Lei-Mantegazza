@@ -211,4 +211,24 @@ class DatabaseService {
       return;
     }
   }
+
+  Future<void> createActivity(ActivityModel activity) async {
+    try {
+      await db.collection('Activities').add(activity.toFirestore());
+        /*case FlightModel:
+          await db.collection('Activities').add(activity.toFirestore());
+          break;
+        case TransportModel:
+          await db.collection('Activities').add(activity.toFirestore());
+          break;
+        case AttractionModel:
+          await db.collection('Activities').add(activity.toFirestore());
+          break;
+          */
+      print('Successfully added a new ${activity.runtimeType}!');
+    } on Exception catch (e) {
+      print("Error creating activity: $e");
+    }
+  }
+
 }

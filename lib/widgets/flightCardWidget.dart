@@ -34,7 +34,7 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                       color: Theme.of(context).primaryColor.withOpacity(0.1),
                     ),
                     child: Icon(
-                      Icons.airplane_ticket,
+                      Icons.flight,
                       size: MediaQuery.of(context).size.width * 0.1,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),

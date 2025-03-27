@@ -4,6 +4,7 @@ import 'package:dima_project/models/attractionModel.dart';
 import 'package:dima_project/models/flightModel.dart';
 import 'package:dima_project/models/transportModel.dart';
 import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/screens/createActivityPage.dart';
 import 'package:dima_project/screens/editActivityPage.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/utils/screenSize.dart';
@@ -34,8 +35,18 @@ class _ItinerarypageState extends State<Itinerarypage> {
     super.initState();
     //trip = widget.trip; // Initialize with passed data
     _futureActivities = DatabaseService().getTripActivities(widget.trip);
+  }
 
-    //print(widget.trip.id);  //TODO PRINT CHECK CAPIRE PERCHE' RITORNA SEMPRE LE STESSE ATTIVITA'
+  void refreshTrips() {
+    setState(() {
+      _futureActivities = DatabaseService().getTripActivities(widget.trip);
+    });
+  }
+
+  void _goToNewItineraryPage(String type)  {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => CreateActivityPage(type: type, trip: widget.trip))).then((value) => refreshTrips());
+
   }
 
 
@@ -205,14 +216,15 @@ class _ItinerarypageState extends State<Itinerarypage> {
               }
           ),
 
-          Positioned(
-              bottom: 25,
-              right: 25,
-              child: FloatingActionButton(
-                onPressed: (){},
-                child: const Icon(Icons.add),
-              )
-          )
+          if(widget.isMyTrip)
+            Positioned(
+                bottom: 25,
+                right: 25,
+                child: FloatingActionButton(
+                  onPressed: _showNewActivityOption,
+                  child: const Icon(Icons.add),
+                )
+            )
         ]
     );
   }
@@ -254,7 +266,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
     } else if (activity is AttractionModel) {
       return activity.startDate ?? DateTime(1970, 1, 1);
     }
-    throw Exception("Tipo di attività non supportato");
+    throw Exception("Tipo di attività non supportato ${activity.type}");
   }
 
 
@@ -297,4 +309,85 @@ class _ItinerarypageState extends State<Itinerarypage> {
     };
     return giorni[weekday] ?? "N/A";
   }
+
+
+  void _showNewActivityOption() {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: "Nuova attività",
+      transitionDuration: const Duration(milliseconds: 250),
+      pageBuilder: (context, anim1, anim2) {
+        return const SizedBox.shrink(); // Necessario per evitare problemi di rendering
+      },
+      transitionBuilder: (context, anim1, anim2, child) {
+        return Transform.translate(
+          offset: Offset(0, (1 - anim1.value) * 300), // Effetto slide dal basso
+          child: Opacity(
+            opacity: anim1.value,
+            child: Align(
+              alignment: Alignment.bottomRight, // Posiziona in basso
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  width: ScreenSize.screenWidth(context)*0.6,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          'Crea una nuova attività',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ),
+                      _buildOption(Icons.flight, 'Volo', 'flight'),
+                      _buildOption(Icons.hotel, 'Alloggio', 'accommodation'),
+                      _buildOption(Icons.directions_bus, 'Altri Trasporti', 'transport'),
+                      _buildOption(Icons.attractions, 'Attrazione', 'attraction'),
+                      const SizedBox(height: 15),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+  Widget _buildOption(IconData icon, String text, String type) {
+
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: ListTile(
+        title: Row(
+          children: [
+            Icon(icon),
+            const SizedBox(width: 12),
+            Text(text, style: Theme.of(context).textTheme.titleMedium),
+          ],
+        ),
+        onTap: () {
+          _goToNewItineraryPage(type);
+        }
+      )
+    );
+  }
+
+
+
 }
