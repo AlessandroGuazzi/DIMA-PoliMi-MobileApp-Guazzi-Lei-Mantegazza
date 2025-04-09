@@ -58,6 +58,7 @@ class _AttractioncardwidgetState extends State<Attractioncardwidget> {
                               size: 20,
                               color: Theme.of(context).primaryColor,
                             ),
+                            const SizedBox(width: 5),
                             Text(
                               widget.attraction.startDate != null && widget.attraction.endDate != null
                                   ? 'Time: ${widget.attraction.startDate!.hour.toString().padLeft(2, '0')}:${widget.attraction.startDate!.minute.toString().padLeft(2, '0')} - '

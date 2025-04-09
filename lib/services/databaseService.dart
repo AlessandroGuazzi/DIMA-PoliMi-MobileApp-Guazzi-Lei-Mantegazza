@@ -231,4 +231,17 @@ class DatabaseService {
     }
   }
 
+  Future<void> deleteActivity(String activityId) async {
+    try {
+      await db.collection('Activities').doc(activityId).delete();
+      print('Successfully deleted activity with ID: $activityId');
+    } on Exception catch (e) {
+      print('Error deleting activity: $e');
+    }
+  }
+
+
+
+
+
 }

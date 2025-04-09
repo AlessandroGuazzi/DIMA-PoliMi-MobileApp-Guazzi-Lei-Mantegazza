@@ -156,6 +156,8 @@ class _ItinerarypageState extends State<Itinerarypage> {
                                         color: Theme.of(context).cardColor,
                                         child: _buildActivityCard(activity),
                                       ),
+
+                                      // EDIT and DELETE buttons
                                       if (widget.isMyTrip)
                                         Positioned(
                                           top: ScreenSize.screenHeight(context) * 0.001,
@@ -173,7 +175,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
                                                 );
                                               } else if (value == 2) {
                                                 // Azione Elimina
-                                                _showDeleteConfirmationDialog(context);
+                                                _showDeleteConfirmationDialog(context, activity.id!);
                                               }
                                             },
                                             itemBuilder: (context) => [
@@ -270,7 +272,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
   }
 
 
-  void _showDeleteConfirmationDialog(BuildContext context) {
+  void _showDeleteConfirmationDialog(BuildContext context, String activityId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -286,8 +288,9 @@ class _ItinerarypageState extends State<Itinerarypage> {
             ),
             TextButton(
               onPressed: () {
-                //TODO Funzione per eliminare l'attività
-                Navigator.of(context).pop(); // Chiude il popup
+                DatabaseService().deleteActivity(activityId);
+                Navigator.of(context).pop();// Chiude il popup
+                refreshTrips();
               },
               child: const Text("Conferma", style: TextStyle(color: Colors.red)),
             ),
@@ -381,9 +384,10 @@ class _ItinerarypageState extends State<Itinerarypage> {
             Text(text, style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
-        onTap: () {
-          _goToNewItineraryPage(type);
-        }
+          onTap: () {
+            Navigator.of(context).pop(); // Close the modal
+            _goToNewItineraryPage(type); // Navigate
+          }
       )
     );
   }

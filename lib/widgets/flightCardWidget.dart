@@ -63,6 +63,7 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                               size: 20,
                               color: Theme.of(context).primaryColor,
                             ),
+                            const SizedBox(width: 5),
                             Text('Departure Time: ${widget.flight.departureDate != null ? '${widget.flight.departureDate!.hour.toString().padLeft(2, '0')}:${widget.flight.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}'),
                           ],
                         ),
@@ -74,6 +75,7 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                               size: 20,
                               color: Theme.of(context).primaryColor,
                             ),
+                            const SizedBox(width: 5),
                             Text('Arrival Time: ${widget.flight.arrivalDate != null ? '${widget.flight.arrivalDate!.hour.toString().padLeft(2, '0')}:${widget.flight.arrivalDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}')
                           ],
                         )

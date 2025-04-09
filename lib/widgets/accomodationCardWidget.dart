@@ -58,7 +58,7 @@ class _AccommodationCardWidgetState extends State<AccommodationCardWidget> {
                               size: 20,
                               color: Theme.of(context).primaryColor,
                             ),
-
+                            const SizedBox(width: 5),
                             Text('CheckIn: ${widget.accommodation.checkIn != null ? '${widget.accommodation.checkIn!.hour.toString().padLeft(2, '0')}:${widget.accommodation.checkIn!.minute.toString().padLeft(2, '0')}' : 'N/A'}')
                           ],
                         ),
@@ -70,7 +70,7 @@ class _AccommodationCardWidgetState extends State<AccommodationCardWidget> {
                               size: 20,
                               color: Theme.of(context).primaryColor,
                             ),
-
+                            const SizedBox(width: 5),
                             Text('CheckOut: ${widget.accommodation.checkOut != null ? '${widget.accommodation.checkOut!.hour.toString().padLeft(2, '0')}:${widget.accommodation.checkOut!.minute.toString().padLeft(2, '0')}' : 'N/A'}')
                           ],
                         )

@@ -35,7 +35,7 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                       color: Theme.of(context).primaryColor.withOpacity(0.1),
                     ),
                     child: Icon(
-                      Icons.directions_bus, // Icona dinamica
+                      iconSelector(widget.transport.transportType ?? 'default'), // Icona dinamica
                       size: MediaQuery.of(context).size.width * 0.1,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
@@ -58,8 +58,8 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                         ),
                         Row(
                           children: [
-                            Icon(Icons.access_time, size: 20, color: Theme.of(context).primaryColor),
-                            const SizedBox(width: 5),
+                            Icon(Icons.access_time_filled_outlined, size: 20, color: Theme.of(context).primaryColor),
+                            const SizedBox(width: 3),
                             Text(
                               'Departure Time: ${widget.transport.departureDate != null ? '${widget.transport.departureDate!.hour.toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
                             ),
@@ -121,4 +121,22 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
     ]
     );
   }
+
+
+  IconData iconSelector(String transportType) {
+    switch (transportType.toLowerCase()) {
+      case 'bus':
+        return Icons.directions_bus;
+      case 'train':
+        return Icons.train;
+      case 'car':
+        return Icons.directions_car;
+      case 'ferry':
+        return Icons.directions_boat;
+      default:
+        return Icons.directions_transit; // fallback icon
+    }
+  }
+
+
 }

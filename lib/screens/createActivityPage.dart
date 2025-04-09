@@ -1,7 +1,10 @@
 import 'package:dima_project/models/accomodationModel.dart';
 import 'package:dima_project/models/activityModel.dart';
 import 'package:dima_project/models/tripModel.dart';
-import 'package:dima_project/widgets/AccommodationForm.dart';
+import 'package:dima_project/widgets/activity_widgets/AccommodationForm.dart';
+import 'package:dima_project/widgets/activity_widgets/AttractionForm.dart';
+import 'package:dima_project/widgets/activity_widgets/FlightForm.dart';
+import 'package:dima_project/widgets/activity_widgets/TransportForm.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -36,10 +39,10 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: switch (widget.type) {
-          'flight' => createFlight(_formKey),
+          'flight' => FlightForm(trip: widget.trip),
           'accommodation' => AccommodationForm(trip: widget.trip),
-          'transport' => createTransport(_formKey),
-          'attraction' => createAttraction(_formKey),
+          'transport' => TransportForm(trip: widget.trip),
+          'attraction' => AttractionForm(trip: widget.trip),
           _ => Center(child: Text("Invalid type: ${widget.type}")),
         },
       ),
