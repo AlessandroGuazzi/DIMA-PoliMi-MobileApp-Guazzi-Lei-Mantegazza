@@ -72,10 +72,14 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     Expanded(
                       child: Wrap(spacing: 4, runSpacing: 4, children: [
                         Text(
-                          widget.trip.cities?.join(' · ') ?? ' ',
+                          widget.trip.cities != null
+                              ? widget.trip.cities!
+                              .map((city) => city['name'])
+                              .join(' · ')  // Joining city names with ' · '
+                              : 'Città non disponibili',
                           style: Theme.of(context).textTheme.bodyLarge,
                           softWrap: true,
-                        ),
+                        )
                       ]),
                     ),
                   ]),

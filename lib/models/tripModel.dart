@@ -4,9 +4,12 @@ class TripModel {
   String? id;
   final Map<String, dynamic>? creatorInfo;
   final String? title;
+
   //nations is a map of {'name': String, 'flag': String, 'code': String}
   final List<Map<String, dynamic>>? nations;
-  final List<String>? cities;
+
+  //cities is a map of {'name': String, 'lat': num, 'lng': num}
+  final List<Map<String, dynamic>>? cities;
   final DateTime? startDate;
   final DateTime? endDate;
   final List<String>? activities;
@@ -47,7 +50,7 @@ class TripModel {
             ? List<Map<String, dynamic>>.from(data?['nations'])
             : null,
         cities: data?['cities'] is Iterable
-            ? List<String>.from(data?['cities'])
+            ? List<Map<String, dynamic>>.from(data?['cities'])
             : null,
         startDate: startDate.toDate(),
         endDate: endDate.toDate(),
@@ -73,7 +76,14 @@ class TripModel {
                   'code': country['code'],
                 })
             .toList(),
-      if (cities != null) 'cities': cities,
+      if (cities != null)
+        'cities': cities!
+            .map((city) => {
+                  'name': city['name'],
+                  'lat': city['lat'],
+                  'lng': city['lng'],
+                })
+            .toList(),
       if (startDate != null) 'startDate': Timestamp.fromDate(startDate!),
       if (endDate != null) 'endDate': Timestamp.fromDate(endDate!),
       if (activities != null) 'activities': activities,

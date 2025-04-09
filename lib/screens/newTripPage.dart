@@ -2,6 +2,7 @@ import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/screens/homePage.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
+import 'package:dima_project/services/googlePlacesService.dart';
 import 'package:dima_project/widgets/citySearchWidget.dart';
 import 'package:dima_project/widgets/countryPickerWidget.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class _NewTripPageState extends State<NewTripPage> {
 
   String title = "";
   List<Country> _selectedCountries = [];
-  List<String> _selectedCities = [];
+  List<Map<String, String>> _selectedCities = [];
   DateTime? _startDate;
   DateTime? _endDate;
 
@@ -166,7 +167,7 @@ class _NewTripPageState extends State<NewTripPage> {
                             return Chip(
                               backgroundColor:
                                   Theme.of(context).scaffoldBackgroundColor,
-                              label: Text(city),
+                              label: Text(city['place_name'] ?? 'null'),
                               onDeleted: () {
                                 setState(() {
                                   _selectedCities.remove(city);
@@ -261,9 +262,13 @@ class _NewTripPageState extends State<NewTripPage> {
     );
   }
 
-  void _onCitySelected(String city) {
+  void _onCitySelected(Map<String, String> city) {
     setState(() {
-      if (!_selectedCities.contains(city)) {
+      // Check if the city with the same place_id already exists
+      bool exists = _selectedCities.any((existingCity) =>
+      existingCity['place_id'] == city['place_id']);
+
+      if (!exists) {
         _selectedCities.add(city);
       }
     });
@@ -305,10 +310,9 @@ class _NewTripPageState extends State<NewTripPage> {
   }
 
   void _submitForm() async {
-
     if (_formKey.currentState?.validate() ?? false) {
       UserModel? currentUser =
-      await DatabaseService().getUserByUid(AuthService().currentUser!.uid);
+          await DatabaseService().getUserByUid(AuthService().currentUser!.uid);
       Map<String, dynamic> creatorInfo = {};
       if (currentUser != null) {
         creatorInfo = {
@@ -319,26 +323,48 @@ class _NewTripPageState extends State<NewTripPage> {
       }
 
       // Insert data into DB
+
+      //first create the right map to insert for countries
       List<Map<String, dynamic>> countriesMap = _selectedCountries
           .map((country) => {
-        'name': country.name,
-        'flag': country.flagEmoji,
-        'code': country.countryCode[0].toLowerCase() +
-            country.countryCode.substring(1),
-      })
+                'name': country.name,
+                'flag': country.flagEmoji,
+                'code': country.countryCode[0].toLowerCase() +
+                    country.countryCode.substring(1),
+              })
           .toList();
+      //same for cities
+      List<Map<String, dynamic>> citiesMap = [];
+      for (var city in _selectedCities) {
+        String placeId = city['place_id'] ?? '';
+        if (placeId.isNotEmpty) {
+          try {
+            // Fetch coordinates using placeId
+            Map<String, double> coordinates = await GooglePlacesService().getCoordinates(placeId);
+            citiesMap.add({
+              'name': city['place_name'],
+              'lat': coordinates['lat'],
+              'lng': coordinates['lng'],
+            });
+          } catch (e) {
+            print("Error fetching coordinates for ${city['place_name']}: $e");
+          }
+        }
+      }
+
       final trip = TripModel(
           title: titleController.text,
           creatorInfo: creatorInfo,
           nations: countriesMap,
-          cities: _selectedCities,
+          cities: citiesMap,
           startDate: _startDate,
           endDate: _endDate);
       DatabaseService()
           .createTrip(trip)
           .then((value) => Navigator.pop(context, true));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Per favore compila tutti i campi correttamente!')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Per favore compila tutti i campi correttamente!')));
     }
   }
 }

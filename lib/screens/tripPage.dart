@@ -6,7 +6,7 @@ import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/screens/editActivityPage.dart';
 import 'package:dima_project/screens/itineraryPage.dart';
 import 'package:dima_project/screens/tripGeneralsPage.dart';
-import 'package:dima_project/screens/tripMapPage.dart';
+import 'package:dima_project/screens/mapPage.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/widgets/accomodationCardWidget.dart';
 import 'package:dima_project/widgets/attractionCardWidget.dart';
@@ -17,17 +17,17 @@ import 'package:flutter/services.dart';
 import 'package:dima_project/utils/screenSize.dart';
 import '../models/flightModel.dart';
 
-class tripDetailPage extends StatefulWidget {
-  const tripDetailPage({super.key, required this.trip, required this.isMyTrip});
+class TripPage extends StatefulWidget {
+  const TripPage({super.key, required this.trip, required this.isMyTrip});
 
   final TripModel trip;  //TODO FORSE UN OTTIMIZZAZIONE E' PASSARE SOLO L'ID DEL TRIP
   final bool isMyTrip;
 
   @override
-  State<tripDetailPage> createState() => _tripDetailPageState();
+  State<TripPage> createState() => _TripPageState();
 }
 
-class _tripDetailPageState extends State<tripDetailPage> {
+class _TripPageState extends State<TripPage> {
 
   late Future<List<ActivityModel>> _futureActivities;
   //scrollController per le date
@@ -93,10 +93,11 @@ class _tripDetailPageState extends State<tripDetailPage> {
             ),
             Expanded(
               child: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
                 children: [
                   Itinerarypage(trip: widget.trip, isMyTrip: widget.isMyTrip),
                   TripGeneralsPage(),
-                  TripMapPage(),
+                  MapPage(trip: widget.trip,),
                 ],
               ),
             ),

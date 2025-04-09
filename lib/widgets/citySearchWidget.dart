@@ -7,7 +7,7 @@ import '../utils/screenSize.dart';
 
 class CitySearchWidget extends StatefulWidget {
   final List<Country> selectedCountries;
-  final Function(String) onCitySelected;
+  final Function(Map<String, String>) onCitySelected;
 
   const CitySearchWidget(
       {super.key,
@@ -66,11 +66,11 @@ class _CitySearchWidgetState extends State<CitySearchWidget> {
                     },
 
                     //to modify the list
-                    itemBuilder: (context, String suggestions) {
+                    itemBuilder: (context, Map<String, String> suggestions) {
                       return Column(
                         children: [
                           ListTile(
-                            title: Text(suggestions),
+                            title: Text(suggestions['place_name'] ?? 'null'),
                           ),
                           Divider(
                             color: Theme.of(context).dividerColor,
@@ -92,13 +92,13 @@ class _CitySearchWidgetState extends State<CitySearchWidget> {
                     errorBuilder: (context, error) => const Center(
                         child:
                             Text('Nessuna città corrisponde alla tua ricerca')),
-                    onSelected: (value) {
-                      widget.onCitySelected(value);
+                    onSelected: (city) {
+                      widget.onCitySelected(city);
                       Navigator.pop(context);
                     },
                     suggestionsCallback: (String query) async {
                       String trimQuery = query.trim();
-                      List<String> cities = [];
+                      List<Map<String, String>> cities = [];
 
                       if (trimQuery != '') {
                         List<String> countryCodes = widget.selectedCountries

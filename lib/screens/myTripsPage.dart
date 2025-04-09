@@ -1,3 +1,4 @@
+import 'package:dima_project/screens/mapPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dima_project/screens/newTripPage.dart';
@@ -65,10 +66,11 @@ class _MyTripsPageState extends State<MyTripsPage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute<void>(
-                                  builder: (context) => tripDetailPage(
-                                        trip: trip,
-                                        isMyTrip: true,
-                                      )));
+                                //TODO: return to map detail!
+                                  builder: (context) => TripPage(
+                                    trip: trip,
+                                    isMyTrip: true,
+                                  )));
                         },
                         child: TripCardWidget(
                           trip,
