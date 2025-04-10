@@ -20,11 +20,14 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
     return Stack(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 0.2, top: 10.0, right: 3.0, bottom: 11.5),
+          padding: const EdgeInsets.only(left: 3.0, top: 10.0, right: 3.0, bottom: 11.5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // **Prima riga con info base**
+
+              SizedBox(width: ScreenSize.screenWidth(context)*0.01),
+
               Row(
                 children: [
                   Container(
@@ -35,7 +38,7 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                     ),
                     child: Icon(
                       Icons.flight,
-                      size: MediaQuery.of(context).size.width * 0.1,
+                      size: MediaQuery.of(context).size.width * 0.09,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
@@ -48,11 +51,11 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                       children: [
                         Row(
                           children: [
-                            Text('From: ', style: Theme.of(context).textTheme.titleLarge),
                             Text(
-                              widget.flight.departureAirPort ?? 'N/A',
+                              '${widget.flight.departureAirPort?['iata'] ?? ''} \u2192 ${widget.flight.arrivalAirPort?['iata'] ?? ''}',
                               style: Theme.of(context).textTheme.headlineSmall,
                             ),
+
                           ],
                         ),
 
@@ -89,21 +92,34 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
               if (isExpanded) ...[
                 const Divider(),
                 Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Dettagli Extra:",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        "Nessuna informazione aggiuntiva.",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
+                  padding: const EdgeInsets.only(top: 10, left: 3.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Dettagli Extra:",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          "Partenza: ${widget.flight.departureAirPort?['name']} ",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 2),
+
+                        Text(
+                          "Arrivo: ${widget.flight.arrivalAirPort?['name']}",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 2),
+
+                        Text(
+                          "Costo: €${widget.flight.expenses?.toStringAsFixed(2)}",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+
                 ),
               ]
             ],

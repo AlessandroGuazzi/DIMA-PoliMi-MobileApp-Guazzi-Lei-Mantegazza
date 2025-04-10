@@ -1,3 +1,4 @@
+import 'package:dima_project/widgets/airportSearchWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dima_project/models/flightModel.dart';
@@ -25,6 +26,12 @@ class _FlightFormState extends State<FlightForm> {
   DateTime? _departureDate;
   TimeOfDay? _departureTime;
 
+  late String departureIata;
+  late String departureName;
+
+  late String arrivalIata;
+  late String arrivalName;
+
   @override
   void dispose() {
     departureAirportController.dispose();
@@ -35,6 +42,36 @@ class _FlightFormState extends State<FlightForm> {
     super.dispose();
   }
 
+
+  void _showAirportSearchDialog(TextEditingController controller, bool isDeparture) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(isDeparture ? "Select Departure Airport" : "Select Arrival Airport"),
+          content: SizedBox(
+            height: 400, // Altezza del dialogo
+            child: AirportSearchWidget(
+              onAirportSelected: (airport) {
+                // Aggiorna il controller con il nome dell'aeroporto selezionato
+                controller.text = '${airport.name} (${airport.iata})';
+                if(isDeparture) {
+                  departureIata = airport.iata;
+                  departureName = airport.name;
+                }
+                if(!isDeparture) {
+                  arrivalIata = airport.iata;
+                  arrivalName = airport.name;
+                }
+                Navigator.of(context).pop(); // Chiudi il dialogo
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -43,7 +80,8 @@ class _FlightFormState extends State<FlightForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextFormField(
+
+            /*TextFormField(
               controller: departureAirportController,
               decoration: const InputDecoration(labelText: "Departure Airport"),
               validator: (value) => value!.isEmpty ? "Required" : null,
@@ -54,6 +92,28 @@ class _FlightFormState extends State<FlightForm> {
               controller: arrivalAirportController,
               decoration: const InputDecoration(labelText: "Arrival Airport"),
               validator: (value) => value!.isEmpty ? "Required" : null,
+            ),
+            const SizedBox(height: 16),*/
+
+            TextFormField(
+              controller: departureAirportController,
+              decoration: const InputDecoration(labelText: "Departure Airport"),
+              validator: (value) => value!.isEmpty ? "Required" : null,
+              onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode()); // Nasconde la tastiera
+                _showAirportSearchDialog(departureAirportController, true); // Mostra il dialogo per la scelta aeroporto
+              },
+            ),
+            const SizedBox(height: 16),
+
+            TextFormField(
+              controller: arrivalAirportController,
+              decoration: const InputDecoration(labelText: "Arrival Airport"),
+              validator: (value) => value!.isEmpty ? "Required" : null,
+              onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode()); // Nasconde la tastiera
+                _showAirportSearchDialog(arrivalAirportController, false); // Mostra il dialogo per la scelta aeroporto
+              },
             ),
             const SizedBox(height: 16),
 
@@ -177,8 +237,14 @@ class _FlightFormState extends State<FlightForm> {
 
       final flight = FlightModel(
         tripId: widget.trip.id,
-        departureAirPort: departureAirportController.text,
-        arrivalAirPort: arrivalAirportController.text,
+        departureAirPort: {
+          'name': departureName,
+          'iata': departureIata,
+        },
+        arrivalAirPort: {
+          'name': arrivalName,
+          'iata': arrivalIata,
+        },
         flightCompany: flightCompanyController.text,
         departureDate: departureDateTime,
         arrivalDate: arrivalDateTime,

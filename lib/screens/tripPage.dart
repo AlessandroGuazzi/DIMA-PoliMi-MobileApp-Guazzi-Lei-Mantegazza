@@ -96,7 +96,7 @@ class _TripPageState extends State<TripPage> {
                 physics: NeverScrollableScrollPhysics(),
                 children: [
                   Itinerarypage(trip: widget.trip, isMyTrip: widget.isMyTrip),
-                  TripGeneralsPage(),
+                  TripGeneralsPage(trip: widget.trip),
                   MapPage(trip: widget.trip,),
                 ],
               ),
@@ -115,57 +115,5 @@ class _TripPageState extends State<TripPage> {
     int secondLetter = countryCode.codeUnitAt(1) - 0x41 + 0x1F1E6;
     return String.fromCharCode(firstLetter) + String.fromCharCode(secondLetter);
   }
-
-
-//alternativa al popupmenu
-/*void _showActivityOption() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Align(
-          alignment: Alignment.topRight, // Allinea in alto a destra
-          child: Container(
-            margin: const EdgeInsets.only(top: 50, right: 10), // Distanza dall'icona
-            width: 200,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 8,
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: const Text('Modifica'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    // Azione di modifica
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.delete),
-                  title: const Text('Elimina'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    // Azione di eliminazione
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }*/
-
-
-
 
 }

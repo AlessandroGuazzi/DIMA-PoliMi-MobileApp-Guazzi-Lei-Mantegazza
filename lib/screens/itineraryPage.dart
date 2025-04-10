@@ -153,9 +153,20 @@ class _ItinerarypageState extends State<Itinerarypage> {
                                   child: Stack(
                                     children: [
                                       Container(
-                                        color: Theme.of(context).cardColor,
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).cardColor,
+                                          borderRadius: BorderRadius.circular(16), // Rounded edges
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Colors.black12, // Light shadow color
+                                              blurRadius: 8, // Softness of the shadow
+                                              offset: Offset(0, 4), // Position of the shadow
+                                            ),
+                                          ],
+                                        ),
                                         child: _buildActivityCard(activity),
                                       ),
+
 
                                       // EDIT and DELETE buttons
                                       if (widget.isMyTrip)

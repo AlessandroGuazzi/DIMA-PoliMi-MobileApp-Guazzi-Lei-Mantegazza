@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/activityModel.dart';
+import 'package:dima_project/models/airportModel.dart';
 
 class FlightModel extends ActivityModel{
   //final String? id;
   //final String? tripId;
-  final String? departureAirPort;
-  final String? arrivalAirPort;
+
+  //airport is a map of {'name' : String, 'iata' : String}
+  final Map<String, String>? departureAirPort; // Esempio: {"name": "Malpensa", "iata": "MXP"}
+  final Map<String, String>? arrivalAirPort;
   final String? flightCompany;
   final DateTime? departureDate;
   final DateTime? arrivalDate;
@@ -39,13 +42,26 @@ class FlightModel extends ActivityModel{
 
     Timestamp? departureTimestamp = data['departureDate'] as Timestamp?;
     Timestamp? arrivalTimestamp = data['arrivalDate'] as Timestamp?;
+    final Map<String, dynamic>? departureAirportData = data['departureAirPort'] as Map<String, dynamic>?;
+    final Map<String, dynamic>? arrivalAirportData = data['arrivalAirPort'] as Map<String, dynamic>?;
 
+    print('fetching flight.....');
     return FlightModel(
       id: snapshot.id, // Use Firestore document ID
       tripId: data['tripId'] as String?,
       type: data['type'] as String?,
-      departureAirPort: data['departureAirPort'] as String?,
-      arrivalAirPort: data['arrivalAirPort'] as String?,
+      departureAirPort: departureAirportData != null
+          ? {
+        'name': departureAirportData['name'] as String? ?? '',
+        'iata': departureAirportData['iata'] as String? ?? '',
+      }
+          : null,
+      arrivalAirPort: arrivalAirportData != null
+          ? {
+        'name': arrivalAirportData['name'] as String? ?? '',
+        'iata': arrivalAirportData['iata'] as String? ?? '',
+      }
+          : null,
       flightCompany: data['flightCompany'] as String?,
       departureDate: departureTimestamp?.toDate(), // Convert Timestamp to DateTime
       arrivalDate: arrivalTimestamp?.toDate(), // Convert Timestamp to DateTime
@@ -60,8 +76,16 @@ class FlightModel extends ActivityModel{
       if (id != null) 'id': id,
       if (tripId != null) 'tripId': tripId,
       if (type != null) 'type': 'flight',
-      if (departureAirPort != null) 'departureAirPort': departureAirPort,
-      if (arrivalAirPort != null) 'arrivalAirPort': arrivalAirPort,
+      if (departureAirPort != null)
+        'departureAirPort': {
+          'name': departureAirPort!['name'],
+          'iata': departureAirPort!['iata'],
+        },
+      if (arrivalAirPort != null)
+        'arrivalAirPort': {
+          'name': arrivalAirPort!['name'],
+          'iata': arrivalAirPort!['iata'],
+        },
       if (flightCompany != null) 'flightCompany': flightCompany,
       if (departureDate != null) 'departureDate': Timestamp.fromDate(departureDate!),
       if (arrivalDate != null) 'arrivalDate': Timestamp.fromDate(arrivalDate!),
