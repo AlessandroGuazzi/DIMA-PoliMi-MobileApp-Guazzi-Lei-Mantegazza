@@ -186,7 +186,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
                                                 );
                                               } else if (value == 2) {
                                                 // Azione Elimina
-                                                _showDeleteConfirmationDialog(context, activity.id!);
+                                                _showDeleteConfirmationDialog(context, activity);
                                               }
                                             },
                                             itemBuilder: (context) => [
@@ -283,7 +283,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
   }
 
 
-  void _showDeleteConfirmationDialog(BuildContext context, String activityId) {
+  void _showDeleteConfirmationDialog(BuildContext context, ActivityModel activity) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -299,7 +299,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
             ),
             TextButton(
               onPressed: () {
-                DatabaseService().deleteActivity(activityId);
+                DatabaseService().deleteActivity(activity);
                 Navigator.of(context).pop();// Chiude il popup
                 refreshTrips();
               },

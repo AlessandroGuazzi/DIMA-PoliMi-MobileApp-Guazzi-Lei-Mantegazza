@@ -13,7 +13,7 @@ class FlightModel extends ActivityModel{
   final DateTime? departureDate;
   final DateTime? arrivalDate;
   final num? duration;
-  final num? expenses;
+  //final num? expenses;
 
 
   // Constructor
@@ -23,14 +23,14 @@ class FlightModel extends ActivityModel{
     String? id,
     String? tripId,
     String? type,
+    num? expenses,
     this.departureAirPort,
     this.arrivalAirPort,
     this.flightCompany,
     this.departureDate,
     this.arrivalDate,
     this.duration,
-    this.expenses,
-  }) : super(id: id, tripId: tripId, type: type);
+  }) : super(id: id, tripId: tripId, type: type, expenses: expenses);
 
   @override
   factory FlightModel.fromFirestore(

@@ -33,7 +33,7 @@ class DatabaseService {
 
   //TODO CAPIRE SE SERVE USARLI
   //reference to the 'flights' in collection 'Activity' of document in the db
-  final flightCollection = FirebaseFirestore.instance
+  /*final flightCollection = FirebaseFirestore.instance
       .collection('Activities')
       .where('type', isEqualTo: 'flight')
       .withConverter(
@@ -68,6 +68,7 @@ class DatabaseService {
         toFirestore: (AccommodationModel accommodation, _) =>
             accommodation.toFirestore(),
       );
+  */
 
   Future initializeUserData(UserModel user) async {
     return await userCollection.doc(currentUserId).set(user);
@@ -215,30 +216,65 @@ class DatabaseService {
   Future<void> createActivity(ActivityModel activity) async {
     try {
       await db.collection('Activities').add(activity.toFirestore());
-        /*case FlightModel:
-          await db.collection('Activities').add(activity.toFirestore());
-          break;
-        case TransportModel:
-          await db.collection('Activities').add(activity.toFirestore());
-          break;
-        case AttractionModel:
-          await db.collection('Activities').add(activity.toFirestore());
-          break;
-          */
+      updateTripCost(activity.tripId!, activity.expenses ?? 0.0, true); //TODO AGGIORNARE COSTO COME ATTRIBUTO DEL GENITORE
       print('Successfully added a new ${activity.runtimeType}!');
     } on Exception catch (e) {
       print("Error creating activity: $e");
     }
   }
 
-  Future<void> deleteActivity(String activityId) async {
+  Future<void> deleteActivity(ActivityModel activity) async {
     try {
-      await db.collection('Activities').doc(activityId).delete();
-      print('Successfully deleted activity with ID: $activityId');
+      await db.collection('Activities').doc(activity.id).delete();
+      updateTripCost(activity.tripId!, activity.expenses ?? 0.0, false);
+      print('Successfully deleted activity with ID: ${activity.id}');
     } on Exception catch (e) {
       print('Error deleting activity: $e');
     }
   }
+
+
+  Future<void> updateTripCost(String tripId, num cost, bool isAdd) async {
+    final tripRef = FirebaseFirestore.instance.collection('Trips').doc(tripId);
+
+    try {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final snapshot = await transaction.get(tripRef);
+
+        if (!snapshot.exists) {
+          throw Exception("Trip with id $tripId does not exist");
+        }
+
+        final currentCost = snapshot.data()?['expenses'] ?? 0.0;
+
+        if(isAdd){
+          transaction.update(tripRef, {
+            'expenses': currentCost + cost,
+          });
+        }
+        else{
+          transaction.update(tripRef, {
+            'expenses': currentCost - cost,
+          });
+        }
+      });
+    } catch (e) {
+      print("Errore durante l'update del costo del trip: $e");
+      rethrow;
+    }
+  }
+
+  Future<TripModel> loadTrip(String tripId) async {
+    final docSnapshot = await tripCollection.doc(tripId).get();
+    if (!docSnapshot.exists || docSnapshot.data() == null) {
+      throw Exception('Trip not found');
+    }
+    return docSnapshot.data()!;
+  }
+
+
+
+
 
 
 

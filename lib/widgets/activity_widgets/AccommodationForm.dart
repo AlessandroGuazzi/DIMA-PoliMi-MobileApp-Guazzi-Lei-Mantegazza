@@ -128,6 +128,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
                   if (costValue == null || costValue < 0) {
                     return "Enter a valid positive number";
                   }
+                  cost = costValue;
                 }
                 return null;
               },
@@ -205,7 +206,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
         checkIn: combineDateAndTime(_startDate!, _checkInTime!),
         checkOut: combineDateAndTime(_endDate! , _checkOutTime!),
         address: addressController.text.isNotEmpty ? addressController.text : null, // Se vuoto, lascia null,
-        cost: cost,
+        expenses: cost,
         contacts: null,
         type: 'accommodation',
       );

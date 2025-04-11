@@ -7,7 +7,7 @@ class AccommodationModel extends ActivityModel{
   final String? address;
   final DateTime? checkIn;
   final DateTime? checkOut;
-  final num? cost;
+  //final num? cost;
   final Map<String, dynamic>? contacts; // Changed to a Map
 
   // Constructor
@@ -15,13 +15,13 @@ class AccommodationModel extends ActivityModel{
     String? id,
     String? tripId,
     String? type,
+    num? expenses,
     this.name,
     this.address,
     this.checkIn,
     this.checkOut,
-    this.cost,
     this.contacts,
-  }) : super(id: id, tripId: tripId, type: type);
+  }) : super(id: id, tripId: tripId, type: type, expenses: expenses);
 
   // Factory method to convert Firestore snapshot to AccommodationModel
   @override
@@ -43,7 +43,7 @@ class AccommodationModel extends ActivityModel{
       address: data['address'] as String?,
       checkIn: checkInTimestamp?.toDate(), // Convert Timestamp to DateTime
       checkOut: checkOutTimestamp?.toDate(), // Convert Timestamp to DateTime
-      cost: data['cost'] as num?,
+      expenses: data['expenses'] as num?,
       contacts: data['contacts'] != null
           ? Map<String, dynamic>.from(data['contacts'] as Map) // Ensure it's a map
           : {}, // Default to an empty map if null
@@ -60,7 +60,7 @@ class AccommodationModel extends ActivityModel{
       if (address != null) 'address': address,
       if (checkIn != null) 'checkIn': Timestamp.fromDate(checkIn!),
       if (checkOut != null) 'checkOut': Timestamp.fromDate(checkOut!),
-      if (cost != null) 'cost': cost,
+      if (expenses!= null) 'expenses': expenses,
       if (contacts != null) 'contacts': contacts,
     };
   }

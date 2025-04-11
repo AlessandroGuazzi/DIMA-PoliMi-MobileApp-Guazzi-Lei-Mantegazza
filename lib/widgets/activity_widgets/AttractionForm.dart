@@ -256,7 +256,7 @@ class _AttractionFormState extends State<AttractionForm> {
         tripId: widget.trip.id,
         attractionType: _selectedType!,
         address: addressController.text.isNotEmpty ? addressController.text : null,
-        cost: costController.text.isNotEmpty ? double.tryParse(costController.text) ?? 0 : 0,
+        expenses: costController.text.isNotEmpty ? double.tryParse(costController.text) ?? 0 : 0,
         startDate: combine(_startDate!, _startTime!),
         endDate: combine(_endDate!, _endTime!),
         description: descriptionController.text.isNotEmpty ? descriptionController.text : null,

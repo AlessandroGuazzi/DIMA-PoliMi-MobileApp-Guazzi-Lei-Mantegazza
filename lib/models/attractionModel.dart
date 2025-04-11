@@ -11,7 +11,7 @@ class AttractionModel extends ActivityModel{
   final DateTime? endDate;
   final String? address;
   final String? description;
-  final num? cost;
+  //final num? cost;
   final String? attractionType;
 
   // Constructor
@@ -19,14 +19,14 @@ class AttractionModel extends ActivityModel{
     String? id,
     String? tripId,
     String? type,
+    num? expenses,
     this.name,
     this.startDate,
     this.endDate,
     this.address,
     this.description,
-    this.cost,
     this.attractionType,
-  }) : super(id: id, tripId: tripId, type: type);
+  }) : super(id: id, tripId: tripId, type: type, expenses: expenses);
 
   // Factory method to convert Firestore snapshot to ActivityModel
   @override
@@ -49,7 +49,7 @@ class AttractionModel extends ActivityModel{
       endDate: endTimestamp?.toDate(), // Convert Timestamp to DateTime
       address: data['address'] as String?,
       description: data['description'] as String?,
-      cost: data['cost'] as num?,
+      expenses: data['expenses'] as num?,
       attractionType: data['attractionType'] as String?, // Convert String to Enum
     );
   }
@@ -65,7 +65,7 @@ class AttractionModel extends ActivityModel{
       if (endDate != null) 'endDate': Timestamp.fromDate(endDate!),
       if (address != null) 'address': address,
       if (description != null) 'description': description,
-      if (cost != null) 'cost': cost,
+      if (expenses != null) 'expenses': expenses,
       if (type != null) 'attractionType': attractionType,
     };
   }

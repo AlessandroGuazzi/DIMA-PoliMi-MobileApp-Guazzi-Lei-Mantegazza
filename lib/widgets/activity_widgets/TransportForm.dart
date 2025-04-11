@@ -191,7 +191,7 @@ class _TransportFormState extends State<TransportForm> {
         departurePlace: departurePlaceController.text,
         arrivalPlace: arrivalPlaceController.text,
         departureDate: departureDateTime,
-        cost: cost,
+        expenses: cost,
         type: _selectedType!,
       );
 

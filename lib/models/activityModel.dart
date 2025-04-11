@@ -8,11 +8,13 @@ class ActivityModel {
   final String? id;
   final String? tripId;
   final String? type;
+  final num? expenses;
 
   ActivityModel({
     this.id,
     this.tripId,
-    this.type
+    this.type,
+    this.expenses
   });
 
 
@@ -22,13 +24,6 @@ class ActivityModel {
       ) {
     final data = snapshot.data();
     if (data == null) return ActivityModel();
-
-    /*
-    return ActivityModel(
-      id: snapshot.id,
-      tripId: data['tripId'] as String?,
-      type: data['type'] as String?
-    );*/
 
 
     switch (data['type']) {
@@ -50,7 +45,8 @@ class ActivityModel {
     return {
       if (id != null) 'id': id,
       if (tripId != null) 'tripId': tripId,
-      if (type != null)  'type': type
+      if (type != null)  'type': type,
+      if (expenses != null)  'expenses': expenses
     };
   }
 

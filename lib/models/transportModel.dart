@@ -9,7 +9,6 @@ class TransportModel extends ActivityModel{
   final String? departurePlace;
   final String? arrivalPlace;
   final num? duration;
-  final num? cost;
   final String? transportType;
 
   // Constructor
@@ -17,13 +16,13 @@ class TransportModel extends ActivityModel{
     String? id,
     String? tripId,
     String? type,
+    num? expenses,
     this.departureDate,
     this.departurePlace,
     this.arrivalPlace,
     this.duration,
-    this.cost,
     this.transportType,
-  }): super(id: id, tripId: tripId, type: type);
+  }): super(id: id, tripId: tripId, type: type, expenses: expenses);
 
   // Factory method to convert Firestore snapshot to TransportModel
   @override
@@ -44,7 +43,7 @@ class TransportModel extends ActivityModel{
       departurePlace: data['departurePlace'] as String?,
       arrivalPlace: data['arrivalPlace'] as String?,
       duration: data['duration'] as num?,
-      cost: data['cost'] as num?,
+      expenses: data['expenses'] as num?,
       transportType: data['transportType'] as String?,
     );
   }
@@ -59,7 +58,7 @@ class TransportModel extends ActivityModel{
       if (departurePlace != null) 'departurePlace': departurePlace,
       if (arrivalPlace != null) 'arrivalPlace': arrivalPlace,
       if (duration != null) 'duration': duration,
-      if (cost != null) 'cost': cost,
+      if (expenses != null) 'expenses': expenses,
       if (transportType != null) 'transportType': transportType,
     };
   }

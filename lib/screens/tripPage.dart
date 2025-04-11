@@ -96,7 +96,7 @@ class _TripPageState extends State<TripPage> {
                 physics: NeverScrollableScrollPhysics(),
                 children: [
                   Itinerarypage(trip: widget.trip, isMyTrip: widget.isMyTrip),
-                  TripGeneralsPage(trip: widget.trip),
+                  TripGeneralsPage(tripId: widget.trip.id!),
                   MapPage(trip: widget.trip,),
                 ],
               ),
