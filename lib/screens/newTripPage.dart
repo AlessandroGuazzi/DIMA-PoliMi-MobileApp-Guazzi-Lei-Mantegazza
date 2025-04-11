@@ -3,7 +3,8 @@ import 'package:dima_project/screens/homePage.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/services/googlePlacesService.dart';
-import 'package:dima_project/widgets/citySearchWidget.dart';
+import 'package:dima_project/utils/PlacesType.dart';
+import 'package:dima_project/widgets/placesSearchWidget.dart';
 import 'package:dima_project/widgets/countryPickerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -275,6 +276,7 @@ class _NewTripPageState extends State<NewTripPage> {
   }
 
   void _openCitiesSearch() async {
+    List<String> selectedCountryCodes = _selectedCountries.map((country) => country.countryCode).toList();
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -282,9 +284,9 @@ class _NewTripPageState extends State<NewTripPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        return CitySearchWidget(
-          selectedCountries: _selectedCountries,
-          onCitySelected: _onCitySelected,
+        return PlacesSearchWidget(
+          selectedCountryCodes: selectedCountryCodes,
+          onPlaceSelected: _onCitySelected, type: PlacesType.cities,
         );
       },
     );

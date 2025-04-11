@@ -1,3 +1,4 @@
+import 'package:dima_project/utils/PlacesType.dart';
 import 'package:dima_project/utils/screenSize.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -5,8 +6,11 @@ import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/attractionModel.dart';
 import 'package:dima_project/services/databaseService.dart';
 
+import '../placesSearchWidget.dart';
+
 class AttractionForm extends StatefulWidget {
   final TripModel trip;
+
   const AttractionForm({super.key, required this.trip});
 
   @override
@@ -16,7 +20,7 @@ class AttractionForm extends StatefulWidget {
 class _AttractionFormState extends State<AttractionForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController costController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -26,17 +30,18 @@ class _AttractionFormState extends State<AttractionForm> {
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
 
-  final List<String> attractionTypes = [
-    'Museo',
-    'Ristorante',
-    'Concerto',
-    'Stadio',
-    'Parco Naturale',
-    'Monumento',
-    'Montagna',
-    'Altro'
-  ];
-  String? _selectedType;
+  final Map<PlacesType, String> activityTypes = {
+    PlacesType.museum: 'Museo',
+    PlacesType.restaurant: 'Ristorante',
+    PlacesType.stadium: 'Stadio',
+    PlacesType.park: 'Parco Naturale',
+    PlacesType.zoo: 'Zoo',
+    PlacesType.church: 'Chiesa',
+    PlacesType.movie_theater: 'Cinema',
+    PlacesType.tourist_attraction: 'Attrazione turistica',
+  };
+
+  PlacesType _selectedType = PlacesType.tourist_attraction;
 
   @override
   Widget build(BuildContext context) {
@@ -46,65 +51,52 @@ class _AttractionFormState extends State<AttractionForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-
-            // Name
-            TextFormField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: "Name"),
-              validator: (value) => value!.isEmpty ? "Enter a name" : null,
-            ),
-            const SizedBox(height: 20),
-
             // Activity Type
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<PlacesType>(
               value: _selectedType,
-              items: attractionTypes.map((type) {
-                return DropdownMenuItem(
-                  value: type,
+              items: activityTypes.entries.map((type) {
+                return DropdownMenuItem<PlacesType>(
+                  value: type.key,
                   child: Row(
                     children: [
-                      Icon(iconSelector(type)),
-                      SizedBox(width: ScreenSize.screenWidth(context) * 0.02,),
-                      Text(type),
+                      Icon(iconSelector(type.value)),
+                      SizedBox(
+                        width: ScreenSize.screenWidth(context) * 0.02,
+                      ),
+                      Text(type.value),
                     ],
                   ),
                 );
               }).toList(),
               decoration: const InputDecoration(
-                labelText: "Activity Type",
-                prefixIcon: Icon(Icons.category),
+                labelText: "Seleziona il tipo di attività",
               ),
-              validator: (value) => value == null ? "Select an activity type" : null,
+              validator: (value) =>
+                  value == null ? "Seleziona un tipo di attività" : null,
               onChanged: (value) => setState(() {
-                _selectedType = value;
+                _selectedType = value ?? PlacesType.tourist_attraction;
               }),
+            ),
+            const SizedBox(height: 20),
+
+            //Location
+            TextFormField(
+              controller: locationController,
+              readOnly: true,
+              decoration: const InputDecoration(
+                  labelText: "Dove?", prefixIcon: Icon(Icons.location_city)),
+              onTap: () {
+                _openActivityPicker();
+              },
+              validator: (value) =>
+                  value!.isEmpty ? "Inserisci un luogo" : null,
             ),
             const SizedBox(height: 20),
 
             // Address
             TextFormField(
               controller: addressController,
-              decoration: const InputDecoration(labelText: "Address (optional)"),
-            ),
-            const SizedBox(height: 20),
-
-            // Cost
-            TextFormField(
-              controller: costController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "Cost (optional)",
-                prefixIcon: Icon(Icons.euro),
-              ),
-              validator: (value) {
-                if (value != null && value.isNotEmpty) {
-                  final parsed = double.tryParse(value);
-                  if (parsed == null || parsed < 0) {
-                    return "Enter a valid cost";
-                  }
-                }
-                return null;
-              },
+              decoration: const InputDecoration(labelText: "Indirizzo", prefixIcon: Icon(Icons.location_on)),
             ),
             const SizedBox(height: 20),
 
@@ -117,7 +109,7 @@ class _AttractionFormState extends State<AttractionForm> {
                     : '',
               ),
               decoration: InputDecoration(
-                hintText: 'Select dates',
+                hintText: 'Quando?',
                 prefixIcon: Icon(Icons.date_range),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -125,74 +117,105 @@ class _AttractionFormState extends State<AttractionForm> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+                  borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor, width: 2),
                 ),
               ),
               validator: (value) {
                 if (_startDate == null || _endDate == null) {
-                  return "Please select a date range";
+                  return "Per favore seleziona delle date";
                 }
                 return null;
               },
               onTap: () => _selectDateRange(context),
             ),
             const SizedBox(height: 20),
+            
+            Row(
+              children: [
 
-            // Selezione orario inizio
-            TextFormField(
-              readOnly: true,
-              controller: TextEditingController(
-                text: _startTime != null ? _startTime!.format(context) : '',
-              ),
-              decoration: InputDecoration(
-                hintText: 'Start Time',
-                prefixIcon: Icon(Icons.access_time),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onTap: () => _selectTime(context, isStartTime: true),
+                // Selezione orario inizio
+                Expanded(child: TextFormField(
+                  readOnly: true,
+                  controller: TextEditingController(
+                    text: _startTime != null ? _startTime!.format(context) : '',
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: 'Inizio',
+                    prefixIcon: Icon(Icons.access_time),
+                  ),
+                  onTap: () => _selectTime(context, isStartTime: true),
+                ),),
+
+                const SizedBox(width: 20),
+                
+                Expanded(child: // Selezione orario fine
+                TextFormField(
+                  readOnly: true,
+                  controller: TextEditingController(
+                    text: _endTime != null ? _endTime!.format(context) : '',
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Fine',
+                    prefixIcon: Icon(Icons.access_time),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onTap: () => _selectTime(context, isStartTime: false),
+                ),)
+                
+              ],
             ),
+
             const SizedBox(height: 20),
 
-            // Selezione orario fine
+            // Cost
             TextFormField(
-              readOnly: true,
-              controller: TextEditingController(
-                text: _endTime != null ? _endTime!.format(context) : '',
+              controller: costController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "Costo (opzionale)",
+                prefixIcon: Icon(Icons.euro),
               ),
-              decoration: InputDecoration(
-                hintText: 'End Time',
-                prefixIcon: Icon(Icons.access_time),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onTap: () => _selectTime(context, isStartTime: false),
+              validator: (value) {
+                if (value != null && value.isNotEmpty) {
+                  final parsed = double.tryParse(value);
+                  if (parsed == null || parsed < 0) {
+                    return "Inserisci un costo valido";
+                  }
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 20),
-
-
 
             // Description
             TextFormField(
               controller: descriptionController,
-              decoration: const InputDecoration(labelText: "Description (optional)"),
+              decoration:
+                  const InputDecoration(labelText: "Descrizione (opzionale)"),
               maxLines: 3,
             ),
             const SizedBox(height: 30),
 
             ElevatedButton(
               onPressed: _submitForm,
-              child: const Text("Save Attraction"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: Text('Aggiungi attività'),
             ),
           ],
         ),
       ),
     );
   }
-
-
 
   Future<void> _selectDateRange(BuildContext context) async {
     DateTime? tripStartDate = widget.trip.startDate;
@@ -219,8 +242,8 @@ class _AttractionFormState extends State<AttractionForm> {
     }
   }
 
-
-  Future<void> _selectTime(BuildContext context, {required bool isStartTime}) async {
+  Future<void> _selectTime(BuildContext context,
+      {required bool isStartTime}) async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -237,8 +260,6 @@ class _AttractionFormState extends State<AttractionForm> {
     }
   }
 
-
-
   DateTime combine(DateTime date, TimeOfDay time) {
     return DateTime(
       date.year,
@@ -249,17 +270,47 @@ class _AttractionFormState extends State<AttractionForm> {
     );
   }
 
+  void _openActivityPicker() async {
+    List<String> countriesCodes = widget.trip.nations
+            ?.map((nation) => nation['code'].toString())
+            .toList() ??
+        [];
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return PlacesSearchWidget(
+          selectedCountryCodes: countriesCodes,
+          onPlaceSelected: _onSelected,
+          type: _selectedType,
+        );
+      },
+    );
+  }
+
+  void _onSelected(Map<String, String> activity) {
+    locationController.text = activity['place_name'] ?? '';
+    addressController.text = activity['other_info'] ?? '';
+    setState(() {});
+  }
+
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
       final attraction = AttractionModel(
-        name: nameController.text,
+        name: locationController.text,
         tripId: widget.trip.id,
-        attractionType: _selectedType!,
-        address: addressController.text.isNotEmpty ? addressController.text : null,
+        attractionType: _selectedType.name ?? '',
+        address:
+            addressController.text.isNotEmpty ? addressController.text : null,
         expenses: costController.text.isNotEmpty ? double.tryParse(costController.text) ?? 0 : 0,
-        startDate: combine(_startDate!, _startTime!),
-        endDate: combine(_endDate!, _endTime!),
-        description: descriptionController.text.isNotEmpty ? descriptionController.text : null,
+        startDate: _startTime != null ? combine(_startDate!, _startTime!) : _startDate,
+        endDate: _endTime != null ? combine(_endDate!, _endTime!) : _endDate,
+        description: descriptionController.text.isNotEmpty
+            ? descriptionController.text
+            : null,
         type: "attraction",
       );
 
@@ -268,7 +319,8 @@ class _AttractionFormState extends State<AttractionForm> {
           .then((_) => Navigator.pop(context, true));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill out all required fields')),
+        const SnackBar(
+            content: Text('Per favore compila tutti i campi correttamente!')),
       );
     }
   }
@@ -286,14 +338,14 @@ class _AttractionFormState extends State<AttractionForm> {
         return Icons.stadium;
       case 'parco naturale':
         return Icons.park;
-      case 'monumento':
-        return Icons.account_balance;
-      case 'montagna':
-        return Icons.terrain;
+      case 'zoo':
+        return Icons.pets;
+      case 'chiesa':
+        return Icons.church;
+      case 'cinema':
+        return Icons.movie;
       default:
-        return Icons.photo;
+        return Icons.attractions;
     }
   }
-
-
 }

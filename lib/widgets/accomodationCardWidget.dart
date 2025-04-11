@@ -1,7 +1,7 @@
 import 'package:dima_project/utils/screenSize.dart';
 import 'package:dima_project/widgets/activityDividerWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:dima_project/models/accomodationModel.dart';
+import 'package:dima_project/models/accommodationModel.dart';
 
 class AccommodationCardWidget extends StatefulWidget {
   const AccommodationCardWidget(this.accommodation, {super.key});

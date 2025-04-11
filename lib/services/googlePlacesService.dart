@@ -4,33 +4,36 @@ import 'package:http/http.dart' as http;
 class GooglePlacesService {
   final String apiKey = 'AIzaSyDKIlpTjMwBYqqmw-8lNs5PId8zWzPg5cY';
 
-  Future<List<Map<String, String>>> searchCities(
-      String query, List<String> countryCodes) async {
+  Future<List<Map<String, String>>> searchAutocomplete(
+      String query, List<String> countryCodes, String searchType) async {
     // Put all country code in 'or' to build the query
     String components = countryCodes.map((code) => "country:$code").join("|");
 
     final url =
         Uri.parse('https://maps.googleapis.com/maps/api/place/autocomplete/json'
             '?input=$query'
-            '&types=(cities)'
+            '&types=$searchType'
             '&components=$components'
             '&language=it'
             '&key=$apiKey');
 
     final response = await http.get(url);
+    print('API CALL');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       if (data['status'] == 'OK') {
         //create a list of map {name, placeId} to return
-        List<Map<String, String>> cities = (data['predictions'] as List)
+        List<Map<String, String>> places = (data['predictions'] as List)
             .map((prediction) => {
                   'place_name': prediction['structured_formatting']['main_text']
+                      .toString(),
+                  'other_info': prediction['structured_formatting']['secondary_text']
                       .toString(),
                   'place_id': prediction['place_id'].toString(),
                 })
             .toList();
-        return cities;
+        return places;
       } else {
         throw Exception('Error fetching cities: ${data["status"]}');
       }
@@ -38,7 +41,6 @@ class GooglePlacesService {
       throw Exception('Error fetching cities: error ${response.statusCode}');
     }
   }
-
 
 
   Future<Map<String, double>> getCoordinates(String placeId) async {

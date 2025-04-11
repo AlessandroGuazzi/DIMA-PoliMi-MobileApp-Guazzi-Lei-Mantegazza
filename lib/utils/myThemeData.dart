@@ -5,24 +5,41 @@ import 'package:flutter/material.dart';
  */
 class MyThemeData {
   static ThemeData appTheme = ThemeData(
+
     brightness: Brightness.light,
     primaryColor: const Color(0xFF6200EE),
-    // Primary color
     secondaryHeaderColor: const Color(0xFF03DAC6),
-    // Secondary color
     scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-    // Background color
     cardColor: const Color(0xFFFFFFFF),
-    // Card color
     dividerColor: Colors.grey.shade300,
+
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFF6200EE),
       foregroundColor: Colors.white,
     ),
+
     buttonTheme: const ButtonThemeData(
       buttonColor: Color(0xFF6200EE), // Button color
       textTheme: ButtonTextTheme.primary,
     ),
+
+    //theme for input fields
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: Color(0xFF6200EE), // Or use Theme.of(context).primaryColor if dynamic
+          width: 2,
+        ),
+      ),
+      prefixIconColor: Colors.grey[700], // optional
+      labelStyle: TextStyle(color: Colors.grey[700]), // optional
+    ),
+
     textTheme: const TextTheme(
       displayLarge: TextStyle(
           fontSize: 57, fontWeight: FontWeight.bold, color: Colors.black),
@@ -71,6 +88,7 @@ class MyThemeData {
           fontWeight: FontWeight.w500,
           color: Colors.black54), // Smallest text
     ),
+
     searchBarTheme: SearchBarThemeData(
       backgroundColor: WidgetStateProperty.all(Colors.white),  // Wrap color in MaterialStateProperty.all
       elevation: WidgetStateProperty.all(2.0),  // Shadow/elevation
@@ -81,5 +99,6 @@ class MyThemeData {
       ),
       overlayColor: WidgetStateProperty.all(Colors.grey[300]), // Hover effect color
     ),
+
   );
 }

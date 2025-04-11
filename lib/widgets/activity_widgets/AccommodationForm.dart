@@ -1,14 +1,16 @@
-import 'package:dima_project/models/accomodationModel.dart';
+import 'package:dima_project/models/accommodationModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/databaseService.dart';
+import 'package:dima_project/utils/PlacesType.dart';
+import 'package:dima_project/widgets/placesSearchWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+//TODO: address is not really the address yet, but probably we don't care
 class AccommodationForm extends StatefulWidget {
   const AccommodationForm({super.key, required this.trip});
 
   final TripModel trip;
-  //final String type;
 
   @override
   State<AccommodationForm> createState() => _AccommodationFormState();
@@ -38,18 +40,30 @@ class _AccommodationFormState extends State<AccommodationForm> {
             // Nome alloggio
             TextFormField(
               controller: titleController,
-              decoration: InputDecoration(labelText: "Accommodation Name"),
-              validator: (value) => value!.isEmpty ? "Enter a name" : null,
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Dove dormirai?',
+                prefixIcon: Icon(Icons.hotel),
+              ),
+              validator: (value) =>
+                  value!.isEmpty ? "Per favore inserisci un'alloggio" : null,
+              onTap: () {
+                _openAccommodationPicker();
+              },
             ),
             const SizedBox(height: 20),
-        
-            // Indirizzo (opzionale)
+
+            // Indirizzo
             TextFormField(
               controller: addressController,
-              decoration: InputDecoration(labelText: "Address (optional)"),
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Indirizzo',
+                prefixIcon: Icon(Icons.location_on),
+              ),
             ),
             const SizedBox(height: 20),
-        
+
             // Selezione date
             TextFormField(
               readOnly: true,
@@ -59,74 +73,73 @@ class _AccommodationFormState extends State<AccommodationForm> {
                     : '',
               ),
               decoration: InputDecoration(
-                hintText: 'Select dates',
+                hintText: 'Seleziona le date',
                 prefixIcon: Icon(Icons.date_range),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Theme.of(context).dividerColor),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
-                ),
               ),
               validator: (value) {
                 if (_startDate == null || _endDate == null) {
-                  return "Please select a date range";
+                  return "Per favore seleziona data di arrivo e fine";
                 }
                 return null;
               },
               onTap: () => _selectDateRange(context),
             ),
             const SizedBox(height: 20),
-        
-            // Selezione orario check-in
-            TextFormField(
-              readOnly: true,
-              controller: TextEditingController(
-                text: _checkInTime != null ? _checkInTime!.format(context) : '',
-              ),
-              decoration: InputDecoration(
-                hintText: 'Check-in Time',
-                prefixIcon: Icon(Icons.access_time),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+
+            Row(
+              children: [
+                // Selezione orario check-in
+                Expanded(
+                  child: TextFormField(
+                    readOnly: true,
+                    controller: TextEditingController(
+                      text: _checkInTime != null
+                          ? _checkInTime!.format(context)
+                          : '',
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Check-in',
+                      prefixIcon: Icon(Icons.access_time),
+                    ),
+                    onTap: () => _selectTime(context, isCheckIn: true),
+                  ),
                 ),
-              ),
-              onTap: () => _selectTime(context, isCheckIn: true),
-            ),
-            const SizedBox(height: 20),
-        
-            // Selezione orario check-out
-            TextFormField(
-              readOnly: true,
-              controller: TextEditingController(
-                text: _checkOutTime != null ? _checkOutTime!.format(context) : '',
-              ),
-              decoration: InputDecoration(
-                hintText: 'Check-out Time',
-                prefixIcon: Icon(Icons.access_time),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                const SizedBox(width: 20),
+
+                // Selezione orario check-out
+                Expanded(
+                  child: TextFormField(
+                    readOnly: true,
+                    controller: TextEditingController(
+                      text: _checkOutTime != null
+                          ? _checkOutTime!.format(context)
+                          : '',
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Check-out',
+                      prefixIcon: Icon(Icons.access_time),
+                    ),
+                    onTap: () => _selectTime(context, isCheckIn: false),
+                  ),
                 ),
-              ),
-              onTap: () => _selectTime(context, isCheckIn: false),
+              ],
             ),
+
             const SizedBox(height: 20),
-        
+
             // Costo (opzionale)
             TextFormField(
               controller: costController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "Cost (optional)",
+              decoration: InputDecoration(
+                labelText: 'Costo',
                 prefixIcon: Icon(Icons.euro),
               ),
               validator: (value) {
                 if (value != null && value.isNotEmpty) {
                   final costValue = double.tryParse(value);
                   if (costValue == null || costValue < 0) {
-                    return "Enter a valid positive number";
+                    return "Per favore inserisci un costo valido";
                   }
                   cost = costValue;
                 }
@@ -134,10 +147,18 @@ class _AccommodationFormState extends State<AccommodationForm> {
               },
             ),
             const SizedBox(height: 20),
-        
+
             ElevatedButton(
               onPressed: _submitForm,
-              child: Text("Save Accommodation"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: Text('Aggiungi alloggio'),
             ),
           ],
         ),
@@ -170,10 +191,13 @@ class _AccommodationFormState extends State<AccommodationForm> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context, {required bool isCheckIn}) async {
+  Future<void> _selectTime(BuildContext context,
+      {required bool isCheckIn}) async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: isCheckIn
+          ? _checkInTime ?? TimeOfDay.now()
+          : _checkOutTime ?? TimeOfDay.now(),
     );
 
     if (pickedTime != null) {
@@ -197,25 +221,53 @@ class _AccommodationFormState extends State<AccommodationForm> {
     );
   }
 
+  void _openAccommodationPicker() async {
+    List<String> countriesCodes = widget.trip.nations
+            ?.map((nation) => nation['code'].toString())
+            .toList() ??
+        [];
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return PlacesSearchWidget(
+          selectedCountryCodes: countriesCodes,
+          onPlaceSelected: _onSelected,
+          type: PlacesType.lodging,
+        );
+      },
+    );
+  }
 
-  void _submitForm(){
-    if (_formKey.currentState?.validate() ?? false){
+  void _onSelected(Map<String, String> accommodation) {
+    titleController.text = accommodation['place_name'] ?? '';
+    addressController.text = accommodation['other_info'] ?? '';
+    setState(() {});
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState?.validate() ?? false) {
       final accommodation = AccommodationModel(
         name: titleController.text,
         tripId: widget.trip.id,
         checkIn: combineDateAndTime(_startDate!, _checkInTime!),
-        checkOut: combineDateAndTime(_endDate! , _checkOutTime!),
-        address: addressController.text.isNotEmpty ? addressController.text : null, // Se vuoto, lascia null,
+        checkOut: combineDateAndTime(_endDate!, _checkOutTime!),
+        address:
+            addressController.text.isNotEmpty ? addressController.text : null,
+        // Se vuoto, lascia null,
         expenses: cost,
         contacts: null,
         type: 'accommodation',
       );
-    DatabaseService().
-      createActivity(accommodation as AccommodationModel).
-      then((value) => Navigator.pop(context, true));
-
-  } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Per favore compila tutti i campi correttamente!')));
+      DatabaseService()
+          .createActivity(accommodation)
+          .then((value) => Navigator.pop(context, true));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Per favore compila tutti i campi correttamente!')));
     }
   }
 }

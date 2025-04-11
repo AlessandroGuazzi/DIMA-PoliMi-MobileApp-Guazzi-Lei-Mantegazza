@@ -1,3 +1,4 @@
+import 'package:dima_project/utils/PlacesType.dart';
 import 'package:flutter/material.dart';
 import '../services/googlePlacesService.dart';
 import 'package:country_picker/country_picker.dart';
@@ -5,21 +6,22 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../utils/screenSize.dart';
 
-class CitySearchWidget extends StatefulWidget {
-  final List<Country> selectedCountries;
-  final Function(Map<String, String>) onCitySelected;
+class PlacesSearchWidget extends StatefulWidget {
+  final List<String> selectedCountryCodes;
+  final Function(Map<String, String>) onPlaceSelected;
+  final PlacesType type;
 
-  const CitySearchWidget(
+  const PlacesSearchWidget(
       {super.key,
-      required this.selectedCountries,
-      required this.onCitySelected});
+      required this.selectedCountryCodes,
+      required this.onPlaceSelected, required this.type});
 
   @override
-  _CitySearchWidgetState createState() => _CitySearchWidgetState();
+  _PlacesSearchWidgetState createState() => _PlacesSearchWidgetState();
 }
 
-class _CitySearchWidgetState extends State<CitySearchWidget> {
-  TextEditingController _cityController = TextEditingController();
+class _PlacesSearchWidgetState extends State<PlacesSearchWidget> {
+  TextEditingController _placesController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,7 @@ class _CitySearchWidgetState extends State<CitySearchWidget> {
                       return SearchBar(
                         controller: controller,
                         focusNode: focusNode,
-                        hintText: 'Search cities...',
+                        hintText: 'Cerca...',
                         leading: Icon(Icons.search),
                         backgroundColor:
                             Theme.of(context).searchBarTheme.backgroundColor,
@@ -70,7 +72,8 @@ class _CitySearchWidgetState extends State<CitySearchWidget> {
                       return Column(
                         children: [
                           ListTile(
-                            title: Text(suggestions['place_name'] ?? 'null'),
+                            title: Text(suggestions['place_name'] ?? ''),
+                            subtitle: Text(suggestions['other_info'] ?? ''),
                           ),
                           Divider(
                             color: Theme.of(context).dividerColor,
@@ -91,21 +94,21 @@ class _CitySearchWidgetState extends State<CitySearchWidget> {
                         child: Text('Ricerca supportata da Google')),
                     errorBuilder: (context, error) => const Center(
                         child:
-                            Text('Nessuna città corrisponde alla tua ricerca')),
-                    onSelected: (city) {
-                      widget.onCitySelected(city);
+                            Text('Nessun posto corrisponde alla tua ricerca')),
+                    onSelected: (place) {
+                      widget.onPlaceSelected(place);
                       Navigator.pop(context);
                     },
                     suggestionsCallback: (String query) async {
                       String trimQuery = query.trim();
-                      List<Map<String, String>> cities = [];
+                      List<Map<String, String>> places = [];
 
                       if (trimQuery != '') {
-                        List<String> countryCodes = widget.selectedCountries
-                            .map((country) => country.countryCode)
-                            .toList();
-                        cities = await GooglePlacesService()
-                            .searchCities(query, countryCodes);
+                        String placeType = widget.type.name;
+                        //this is needed due to how google places api treat cities call
+                        if (placeType == 'cities') placeType = '(cities)';
+                        places = await GooglePlacesService().searchAutocomplete(
+                            query, widget.selectedCountryCodes, placeType);
                       }
 
                       /*
@@ -117,7 +120,7 @@ class _CitySearchWidgetState extends State<CitySearchWidget> {
                         "Madrid"];
                         */
 
-                      return cities;
+                      return places;
                     })),
           ],
         ));
