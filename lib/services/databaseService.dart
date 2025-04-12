@@ -200,13 +200,23 @@ class DatabaseService {
   Future<void> handleTripSave(bool isSaved, String tripId) async {
     if (tripId != 'null') {
       try {
-        await userCollection.doc(currentUserId).update({
-          'savedTrip': isSaved
-              ? FieldValue.arrayRemove([tripId])
-              : FieldValue.arrayUnion([tripId])
+        await db.runTransaction((transaction) async {
+          //insert/remove trip into savedTrip for current user
+          transaction.update(userCollection.doc(currentUserId), {
+            'savedTrip': isSaved
+                ? FieldValue.arrayRemove([tripId])
+                : FieldValue.arrayUnion([tripId])
+          });
+
+          //increment/decrement saveCounter for trip with tripId
+          transaction.update(tripCollection.doc(tripId), {
+            'saveCounter':
+                isSaved ? FieldValue.increment(-1) : FieldValue.increment(1)
+          });
         });
       } on Exception catch (e) {
         print('Error saving/unsaving trip: $e');
+        rethrow;
       }
     } else {
       return;
@@ -271,13 +281,4 @@ class DatabaseService {
     }
     return docSnapshot.data()!;
   }
-
-
-
-
-
-
-
-
-
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/screens/homePage.dart';
 import 'package:dima_project/services/authService.dart';
@@ -360,7 +361,9 @@ class _NewTripPageState extends State<NewTripPage> {
           nations: countriesMap,
           cities: citiesMap,
           startDate: _startDate,
-          endDate: _endDate);
+          endDate: _endDate,
+          timestamp: Timestamp.now(),
+      );
       DatabaseService()
           .createTrip(trip)
           .then((value) => Navigator.pop(context, true));

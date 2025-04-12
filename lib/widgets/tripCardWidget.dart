@@ -15,7 +15,9 @@ class TripCardWidget extends StatefulWidget {
   State<TripCardWidget> createState() => _TripCardWidgetState();
 }
 
+
 class _TripCardWidgetState extends State<TripCardWidget> {
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -118,24 +120,34 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                                       style:
                                           Theme.of(context).textTheme.bodySmall,
                                     ),
+                                    const SizedBox(
+                                      width: 4,
+                                    ),
                                   ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        IconButton(
-                            onPressed: () {
-                              _handleSaveButton();
-                            },
-                            icon: widget.isSaved
-                                ? Icon(
-                                    Icons.favorite,
-                                    color: Theme.of(context).primaryColor,
-                                  )
-                                : Icon(Icons.favorite_border)),
+                        Row(
+                          children: [
+                            Text('${widget.trip.saveCounter ?? 'na'}'),
+                            IconButton(
+                                onPressed: () {
+                                  _handleSaveButton();
+                                },
+                                icon: widget.isSaved
+                                    ? Icon(
+                                        Icons.bookmark_added_rounded,
+                                        color: Theme.of(context).primaryColor,
+                                      )
+                                    : Icon(Icons.bookmark_add_outlined)),
+                          ],
+                        ),
                       ]),
-                  //space for icons
+                  Text(
+                    getTimePassed(widget.trip.timestamp?.toDate() ?? DateTime.now()),
+                  ),
                 ],
               ),
             ),
@@ -155,5 +167,20 @@ class _TripCardWidgetState extends State<TripCardWidget> {
       context,
       MaterialPageRoute(builder: (context) => ProfilePage()),
     );
+  }
+
+  String getTimePassed(DateTime postTimestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(postTimestamp);
+
+    if (difference.inSeconds < 60) {
+      return '${difference.inSeconds} secondi fa';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} minuti fa';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} ore fa';
+    } else {
+      return '${difference.inDays} giorni fa';
+    }
   }
 }

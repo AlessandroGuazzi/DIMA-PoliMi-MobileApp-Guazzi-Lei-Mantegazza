@@ -18,6 +18,8 @@ class TripModel {
   final bool? isConfirmed;
   final bool? isPast;
   final bool? isPrivate;
+  int? saveCounter;
+  final Timestamp? timestamp;
 
   //constructor
   TripModel({
@@ -33,6 +35,8 @@ class TripModel {
     this.isConfirmed,
     this.isPast,
     this.isPrivate,
+    this.saveCounter,
+    this.timestamp,
   });
 
   factory TripModel.fromFirestore(
@@ -71,7 +75,9 @@ class TripModel {
         */
         isConfirmed: data?['isConfirmed'],
         isPast: data?['isPast'],
-        isPrivate: data?['isPrivate']);
+        isPrivate: data?['isPrivate'],
+        saveCounter: data?['saveCounter'],
+        timestamp: data?['timestamp']);
   }
 
   Map<String, dynamic> toFirestore() {
@@ -110,6 +116,8 @@ class TripModel {
       if (isConfirmed != null) 'isConfirmed': isConfirmed,
       if (isPast != null) 'isPast': isPast,
       if (isPrivate != null) 'isPrivate': isPrivate,
+      if (saveCounter != null) 'saveCounter': saveCounter else 'saveCounter': 0,
+      if (timestamp != null) 'timestamp': timestamp,
     };
   }
 }
