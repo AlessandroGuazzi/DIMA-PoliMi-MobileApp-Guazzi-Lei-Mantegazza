@@ -49,22 +49,22 @@ class _FlightFormState extends State<FlightForm> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(isDeparture ? "Select Departure Airport" : "Select Arrival Airport"),
-          content: SizedBox(
-            height: 400, // Altezza del dialogo
-            child: AirportSearchWidget(
-              onAirportSelected: (airport) {
-                // Aggiorna il controller con il nome dell'aeroporto selezionato
-                controller.text = '${airport.name} (${airport.iata})';
-                if(isDeparture) {
-                  departureIata = airport.iata;
-                  departureName = airport.name;
-                }
-                if(!isDeparture) {
-                  arrivalIata = airport.iata;
-                  arrivalName = airport.name;
-                }
-                Navigator.of(context).pop(); // Chiudi il dialogo
-              },
+          content: SingleChildScrollView(
+            child: SizedBox(
+              width: double.maxFinite,
+              child: AirportSearchWidget(
+                onAirportSelected: (airport) {
+                  controller.text = '${airport.name} (${airport.iata})';
+                  if (isDeparture) {
+                    departureIata = airport.iata;
+                    departureName = airport.name;
+                  } else {
+                    arrivalIata = airport.iata;
+                    arrivalName = airport.name;
+                  }
+                  Navigator.of(context).pop();
+                },
+              ),
             ),
           ),
         );

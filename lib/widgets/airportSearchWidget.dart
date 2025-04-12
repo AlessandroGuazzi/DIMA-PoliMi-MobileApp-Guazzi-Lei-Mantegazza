@@ -1,4 +1,5 @@
 import 'package:dima_project/models/airportModel.dart';
+import 'package:dima_project/utils/screenSize.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
@@ -57,6 +58,7 @@ class _AirportSearchWidgetState extends State<AirportSearchWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min, // <-- importante!
       children: [
         TextField(
           controller: _controller,
@@ -68,10 +70,12 @@ class _AirportSearchWidgetState extends State<AirportSearchWidget> {
           ),
         ),
         const SizedBox(height: 10),
-        Expanded(
+        SizedBox(
+          height: ScreenSize.screenHeight(context)*0.5,
           child: _filteredAirports.isEmpty
               ? const Center(child: Text('Nessun risultato'))
               : ListView.builder(
+            shrinkWrap: true,
             itemCount: _filteredAirports.length,
             itemBuilder: (context, index) {
               final airport = _filteredAirports[index];

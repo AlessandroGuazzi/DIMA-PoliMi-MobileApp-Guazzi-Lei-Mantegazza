@@ -41,7 +41,7 @@ class _TripGeneralsPageState extends State<TripGeneralsPage> {
 
         Map<String, double> dataMap = {
           "Flight": 42,
-          "Shopping": 20,
+          "Attractions": 20,
           "Transport": 9,
           "Hotel": 23,
           "Food": 18,

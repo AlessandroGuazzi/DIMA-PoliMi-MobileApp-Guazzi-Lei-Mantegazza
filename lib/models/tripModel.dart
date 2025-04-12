@@ -14,6 +14,7 @@ class TripModel {
   final DateTime? endDate;
   final List<String>? activities;
   final num? expenses;
+  //final Map<String, num>? expenses;
   final bool? isConfirmed;
   final bool? isPast;
   final bool? isPrivate;
@@ -58,6 +59,16 @@ class TripModel {
             ? List<String>.from(data?['activities'])
             : null,
         expenses: data?['expenses'],
+        /*
+        expenses: data?['expenses'] != null
+            ? {
+          'flight': (data!['expenses']['flight'] as num?) ?? 0,
+          'accommodation': (data['expenses']['accommodation'] as num?) ?? 0,
+          'attraction': (data['expenses']['attraction'] as num?) ?? 0,
+          'transport': (data['expenses']['transport'] as num?) ?? 0,
+        }
+            : null,
+        */
         isConfirmed: data?['isConfirmed'],
         isPast: data?['isPast'],
         isPrivate: data?['isPrivate']);
@@ -88,6 +99,14 @@ class TripModel {
       if (endDate != null) 'endDate': Timestamp.fromDate(endDate!),
       if (activities != null) 'activities': activities,
       if (expenses != null) 'expenses': expenses,
+      /*if (expenses != null)
+        'expenses': {
+          'flight': expenses!['flight'] ?? 0,
+          'accommodation': expenses!['accommodation'] ?? 0,
+          'attraction': expenses!['attraction'] ?? 0,
+          'transport': expenses!['transport'] ?? 0,
+        },
+      */
       if (isConfirmed != null) 'isConfirmed': isConfirmed,
       if (isPast != null) 'isPast': isPast,
       if (isPrivate != null) 'isPrivate': isPrivate,
