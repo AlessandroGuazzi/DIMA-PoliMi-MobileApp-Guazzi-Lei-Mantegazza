@@ -177,33 +177,33 @@ class _ExplorerPageState extends State<ExplorerPage> {
 
   Future<void> _openSortWidget() async {
     await showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    builder: (BuildContext context) {
-      return Container(
-          height: ScreenSize.screenHeight(context) * 0.2,
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(8),
           color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              //divider
+              // Handle
               Padding(
-                padding: EdgeInsets.fromLTRB(150, 15, 150, 15),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Container(
                   height: 5,
-                  width: double.infinity,
+                  width: 60,
                   decoration: BoxDecoration(
                     color: Theme.of(context).dividerColor,
-                    borderRadius:
-                    BorderRadius.all(Radius.circular(100)), // Rounded edges
+                    borderRadius: BorderRadius.circular(100),
                   ),
                 ),
               ),
-
-              Text('Ordina Per', style: Theme.of(context).textTheme.bodyLarge,),
-
+              Text(
+                'Ordina Per',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
               ListTile(
-                leading: Icon(Icons.access_time),
-                title: Text('Più recenti'),
+                leading: const Icon(Icons.access_time),
+                title: const Text('Più recenti'),
                 onTap: () {
                   setState(() {
                     _filteredTrips.sort((a, b) =>
@@ -213,8 +213,8 @@ class _ExplorerPageState extends State<ExplorerPage> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.trending_up),
-                title: Text('Più popolari'),
+                leading: const Icon(Icons.trending_up),
+                title: const Text('Più popolari'),
                 onTap: () {
                   setState(() {
                     _filteredTrips.sort((a, b) =>
@@ -223,11 +223,10 @@ class _ExplorerPageState extends State<ExplorerPage> {
                   Navigator.pop(context);
                 },
               ),
-
-
             ],
-          ));
-    },
+          ),
+        );
+      },
     );
   }
 }
