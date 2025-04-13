@@ -35,33 +35,6 @@ class _ExplorerPageState extends State<ExplorerPage> {
         DatabaseService().getUserByUid(AuthService().currentUser!.uid);
   }
 
-  void _handleTripSave(bool isSaved, String tripId) async {
-
-    try {
-      await DatabaseService().handleTripSave(isSaved, tripId);
-      setState(() {
-        TripModel trip = _filteredTrips.firstWhere((trip) => trip.id == tripId);
-        if (isSaved) {
-          _savedTrips.remove(tripId);
-          //update the counter locally
-          trip.saveCounter = (trip.saveCounter ?? 0) - 1;
-        } else {
-          _savedTrips.add(tripId);
-          trip.saveCounter = (trip.saveCounter ?? 0) + 1;
-        }
-      });
-    } on Exception catch (e) {
-       SnackBar(content: Text('Errore $e'));
-    }
-  }
-
-  void _filterTrips(String query) {
-    _filteredTrips = _allTrips
-        .where((trip) =>
-            trip.title!.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     print('Build of explorer page...');
@@ -146,7 +119,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
                               bool isSaved = _savedTrips.contains(trip.id);
 
                               return Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 0, 0, 11),
+                                padding: const EdgeInsets.only(bottom: 10),
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.push(
@@ -155,12 +128,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
                                             builder: (context) => TripPage(
                                                 trip: trip, isMyTrip: false)));
                                   },
-                                  child: TripCardWidget(
-                                    trip,
-                                    isSaved,
-                                    onSave:
-                                        _handleTripSave, // callback to handle saving trips
-                                  ),
+                                  child: TripCardWidget(trip, isSaved, _handleTripSave, false)
                                 ),
                               );
                             },
@@ -173,6 +141,33 @@ class _ExplorerPageState extends State<ExplorerPage> {
         ],
       ),
     );
+  }
+
+  void _handleTripSave(bool isSaved, String tripId) async {
+
+    try {
+      await DatabaseService().handleTripSave(isSaved, tripId);
+      setState(() {
+        TripModel trip = _filteredTrips.firstWhere((trip) => trip.id == tripId);
+        if (isSaved) {
+          _savedTrips.remove(tripId);
+          //update the counter locally
+          trip.saveCounter = (trip.saveCounter ?? 0) - 1;
+        } else {
+          _savedTrips.add(tripId);
+          trip.saveCounter = (trip.saveCounter ?? 0) + 1;
+        }
+      });
+    } on Exception catch (e) {
+      SnackBar(content: Text('Errore $e'));
+    }
+  }
+
+  void _filterTrips(String query) {
+    _filteredTrips = _allTrips
+        .where((trip) =>
+        trip.title!.toLowerCase().contains(query.toLowerCase()))
+        .toList();
   }
 
   Future<void> _openSortWidget() async {
@@ -199,7 +194,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
               ),
               Text(
                 'Ordina Per',
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               ListTile(
                 leading: const Icon(Icons.access_time),

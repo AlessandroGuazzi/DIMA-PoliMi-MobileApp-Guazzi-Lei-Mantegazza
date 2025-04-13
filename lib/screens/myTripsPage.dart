@@ -47,39 +47,44 @@ class _MyTripsPageState extends State<MyTripsPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No trips created yet'));
+              return const Center(child: Text('Pianifica il tuo primo viaggio'));
             }
 
             // List of trips, with null-check!
             List<TripModel> trips = snapshot.data!;
 
-            return ListView.builder(
-              itemCount: trips.length,
-              itemBuilder: (context, index) {
-                final trip = trips[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 7.0, horizontal: 4.0),
-                  child: Material(
-                    child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute<void>(
-                                //TODO: return to map detail!
-                                  builder: (context) => TripPage(
-                                    trip: trip,
-                                    isMyTrip: true,
-                                  )));
-                        },
-                        child: TripCardWidget(
-                          trip,
-                          false,
-                          onSave: (bool, String) {},
-                        )),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, top: 15, bottom: 5),
+                  child: Text('Pianifica i tuoi viaggi', style: Theme.of(context).textTheme.displayLarge,),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: trips.length,
+                    itemBuilder: (context, index) {
+                      final trip = trips[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Material(
+                          child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                        builder: (context) => TripPage(
+                                          trip: trip,
+                                          isMyTrip: true,
+                                        )));
+                              },
+                              child: TripCardWidget(trip, false, (isSaved, id) {}, true)),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+              ],
             );
           },
         ),

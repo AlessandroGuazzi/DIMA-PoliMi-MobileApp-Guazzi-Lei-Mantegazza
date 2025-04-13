@@ -32,208 +32,215 @@ class _NewTripPageState extends State<NewTripPage> {
   List<Map<String, String>> _selectedCities = [];
   DateTime? _startDate;
   DateTime? _endDate;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text("Crea un nuovo viaggio!"),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0), // Padding for all sides
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                // Title input
-                TextFormField(
-                  controller: titleController,
-                  decoration: InputDecoration(
-                    labelText: 'Titolo',
-                    hintText: 'Inserisci il titolo del viaggio',
-                    prefixIcon: Icon(Icons.title),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
+    if (isLoading) {
+      return Container(
+          color: Colors.white,
+          child: const Center(child: CircularProgressIndicator()));
+    } else {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: Text("Crea un nuovo viaggio!"),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(16.0), // Padding for all sides
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  // Title input
+                  TextFormField(
+                    controller: titleController,
+                    decoration: InputDecoration(
+                      labelText: 'Titolo',
+                      hintText: 'Inserisci il titolo del viaggio',
+                      prefixIcon: Icon(Icons.title),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            BorderSide(color: Theme.of(context).dividerColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 2),
+                      ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Per favore inserisci un titolo';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Per favore inserisci un titolo';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
+                  SizedBox(height: 16),
 
-                // Countries picker input
-                TextFormField(
-                  controller: countriesController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    hintText: 'Che nazioni visiterai?',
-                    prefixIcon: Icon(Icons.location_on),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
+                  // Countries picker input
+                  TextFormField(
+                    controller: countriesController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      hintText: 'Che nazioni visiterai?',
+                      prefixIcon: Icon(Icons.location_on),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            BorderSide(color: Theme.of(context).dividerColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 2),
+                      ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
+                    validator: (value) {
+                      if (_selectedCountries.isEmpty) {
+                        return 'Per favore seleziona almeno una nazione';
+                      }
+                      return null;
+                    },
+                    onTap: () {
+                      _openCountryPicker();
+                    },
                   ),
-                  validator: (value) {
-                    if (_selectedCountries.isEmpty) {
-                      return 'Per favore seleziona almeno una nazione';
-                    }
-                    return null;
-                  },
-                  onTap: () {
-                    _openCountryPicker();
-                  },
-                ),
 
-                _selectedCountries.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Wrap(
-                          spacing: 8.0,
-                          runSpacing: 4.0,
-                          children: _selectedCountries.map((country) {
-                            return Chip(
-                              backgroundColor:
-                                  Theme.of(context).scaffoldBackgroundColor,
-                              label:
-                                  Text('${country.flagEmoji} ${country.name}'),
-                              onDeleted: () {
-                                setState(() {
-                                  _selectedCountries.remove(country);
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      )
-                    : const SizedBox(),
+                  _selectedCountries.isNotEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Wrap(
+                            spacing: 8.0,
+                            runSpacing: 4.0,
+                            children: _selectedCountries.map((country) {
+                              return Chip(
+                                backgroundColor:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                label: Text(
+                                    '${country.flagEmoji} ${country.name}'),
+                                onDeleted: () {
+                                  setState(() {
+                                    _selectedCountries.remove(country);
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        )
+                      : const SizedBox(),
 
-                SizedBox(height: 16),
+                  SizedBox(height: 16),
 
-                // City search input
-                TextFormField(
-                  controller: citiesController,
-                  enabled: _selectedCountries.isEmpty ? false : true,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    hintText: 'Che città visiterai?',
-                    prefixIcon: Icon(Icons.location_city),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
+                  // City search input
+                  TextFormField(
+                    controller: citiesController,
+                    enabled: _selectedCountries.isEmpty ? false : true,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      hintText: 'Che città visiterai?',
+                      prefixIcon: Icon(Icons.location_city),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            BorderSide(color: Theme.of(context).dividerColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 2),
+                      ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
+                    validator: (value) {
+                      if (_selectedCities.isEmpty) {
+                        return 'Per favore inserisci almeno una città';
+                      }
+                      return null;
+                    },
+                    onTap: () {
+                      _openCitiesSearch();
+                    },
                   ),
-                  validator: (value) {
-                    if (_selectedCities.isEmpty) {
-                      return 'Per favore inserisci almeno una città';
-                    }
-                    return null;
-                  },
-                  onTap: () {
-                    _openCitiesSearch();
-                  },
-                ),
 
-                _selectedCities.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
-                          children: _selectedCities.map((city) {
-                            return Chip(
-                              backgroundColor:
-                                  Theme.of(context).scaffoldBackgroundColor,
-                              label: Text(city['place_name'] ?? 'null'),
-                              onDeleted: () {
-                                setState(() {
-                                  _selectedCities.remove(city);
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      )
-                    : const SizedBox(),
+                  _selectedCities.isNotEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Wrap(
+                            spacing: 4,
+                            runSpacing: 4,
+                            children: _selectedCities.map((city) {
+                              return Chip(
+                                backgroundColor:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                label: Text(city['place_name'] ?? 'null'),
+                                onDeleted: () {
+                                  setState(() {
+                                    _selectedCities.remove(city);
+                                  });
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        )
+                      : const SizedBox(),
 
-                SizedBox(height: 16),
+                  SizedBox(height: 16),
 
-                // dates input
-                TextFormField(
-                  readOnly: true,
-                  controller: TextEditingController(
-                    text: _startDate != null && _endDate != null
-                        ? "${DateFormat('dd/MM/yy').format(_startDate!)} - ${DateFormat('dd/MM/yy').format(_endDate!)}"
-                        : '',
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Quando partirai?',
-                    prefixIcon: Icon(Icons.date_range),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
+                  // dates input
+                  TextFormField(
+                    readOnly: true,
+                    controller: TextEditingController(
+                      text: _startDate != null && _endDate != null
+                          ? "${DateFormat('dd/MM/yy').format(_startDate!)} - ${DateFormat('dd/MM/yy').format(_endDate!)}"
+                          : '',
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
+                    decoration: InputDecoration(
+                      hintText: 'Quando partirai?',
+                      prefixIcon: Icon(Icons.date_range),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            BorderSide(color: Theme.of(context).dividerColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 2),
+                      ),
                     ),
+                    validator: (value) {
+                      if (_startDate == null || _endDate == null) {
+                        return "Per favore seleziona delle date";
+                      }
+                      return null;
+                    },
+                    onTap: () => _selectDateRange(context),
                   ),
-                  validator: (value) {
-                    if (_startDate == null || _endDate == null) {
-                      return "Per favore seleziona delle date";
-                    }
-                    return null;
-                  },
-                  onTap: () => _selectDateRange(context),
-                ),
-                SizedBox(height: 32),
+                  SizedBox(height: 32),
 
-                // Submit button
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                  // Submit button
+                  ElevatedButton(
+                    onPressed: _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
+                    child: Text('Crea il viaggio'),
                   ),
-                  child: Text('Crea il viaggio'),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   void _onCountriesSelected(List<Country> selectedCountries) {
@@ -267,8 +274,8 @@ class _NewTripPageState extends State<NewTripPage> {
   void _onCitySelected(Map<String, String> city) {
     setState(() {
       // Check if the city with the same place_id already exists
-      bool exists = _selectedCities.any((existingCity) =>
-      existingCity['place_id'] == city['place_id']);
+      bool exists = _selectedCities
+          .any((existingCity) => existingCity['place_id'] == city['place_id']);
 
       if (!exists) {
         _selectedCities.add(city);
@@ -277,7 +284,8 @@ class _NewTripPageState extends State<NewTripPage> {
   }
 
   void _openCitiesSearch() async {
-    List<String> selectedCountryCodes = _selectedCountries.map((country) => country.countryCode).toList();
+    List<String> selectedCountryCodes =
+        _selectedCountries.map((country) => country.countryCode).toList();
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -287,7 +295,8 @@ class _NewTripPageState extends State<NewTripPage> {
       builder: (BuildContext context) {
         return PlacesSearchWidget(
           selectedCountryCodes: selectedCountryCodes,
-          onPlaceSelected: _onCitySelected, type: PlacesType.cities,
+          onPlaceSelected: _onCitySelected,
+          type: PlacesType.cities,
         );
       },
     );
@@ -314,6 +323,10 @@ class _NewTripPageState extends State<NewTripPage> {
 
   void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
+      //since the process has multiple async operation update ui to show loading
+      setState(() {
+        isLoading = true;
+      });
       UserModel? currentUser =
           await DatabaseService().getUserByUid(AuthService().currentUser!.uid);
       Map<String, dynamic> creatorInfo = {};
@@ -343,7 +356,8 @@ class _NewTripPageState extends State<NewTripPage> {
         if (placeId.isNotEmpty) {
           try {
             // Fetch coordinates using placeId
-            Map<String, double> coordinates = await GooglePlacesService().getCoordinates(placeId);
+            Map<String, double> coordinates =
+                await GooglePlacesService().getCoordinates(placeId);
             citiesMap.add({
               'name': city['place_name'],
               'lat': coordinates['lat'],
@@ -355,14 +369,19 @@ class _NewTripPageState extends State<NewTripPage> {
         }
       }
 
+      //retrieve image Reference from google
+      String imageRef = await GooglePlacesService()
+          .getCountryImageRef(countriesMap.first['name']);
+
       final trip = TripModel(
-          title: titleController.text,
-          creatorInfo: creatorInfo,
-          nations: countriesMap,
-          cities: citiesMap,
-          startDate: _startDate,
-          endDate: _endDate,
-          timestamp: Timestamp.now(),
+        title: titleController.text,
+        creatorInfo: creatorInfo,
+        nations: countriesMap,
+        cities: citiesMap,
+        startDate: _startDate,
+        endDate: _endDate,
+        timestamp: Timestamp.now(),
+        imageRef: imageRef,
       );
       DatabaseService()
           .createTrip(trip)

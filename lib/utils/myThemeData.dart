@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
  */
 class MyThemeData {
   static ThemeData appTheme = ThemeData(
-
     brightness: Brightness.light,
     primaryColor: const Color(0xFF6200EE),
     secondaryHeaderColor: const Color(0xFF03DAC6),
@@ -23,6 +22,12 @@ class MyThemeData {
       textTheme: ButtonTextTheme.primary,
     ),
 
+    iconTheme: IconThemeData(
+      size: 20,
+      color: const Color(0xFF6200EE),
+      opacity:0.9,
+    ),
+
     //theme for input fields
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
@@ -32,7 +37,7 @@ class MyThemeData {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
-          color: Color(0xFF6200EE), // Or use Theme.of(context).primaryColor if dynamic
+          color: Color(0xFF6200EE),
           width: 2,
         ),
       ),
@@ -40,65 +45,73 @@ class MyThemeData {
       labelStyle: TextStyle(color: Colors.grey[700]), // optional
     ),
 
-    textTheme: const TextTheme(
-      displayLarge: TextStyle(
-          fontSize: 57, fontWeight: FontWeight.bold, color: Colors.black),
-      // H1
-      displayMedium: TextStyle(
-          fontSize: 45, fontWeight: FontWeight.bold, color: Colors.black),
-      // H2
-      displaySmall: TextStyle(
-          fontSize: 36, fontWeight: FontWeight.bold, color: Colors.black),
-      // H3
-      headlineLarge: TextStyle(
-          fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black),
-      // H4
-      headlineMedium: TextStyle(
-          fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
-      // H5
-      headlineSmall: TextStyle(
-          fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-      // H6
-      titleLarge: TextStyle(
-          fontSize: 22, fontWeight: FontWeight.w600, color: Colors.black),
-      // Title
-      titleMedium: TextStyle(
-          fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
-      // Subtitle 1
-      titleSmall: TextStyle(
-          fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
-      // Subtitle 2
-      bodyLarge: TextStyle(
-          fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black87),
-      // Body 1
-      bodyMedium: TextStyle(
-          fontSize: 14, fontWeight: FontWeight.normal, color: Colors.black87),
-      // Body 2
+    //theme for text
+    textTheme: TextTheme(
+      displayLarge: const TextStyle(
+        // Page titles
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        letterSpacing: -1.0,
+      ),
+      headlineLarge: const TextStyle(
+        // Section headers
+        fontSize: 24,
+        fontWeight: FontWeight.w700,
+      ),
+      headlineMedium: const TextStyle(
+        // Card titles / prominent info
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+      titleLarge: const TextStyle(
+        // Regular headers or list titles
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      ),
+      titleMedium: const TextStyle(
+        // Medium emphasis titles
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+      ),
+      bodyLarge: const TextStyle(
+        // Primary body text
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        height: 1.5,
+      ),
+      bodyMedium:  TextStyle(
+        // Secondary body or muted info
+        fontSize: 14,
+        fontWeight: FontWeight.normal,
+        color: Colors.grey[800],
+        //height: 1.5,
+      ),
       bodySmall: TextStyle(
-          fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black54),
-      // Caption
+        // Captions or helper text
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        color: Colors.grey[600],
+      ),
       labelLarge: TextStyle(
-          fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black),
-      // Button
-      labelMedium: TextStyle(
-          fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black),
-      // Overline
-      labelSmall: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
-          color: Colors.black54), // Smallest text
+        // Button text or tags
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.2,
+      ),
     ),
 
     searchBarTheme: SearchBarThemeData(
-      backgroundColor: WidgetStateProperty.all(Colors.white),  // Wrap color in MaterialStateProperty.all
-      elevation: WidgetStateProperty.all(2.0),  // Shadow/elevation
+      backgroundColor: WidgetStateProperty.all(Colors.white),
+      // Wrap color in MaterialStateProperty.all
+      elevation: WidgetStateProperty.all(2.0),
+      // Shadow/elevation
       shape: WidgetStateProperty.all(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50.0), // Rounded corners
         ),
       ),
-      overlayColor: WidgetStateProperty.all(Colors.grey[300]), // Hover effect color
+      overlayColor:
+          WidgetStateProperty.all(Colors.grey[300]), // Hover effect color
     ),
-
   );
 }

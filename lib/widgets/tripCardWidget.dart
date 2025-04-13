@@ -1,5 +1,8 @@
 import 'package:dima_project/screens/profilePage.dart';
+import 'package:dima_project/services/googlePlacesService.dart';
+import 'package:dima_project/utils/screenSize.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../models/tripModel.dart';
 
@@ -7,19 +10,105 @@ class TripCardWidget extends StatefulWidget {
   final TripModel trip;
   final bool isSaved;
   final Function(bool, String) onSave; // Callback to update ExplorerPage
+  final bool isHome;
 
-  const TripCardWidget(this.trip, this.isSaved,
-      {required this.onSave, super.key});
+  const TripCardWidget(this.trip, this.isSaved, this.onSave, this.isHome,
+      {super.key});
 
   @override
   State<TripCardWidget> createState() => _TripCardWidgetState();
 }
 
-
 class _TripCardWidgetState extends State<TripCardWidget> {
-
   @override
   Widget build(BuildContext context) {
+    if (widget.isHome) {
+      return _homeCardWidget();
+    } else {
+      return _explorerCardWidget();
+    }
+  }
+
+  Widget _homeCardWidget() {
+    DateTime startDate = widget.trip.startDate ?? DateTime.now();
+    String startDateFormat = DateFormat('dd MMM ').format(startDate);
+
+    DateTime endDate = widget.trip.endDate ?? DateTime.now();
+    String endDateFormat = DateFormat('dd MMM').format(endDate);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            //profile pic
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                widget.trip.imageRef != null
+                    ? GooglePlacesService().getImageUrl(widget.trip.imageRef!)
+                    : 'https://picsum.photos/800',
+                width: ScreenSize.screenWidth(context) * 0.25,
+                height: ScreenSize.screenWidth(context) * 0.25,
+                fit: BoxFit.cover,
+              ),
+            ),
+
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.trip.title ?? 'Titolo mancante',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                            '$startDateFormat -> $endDateFormat', //· fra ${startDate.difference(DateTime.now()).inDays + 1} giorni',
+                            softWrap: true,
+                            style: Theme.of(context).textTheme.bodyMedium),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.public,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          _displayCityNames(),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          softWrap: true,
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _explorerCardWidget() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -45,7 +134,10 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     },
                     blendMode: BlendMode.dstIn,
                     child: Image.network(
-                      'https://picsum.photos/2000',
+                      widget.trip.imageRef != null
+                          ? GooglePlacesService()
+                              .getImageUrl(widget.trip.imageRef!)
+                          : 'https://picsum.photos/800',
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
@@ -59,7 +151,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 children: [
                   Text(
                     '${widget.trip.title}',
-                    style: Theme.of(context).textTheme.headlineMedium,
+                    style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   const SizedBox(height: 4),
                   Row(mainAxisSize: MainAxisSize.max, children: [
@@ -74,11 +166,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     Expanded(
                       child: Wrap(spacing: 4, runSpacing: 4, children: [
                         Text(
-                          widget.trip.cities != null
-                              ? widget.trip.cities!
-                              .map((city) => city['name'])
-                              .join(' · ')  // Joining city names with ' · '
-                              : 'Città non disponibili',
+                          _displayCityNames(),
                           style: Theme.of(context).textTheme.bodyLarge,
                           softWrap: true,
                         )
@@ -116,7 +204,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                                     ),
                                     //username
                                     Text(
-                                      '@${widget.trip.creatorInfo!['username'] ?? 'user'}',
+                                      '@${widget.trip.creatorInfo!['username'] ?? 'user'} · ${getTimePassed(widget.trip.timestamp?.toDate() ?? DateTime.now())}',
                                       style:
                                           Theme.of(context).textTheme.bodySmall,
                                     ),
@@ -145,9 +233,6 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                           ],
                         ),
                       ]),
-                  Text(
-                    getTimePassed(widget.trip.timestamp?.toDate() ?? DateTime.now()),
-                  ),
                 ],
               ),
             ),
@@ -174,13 +259,32 @@ class _TripCardWidgetState extends State<TripCardWidget> {
     final difference = now.difference(postTimestamp);
 
     if (difference.inSeconds < 60) {
-      return '${difference.inSeconds} secondi fa';
+      return '${difference.inSeconds} sec fa';
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes} minuti fa';
+      return '${difference.inMinutes} min fa';
     } else if (difference.inHours < 24) {
       return '${difference.inHours} ore fa';
     } else {
       return '${difference.inDays} giorni fa';
+    }
+  }
+
+  String _displayCityNames() {
+    if (widget.trip.cities != null && widget.trip.cities!.isNotEmpty) {
+      final cities = widget.trip.cities!;
+      if (cities.length > 1) {
+        String result =
+            cities.take(2).map((c) => c['name']).toList().join(' · ');
+        final moreCount = cities.length - 2;
+        if (moreCount > 0) {
+          result += ' + $moreCount';
+        }
+        return result;
+      } else {
+        return cities.first['name'];
+      }
+    } else {
+      return 'Nessun Luogo';
     }
   }
 }

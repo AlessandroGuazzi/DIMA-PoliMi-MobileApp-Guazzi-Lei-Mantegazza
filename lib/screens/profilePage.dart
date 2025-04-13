@@ -1,5 +1,6 @@
 import 'package:dima_project/screens/tripPage.dart';
 import 'package:dima_project/utils/screenSize.dart';
+import 'package:dima_project/widgets/tripCardWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/services/authService.dart';
@@ -185,7 +186,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           '@${snapshot.data!.username}',
                           style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey[600], // Colore grigio per lo username
+                          color: Colors.grey[600],
                           ),
                         ),
                       ],
@@ -210,7 +211,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             future: _futureTrips,
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const Center(child: CircularProgressIndicator());
+                                return Container(color: Colors.white,child: const Center(child: CircularProgressIndicator()));
                               }
 
                               if (snapshot.hasError) {
@@ -224,64 +225,20 @@ class _ProfilePageState extends State<ProfilePage> {
                               }
 
                               return ListView.builder(
-                                padding: const EdgeInsets.all(16),
                                 itemCount: trips.length,
                                 itemBuilder: (context, index) {
                                   final trip = trips[index];
-                                  return Card(
-                                    margin: const EdgeInsets.only(bottom: 16),
-                                    elevation: 4, // Aggiungi un'ombra per dare profondità
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8), // Angoli arrotondati
-                                    ),
-                                    child: ListTile(
-                                      contentPadding: const EdgeInsets.all(16),
-                                      leading: Container(
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).primaryColor.withAlpha(100), // Sfondo del cerchio
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.travel_explore,
-                                          color: Colors.white, // Colore dell'icona
-                                        ),
-                                      ),
-                                      title: Text(
-                                        trip.title ?? 'Viaggio senza titolo',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18, // Dimensione del titolo
-                                        ),
-                                      ),
-                                      subtitle: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Nazioni: ${trip.nations?.map((n) => n['name']).join(', ')}',
-                                            style: TextStyle(
-                                              fontSize: 14, // Dimensione del testo
-                                              color: Theme.of(context).hintColor, // Colore del testo
-                                            ),
-                                          ),
-                                          Text(
-                                            'Date: ${DateFormat('dd/MM/yyyy').format(trip.startDate!)} - '
-                                                '${DateFormat('dd/MM/yyyy').format(trip.endDate!)}',
-                                            style: TextStyle(
-                                              fontSize: 14, // Dimensione del testo
-                                              color: Theme.of(context).hintColor, // Colore del testo
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      trailing: Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: Theme.of(context).primaryColor, // Colore della freccia
-                                      ),
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 5),
+                                    child: GestureDetector(
                                       onTap: () {
-                                        Navigator.push(context, MaterialPageRoute<void>(builder: (context) => TripPage(trip: trip, isMyTrip: true)));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute<void>(
+                                                builder: (context) => TripPage(
+                                                    trip: trip, isMyTrip: true)));
                                       },
-                                    ),
+                                        child: TripCardWidget(trip, false, (a, b) {}, true)),
                                   );
                                 },
                               );

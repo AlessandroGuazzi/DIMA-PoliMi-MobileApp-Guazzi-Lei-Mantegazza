@@ -20,6 +20,7 @@ class TripModel {
   final bool? isPrivate;
   int? saveCounter;
   final Timestamp? timestamp;
+  final String? imageRef;
 
   //constructor
   TripModel({
@@ -37,6 +38,7 @@ class TripModel {
     this.isPrivate,
     this.saveCounter,
     this.timestamp,
+    this.imageRef,
   });
 
   factory TripModel.fromFirestore(
@@ -75,7 +77,9 @@ class TripModel {
         isPast: data?['isPast'],
         isPrivate: data?['isPrivate'],
         saveCounter: data?['saveCounter'],
-        timestamp: data?['timestamp']);
+        timestamp: data?['timestamp'],
+        imageRef: data?['imageRef']
+    );
   }
 
   Map<String, dynamic> toFirestore() {
@@ -115,6 +119,7 @@ class TripModel {
       if (isPrivate != null) 'isPrivate': isPrivate,
       if (saveCounter != null) 'saveCounter': saveCounter else 'saveCounter': 0,
       if (timestamp != null) 'timestamp': timestamp,
+      if(imageRef != null) 'imageRef': imageRef,
     };
   }
 }
