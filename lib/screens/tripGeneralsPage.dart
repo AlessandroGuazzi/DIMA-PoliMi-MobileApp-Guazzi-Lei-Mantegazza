@@ -18,6 +18,8 @@ class _TripGeneralsPageState extends State<TripGeneralsPage> {
 
   late Future<TripModel> trip;
 
+  late num totalCost;
+
   @override
   void initState() {
     super.initState();
@@ -39,12 +41,18 @@ class _TripGeneralsPageState extends State<TripGeneralsPage> {
 
         final tripData = snapshot.data!;
 
+        final flightExpense = (tripData.expenses?['flight'] as num?)?.toDouble() ?? 0.0;
+        final accommodationExpense = (tripData.expenses?['accommodation'] as num?)?.toDouble() ?? 0.0;
+        final attractionExpense = (tripData.expenses?['attraction'] as num?)?.toDouble() ?? 0.0;
+        final transportExpense = (tripData.expenses?['transport'] as num?)?.toDouble() ?? 0.0;
+        totalCost = flightExpense + attractionExpense + accommodationExpense + transportExpense;
+
+
         Map<String, double> dataMap = {
-          "Flight": 42,
-          "Attractions": 20,
-          "Transport": 9,
-          "Hotel": 23,
-          "Food": 18,
+          "Flight": flightExpense,
+          "Attractions": attractionExpense,
+          "Transport": transportExpense,
+          "Hotel": accommodationExpense,
         };
 
         final colorList = <Color>[
@@ -52,31 +60,56 @@ class _TripGeneralsPageState extends State<TripGeneralsPage> {
           Colors.blue.shade400,
           Colors.indigo.shade900,
           Colors.red.shade300,
-          Colors.orange.shade800,
         ];
 
         return SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(
-                width: double.infinity,
-                height: ScreenSize.screenHeight(context) * 0.2,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+              Container(
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white, // o Theme.of(context).cardColor
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 6,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
                       child: Image.network(
                         'https://picsum.photos/200',
                         width: double.infinity,
-                        height: ScreenSize.screenHeight(context) * 0.2,
+                        height: ScreenSize.screenHeight(context) * 0.23,
                         fit: BoxFit.cover,
                       ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_month, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            "${DateFormat('d MMM').format(tripData.startDate!)} - ${DateFormat('d MMM').format(tripData.endDate!)}   Year: ${tripData.startDate!.year}",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
 
               const SizedBox(height: 10),
 
@@ -86,19 +119,6 @@ class _TripGeneralsPageState extends State<TripGeneralsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_month),
-                        const SizedBox(width: 10),
-                        Text(
-                          "${DateFormat('d MMM').format(tripData.startDate!)} - ${DateFormat('d MMM').format(tripData.endDate!)}   Year: ${tripData.startDate!.year}",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
                     // --- Cost Summary ---
                     Container(
                       decoration: BoxDecoration(
@@ -119,7 +139,7 @@ class _TripGeneralsPageState extends State<TripGeneralsPage> {
                           PieChart(
                             dataMap: dataMap,
                             chartRadius: MediaQuery.of(context).size.width * 0.45,
-                            centerText: "${tripData.expenses ?? 0.0} €",
+                            centerText: "$totalCost €",
                             centerTextStyle: const TextStyle(
                               fontSize: 17, // 👈 imposta la dimensione del testo
                               fontWeight: FontWeight.bold,
@@ -132,7 +152,7 @@ class _TripGeneralsPageState extends State<TripGeneralsPage> {
                             chartValuesOptions: const ChartValuesOptions(showChartValues: false),
                           ),
                           const SizedBox(height: 25),
-                          //TODO SI PUO FARE EXPANDED
+
                           Column(
                             children: List.generate(dataMap.length, (index) {
                               final entry = dataMap.entries.elementAt(index);
@@ -141,7 +161,7 @@ class _TripGeneralsPageState extends State<TripGeneralsPage> {
                               final value = entry.value;
 
                               return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16),
+                                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
                                 child: Row(
                                   children: [
                                     Container(
@@ -160,7 +180,7 @@ class _TripGeneralsPageState extends State<TripGeneralsPage> {
                                       ),
                                     ),
                                     Text(
-                                      '${value.toStringAsFixed(0)}%',
+                                      '${value.toStringAsFixed(0)}€ (${(totalCost > 0 ? (value / totalCost) * 100 : 0).toStringAsFixed(0)}%)',
                                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                                     ),
                                   ],
@@ -169,39 +189,6 @@ class _TripGeneralsPageState extends State<TripGeneralsPage> {
                             }),
                           ),
 
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // --- Active Users ---
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.pinkAccent,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Active Users',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                          ),
-                          const Text(
-                            'A small summary of your users base',
-                            style: TextStyle(color: Colors.white70),
-                          ),
-                          const SizedBox(height: 16),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: LinearProgressIndicator(
-                              value: 0.6,
-                              color: Colors.white,
-                              backgroundColor: Colors.white24,
-                              minHeight: 12,
-                            ),
-                          ),
                         ],
                       ),
                     ),

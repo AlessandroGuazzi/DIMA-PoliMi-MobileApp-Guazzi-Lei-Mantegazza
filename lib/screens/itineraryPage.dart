@@ -175,16 +175,21 @@ class _ItinerarypageState extends State<Itinerarypage> {
                                           right: ScreenSize.screenWidth(context) * 0.003,
                                           child: PopupMenuButton<int>(
                                             icon: const Icon(Icons.more_horiz),
-                                            onSelected: (value) {
+                                            onSelected: (value) async{
                                               if (value == 1) {
                                                 // Azione Modifica
-                                                Navigator.push(
+                                                await Navigator.push(
                                                   context,
-                                                  MaterialPageRoute<void>(
-                                                    builder: (context) => EditActivityPage(activity: activity),
+                                                  MaterialPageRoute(
+                                                    builder: (context) => EditActivityPage(
+                                                      trip: widget.trip,
+                                                      activity: activity,
+                                                    ),
                                                   ),
                                                 );
-                                              } else if (value == 2) {
+                                                refreshTrips();
+                                              }
+                                              else if (value == 2) {
                                                 // Azione Elimina
                                                 _showDeleteConfirmationDialog(context, activity);
                                               }
@@ -229,6 +234,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
               }
           ),
 
+          //TODO METTERE IL BOTTONE ALTROVE, DA CAPIRE
           if(widget.isMyTrip)
             Positioned(
                 bottom: 25,
@@ -282,7 +288,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
     throw Exception("Tipo di attività non supportato ${activity.type}");
   }
 
-
+  //DELETE MESSAGE
   void _showDeleteConfirmationDialog(BuildContext context, ActivityModel activity) {
     showDialog(
       context: context,
@@ -383,8 +389,6 @@ class _ItinerarypageState extends State<Itinerarypage> {
 
 
   Widget _buildOption(IconData icon, String text, String type) {
-
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: ListTile(

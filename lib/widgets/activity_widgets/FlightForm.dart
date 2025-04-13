@@ -8,7 +8,8 @@ import 'package:dima_project/services/databaseService.dart';
 class FlightForm extends StatefulWidget {
   final TripModel trip;
 
-  const FlightForm({super.key, required this.trip});
+  final FlightModel? flight; // Se è null → creazione, altrimenti modifica
+  const FlightForm({super.key, required this.trip, this.flight});
 
   @override
   State<FlightForm> createState() => _FlightFormState();
@@ -31,6 +32,28 @@ class _FlightFormState extends State<FlightForm> {
 
   late String arrivalIata;
   late String arrivalName;
+
+  @override
+  void initState() {
+    super.initState();
+    final flight = widget.flight;
+    if (flight != null) {
+      departureIata = flight.departureAirPort!['iata']!;
+      departureName = flight.departureAirPort!['name']!;
+      departureAirportController.text = '$departureName ($departureIata)';
+
+      arrivalIata = flight.arrivalAirPort!['iata']!;
+      arrivalName = flight.arrivalAirPort!['name']!;
+      arrivalAirportController.text = '$arrivalName ($arrivalIata)';
+
+      flightCompanyController.text = flight.flightCompany ?? '';
+      durationController.text = flight.duration.toString();
+      expensesController.text = flight.expenses?.toStringAsFixed(2) ?? '';
+
+      _departureDate = flight.departureDate;
+      _departureTime = TimeOfDay.fromDateTime(flight.departureDate!);
+    }
+  }
 
   @override
   void dispose() {
@@ -80,20 +103,6 @@ class _FlightFormState extends State<FlightForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-
-            /*TextFormField(
-              controller: departureAirportController,
-              decoration: const InputDecoration(labelText: "Departure Airport"),
-              validator: (value) => value!.isEmpty ? "Required" : null,
-            ),
-            const SizedBox(height: 16),
-
-            TextFormField(
-              controller: arrivalAirportController,
-              decoration: const InputDecoration(labelText: "Arrival Airport"),
-              validator: (value) => value!.isEmpty ? "Required" : null,
-            ),
-            const SizedBox(height: 16),*/
 
             TextFormField(
               controller: departureAirportController,
@@ -212,7 +221,6 @@ class _FlightFormState extends State<FlightForm> {
   }
 
 
-  //TODO NON MOSTRA IL TIME PICKED
   Future<void> _pickTime(BuildContext context) async {
     final pickedTime = await showTimePicker(
       context: context,
@@ -235,7 +243,7 @@ class _FlightFormState extends State<FlightForm> {
       final durationHours = double.parse(durationController.text);
       final arrivalDateTime = departureDateTime.add(Duration(minutes: (durationHours * 60).toInt()));
 
-      final flight = FlightModel(
+      final updatedFlight = FlightModel(
         tripId: widget.trip.id,
         departureAirPort: {
           'name': departureName,
@@ -253,9 +261,21 @@ class _FlightFormState extends State<FlightForm> {
         type: 'flight',
       );
 
-      DatabaseService()
-          .createActivity(flight)
-          .then((_) => Navigator.pop(context, true));
+      final db = DatabaseService();
+
+      if (widget.flight == null) {
+        // Caso: creazione
+        db.createActivity(updatedFlight).then((_) => Navigator.pop(context, true));
+      } else {
+        // Caso: modifica
+        final oldCost = widget.flight!.expenses ?? 0;
+        final newCost = updatedFlight.expenses ?? 0;
+        final diff = (newCost - oldCost).abs();
+        final isAdd = newCost > oldCost;
+
+        db.updateActivity(widget.flight!.id!, updatedFlight, diff, isAdd).then((_) => Navigator.pop(context, true));
+      }
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill out all required fields.')),

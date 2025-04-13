@@ -31,45 +31,6 @@ class DatabaseService {
           fromFirestore: ActivityModel.fromFirestore,
           toFirestore: (ActivityModel activity, _) => activity.toFirestore());
 
-  //TODO CAPIRE SE SERVE USARLI
-  //reference to the 'flights' in collection 'Activity' of document in the db
-  /*final flightCollection = FirebaseFirestore.instance
-      .collection('Activities')
-      .where('type', isEqualTo: 'flight')
-      .withConverter(
-          fromFirestore: FlightModel.fromFirestore,
-          toFirestore: (FlightModel flight, _) => flight.toFirestore());
-
-  //reference to the 'other transports' in collection 'Activity' of document in the db
-  final transportCollection = FirebaseFirestore.instance
-      .collection('Activities')
-      .where('type', isEqualTo: 'transport')
-      .withConverter(
-          fromFirestore: TransportModel.fromFirestore,
-          toFirestore: (TransportModel transport, _) =>
-              transport.toFirestore());
-
-  //reference to the 'attractions' in collection 'Activity' of document in the db
-  final attractionCollection = FirebaseFirestore.instance
-      .collection('Activities')
-      .where('type', isEqualTo: 'attraction') // Filtra per attrazioni
-      .withConverter(
-        fromFirestore: AttractionModel.fromFirestore,
-        toFirestore: (AttractionModel attraction, _) =>
-            attraction.toFirestore(),
-      );
-
-  //reference to the 'accomodation' in collection 'Activity' of document in the db
-  final accommodationCollection = FirebaseFirestore.instance
-      .collection('Activities')
-      .where('type', isEqualTo: 'accommodation') // Filtra per alloggi
-      .withConverter(
-        fromFirestore: AccommodationModel.fromFirestore,
-        toFirestore: (AccommodationModel accommodation, _) =>
-            accommodation.toFirestore(),
-      );
-  */
-
   Future initializeUserData(UserModel user) async {
     return await userCollection.doc(currentUserId).set(user);
   }
@@ -226,7 +187,7 @@ class DatabaseService {
   Future<void> createActivity(ActivityModel activity) async {
     try {
       await db.collection('Activities').add(activity.toFirestore());
-      updateTripCost(activity.tripId!, activity.expenses ?? 0.0, true); //TODO AGGIORNARE COSTO COME ATTRIBUTO DEL GENITORE
+      updateTripCost(activity.tripId!, activity.expenses ?? 0.0, true, activity.type!); //TODO AGGIORNARE COSTO COME ATTRIBUTO DEL GENITORE
       print('Successfully added a new ${activity.runtimeType}!');
     } on Exception catch (e) {
       print("Error creating activity: $e");
@@ -236,7 +197,7 @@ class DatabaseService {
   Future<void> deleteActivity(ActivityModel activity) async {
     try {
       await db.collection('Activities').doc(activity.id).delete();
-      updateTripCost(activity.tripId!, activity.expenses ?? 0.0, false);
+      updateTripCost(activity.tripId!, activity.expenses ?? 0.0, false, activity.type!);
       print('Successfully deleted activity with ID: ${activity.id}');
     } on Exception catch (e) {
       print('Error deleting activity: $e');
@@ -244,7 +205,7 @@ class DatabaseService {
   }
 
 
-  Future<void> updateTripCost(String tripId, num cost, bool isAdd) async {
+  Future<void> updateTripCost(String tripId, num cost, bool isAdd, String type) async {
     final tripRef = FirebaseFirestore.instance.collection('Trips').doc(tripId);
 
     try {
@@ -255,16 +216,23 @@ class DatabaseService {
           throw Exception("Trip with id $tripId does not exist");
         }
 
-        final currentCost = snapshot.data()?['expenses'] ?? 0.0;
+        final data = snapshot.data();
+        final expenses = (data?['expenses'] as Map<String, dynamic>?);
 
-        if(isAdd){
+        // Valore attuale o default a 0
+        final currentCost = (expenses != null && expenses[type] != null)
+            ? expenses[type] as num
+            : 0;
+
+        final updatedCost = isAdd ? currentCost + cost : currentCost - cost;
+
+        if (expenses == null) {
           transaction.update(tripRef, {
-            'expenses': currentCost + cost,
+            'expenses': {type: updatedCost},
           });
-        }
-        else{
+        } else {
           transaction.update(tripRef, {
-            'expenses': currentCost - cost,
+            'expenses.$type': updatedCost,
           });
         }
       });
@@ -281,4 +249,17 @@ class DatabaseService {
     }
     return docSnapshot.data()!;
   }
+
+  Future<void> updateActivity(String id, ActivityModel activity, num cost, bool isAdd) async {
+    final docRef = activityCollection.doc(id);
+    final docSnapshot = await docRef.get();
+
+    if (docSnapshot.exists) {
+      await docRef.update(activity.toFirestore());
+    } else {
+      throw Exception("Documento non trovato con ID: ${activity.id}");
+    }
+    updateTripCost(activity.tripId!, cost, isAdd, activity.type!);
+  }
+
 }

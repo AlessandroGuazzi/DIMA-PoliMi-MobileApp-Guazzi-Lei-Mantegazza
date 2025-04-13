@@ -192,7 +192,8 @@ class _TransportFormState extends State<TransportForm> {
         arrivalPlace: arrivalPlaceController.text,
         departureDate: departureDateTime,
         expenses: cost,
-        type: _selectedType!,
+        transportType: _selectedType!,
+        type: 'transport'
       );
 
       DatabaseService().createActivity(transport).then(

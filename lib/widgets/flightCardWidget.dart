@@ -114,7 +114,7 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                         const SizedBox(height: 2),
 
                         Text(
-                          "Costo: €${widget.flight.expenses?.toStringAsFixed(2)}",
+                          "Costo: €${(widget.flight.expenses ?? 0).toStringAsFixed(2)}",
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
