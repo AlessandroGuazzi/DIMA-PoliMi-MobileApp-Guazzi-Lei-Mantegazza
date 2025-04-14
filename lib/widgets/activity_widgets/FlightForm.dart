@@ -128,7 +128,7 @@ class _FlightFormState extends State<FlightForm> {
 
             TextFormField(
               controller: flightCompanyController,
-              decoration: const InputDecoration(labelText: "Flight Company"),
+              decoration: const InputDecoration(labelText: "Flight Company (optional)"),
             ),
             const SizedBox(height: 16),
 

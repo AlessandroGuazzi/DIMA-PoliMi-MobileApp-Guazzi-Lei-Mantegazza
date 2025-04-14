@@ -1,9 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima_project/models/accommodationModel.dart';
 import 'package:dima_project/models/activityModel.dart';
-import 'package:dima_project/models/attractionModel.dart';
-import 'package:dima_project/models/flightModel.dart';
-import 'package:dima_project/models/transportModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/userModel.dart';
 import 'authService.dart';

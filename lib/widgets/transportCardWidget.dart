@@ -50,9 +50,13 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                         Row(
                           children: [
                             Text('From: ', style: Theme.of(context).textTheme.titleLarge),
-                            Text(
-                              widget.transport.departurePlace ?? 'N/A',
-                              style: Theme.of(context).textTheme.headlineSmall,
+                            Expanded(
+                              child: Text(
+                                widget.transport.departurePlace ?? 'N/A',
+                                style: Theme.of(context).textTheme.headlineSmall,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
                             ),
                           ],
                         ),

@@ -1,7 +1,13 @@
+import 'package:dima_project/models/accommodationModel.dart';
 import 'package:dima_project/models/activityModel.dart';
+import 'package:dima_project/models/attractionModel.dart';
 import 'package:dima_project/models/flightModel.dart';
+import 'package:dima_project/models/transportModel.dart';
 import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/widgets/activity_widgets/AccommodationForm.dart';
+import 'package:dima_project/widgets/activity_widgets/AttractionForm.dart';
 import 'package:dima_project/widgets/activity_widgets/FlightForm.dart';
+import 'package:dima_project/widgets/activity_widgets/TransportForm.dart';
 import 'package:flutter/material.dart';
 
 class EditActivityPage extends StatefulWidget {
@@ -25,9 +31,9 @@ class _EditActivityPageState extends State<EditActivityPage> {
         padding: const EdgeInsets.all(16.0),
         child: switch (widget.activity.type) {
           'flight' => FlightForm(trip: widget.trip, flight: widget.activity as FlightModel),
-          //'accommodation' => AccommodationForm(trip: widget.trip),
-          //'transport' => TransportForm(trip: widget.trip),
-          //'attraction' => AttractionForm(trip: widget.trip),
+          'accommodation' => AccommodationForm(trip: widget.trip, accommodation: widget.activity as AccommodationModel),
+          'transport' => TransportForm(trip: widget.trip, transport: widget.activity as TransportModel),
+          'attraction' => AttractionForm(trip: widget.trip, attraction: widget.activity as AttractionModel),
           _ => Center(child: Text("Invalid type: ${widget.activity.type}")),
         },
       ),

@@ -8,8 +8,9 @@ import 'package:intl/intl.dart';
 
 //TODO: address is not really the address yet, but probably we don't care
 class AccommodationForm extends StatefulWidget {
-  const AccommodationForm({super.key, required this.trip});
+  const AccommodationForm({super.key, required this.trip, this.accommodation});
 
+  final AccommodationModel? accommodation; // per la modifica
   final TripModel trip;
 
   @override
@@ -27,7 +28,25 @@ class _AccommodationFormState extends State<AccommodationForm> {
   DateTime? _endDate;
   TimeOfDay? _checkInTime;
   TimeOfDay? _checkOutTime;
-  double? cost;
+  num? cost;
+
+  @override
+  void initState() {
+    super.initState();
+    final activity = widget.accommodation;
+    if (activity != null) {
+      titleController.text = activity.name ?? '';
+      addressController.text = activity.address ?? '';
+      costController.text = activity.expenses?.toStringAsFixed(2) ?? '';
+      cost = activity.expenses ?? 0;
+
+      _startDate = activity.checkIn;
+      _endDate = activity.checkOut;
+
+      _checkInTime = TimeOfDay.fromDateTime(activity.checkIn!);
+      _checkOutTime = TimeOfDay.fromDateTime(activity.checkOut!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +60,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
             TextFormField(
               controller: titleController,
               readOnly: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Dove dormirai?',
                 prefixIcon: Icon(Icons.hotel),
               ),
@@ -250,7 +269,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
 
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
-      final accommodation = AccommodationModel(
+      final updatedAccommodation = AccommodationModel(
         name: titleController.text,
         tripId: widget.trip.id,
         checkIn: combineDateAndTime(_startDate!, _checkInTime!),
@@ -262,9 +281,17 @@ class _AccommodationFormState extends State<AccommodationForm> {
         contacts: null,
         type: 'accommodation',
       );
-      DatabaseService()
-          .createActivity(accommodation)
-          .then((value) => Navigator.pop(context, true));
+      final db = DatabaseService();
+      if (widget.accommodation == null) {
+        db.createActivity(updatedAccommodation).then((_) => Navigator.pop(context, true));
+      } else {
+        final oldCost = widget.accommodation!.expenses ?? 0;
+        final newCost = updatedAccommodation.expenses ?? 0;
+        final diff = (newCost - oldCost).abs();
+        final isAdd = newCost > oldCost;
+
+        db.updateActivity(widget.accommodation!.id!, updatedAccommodation, diff, isAdd).then((_) => Navigator.pop(context, true));
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Per favore compila tutti i campi correttamente!')));

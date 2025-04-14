@@ -10,8 +10,10 @@ import '../placesSearchWidget.dart';
 
 class AttractionForm extends StatefulWidget {
   final TripModel trip;
+  final AttractionModel? attraction; //per la modifica
 
-  const AttractionForm({super.key, required this.trip});
+  const AttractionForm({super.key, required this.trip, this.attraction});
+
 
   @override
   State<AttractionForm> createState() => _AttractionFormState();
@@ -42,6 +44,34 @@ class _AttractionFormState extends State<AttractionForm> {
   };
 
   PlacesType _selectedType = PlacesType.tourist_attraction;
+
+  @override
+  void initState() {
+    super.initState();
+    final attraction = widget.attraction;
+    if (attraction != null) {
+      locationController.text = attraction.name!;
+      addressController.text = attraction.address ?? '';
+      costController.text = attraction.expenses?.toString() ?? '';
+      descriptionController.text = attraction.description ?? '';
+
+      _selectedType = PlacesType.values.firstWhere(
+            (e) => e.name == attraction.attractionType,
+        orElse: () => PlacesType.tourist_attraction,
+      );
+
+      if (attraction.startDate != null) {
+        _startDate = attraction.startDate;
+        _startTime = TimeOfDay.fromDateTime(attraction.startDate!);
+      }
+      if (attraction.endDate != null) {
+        _endDate = attraction.endDate;
+        _endTime = TimeOfDay.fromDateTime(attraction.endDate!);
+      }
+    } else {
+      _selectedType = PlacesType.tourist_attraction;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -299,7 +329,7 @@ class _AttractionFormState extends State<AttractionForm> {
 
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
-      final attraction = AttractionModel(
+      final updatedAttraction = AttractionModel(
         name: locationController.text,
         tripId: widget.trip.id,
         attractionType: _selectedType.name ?? '',
@@ -314,9 +344,17 @@ class _AttractionFormState extends State<AttractionForm> {
         type: "attraction",
       );
 
-      DatabaseService()
-          .createActivity(attraction)
-          .then((_) => Navigator.pop(context, true));
+      final db = DatabaseService();
+      if (widget.attraction == null) {
+        db.createActivity(updatedAttraction).then((_) => Navigator.pop(context, true));
+      } else {
+        final oldCost = widget.attraction!.expenses ?? 0;
+        final newCost = updatedAttraction.expenses ?? 0;
+        final diff = (newCost - oldCost).abs();
+        final isAdd = newCost > oldCost;
+
+        db.updateActivity(widget.attraction!.id!, updatedAttraction, diff, isAdd).then((_) => Navigator.pop(context, true));
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

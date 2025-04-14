@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 class Itinerarypage extends StatefulWidget {
   const Itinerarypage({super.key, required this.trip, required this.isMyTrip});
 
-  final TripModel trip;  //TODO FORSE UN OTTIMIZZAZIONE E' PASSARE SOLO L'ID DEL TRIP
+  final TripModel trip;
   final bool isMyTrip;
 
   @override
@@ -87,39 +87,28 @@ class _ItinerarypageState extends State<Itinerarypage> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Lista scrollabile orizzontale sopra con le date
-                    Container(
-                      height: ScreenSize.screenHeight(context) * 0.08,
-                      //color: Colors.green, //TODO COLOR MESSO PER EVIDENZIARE DOV'è IL CONTAINER
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
+
+                    //TODO BARRA SOPRA ALL'ITINERIARIO, AGGIUNGI QUA IL BOTTONE
+                    /*if (widget.isMyTrip)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                         child: Row(
                           children: [
-                            // const Icon(Icons.calendar_today),
-                            //lista di date
-                            for(int i = 0; i < groupedActivities.length; i++)
-                              Container(
-                                /*decoration: BoxDecoration(
-                                    color: Colors.primaries[i % Colors.primaries.length].withOpacity(0.3), // Colori diversi
-                                    borderRadius: BorderRadius.circular(12), // Bordo arrotondato
-                                    border: Border.all(color: Colors.black, width: 2),
-                                  ),*/
-                                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 3),
-                                child: ElevatedButton(
-                                  onPressed: (){
-
-                                  },
-                                  child: Text(
-                                    groupedActivities.keys.elementAt(i),
-                                    style: Theme.of(context).textTheme.bodyLarge,
-                                  ),
-                                ),
-                              )
+                            Expanded(
+                              child: TripProgressBar(
+                                startDate: widget.trip.startDate!,
+                                endDate: widget.trip.endDate!,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            IconButton(
+                              onPressed: _showNewActivityOption,
+                              icon: const Icon(Icons.add),
+                              tooltip: "Aggiungi attività",
+                            )
                           ],
                         ),
-                      ),
-                    ),
+                      ),*/
 
                     Divider(
                       color: Theme.of(context).dividerColor, // Colore della linea

@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TransportForm extends StatefulWidget {
-  const TransportForm({super.key, required this.trip});
+  const TransportForm({super.key, required this.trip, this.transport});
+
   final TripModel trip;
+  final TransportModel? transport; // aggiunto per gestire modifica
 
   @override
   State<TransportForm> createState() => _TransportFormState();
@@ -22,8 +24,33 @@ class _TransportFormState extends State<TransportForm> {
   DateTime? _departureDate;
   TimeOfDay? _departureTime;
   String? _selectedType;
+  num? cost;
 
-  final List<String> _transportTypes = ['Bus', 'Train', 'Car', 'Ferry'];
+  //final List<String> _transportTypes = ['Bus', 'Train', 'Car', 'Ferry'];
+  final Map<String, IconData> _transportIcons = {
+    'Bus': Icons.directions_bus,
+    'Train': Icons.train,
+    'Car': Icons.directions_car,
+    'Ferry': Icons.directions_boat,
+  };
+
+
+  @override
+  void initState() {
+    super.initState();
+    final t = widget.transport;
+    if (t != null) {
+      departurePlaceController.text = t.departurePlace!;
+      arrivalPlaceController.text = t.arrivalPlace!;
+      _departureDate = t.departureDate;
+      _departureTime = TimeOfDay.fromDateTime(t.departureDate!);
+      _selectedType = t.transportType;
+      if (t.expenses != null) {
+        costController.text = t.expenses.toString();
+        cost = t.expenses ?? 0;
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -61,9 +88,9 @@ class _TransportFormState extends State<TransportForm> {
               child: AbsorbPointer(
                 child: TextFormField(
                   readOnly: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Departure Date",
-                    prefixIcon: const Icon(Icons.calendar_today),
+                    prefixIcon: Icon(Icons.calendar_today),
                     hintText: 'Select date',
                   ),
                   controller: TextEditingController(
@@ -83,9 +110,9 @@ class _TransportFormState extends State<TransportForm> {
               child: AbsorbPointer(
                 child: TextFormField(
                   readOnly: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Departure Time",
-                    prefixIcon: const Icon(Icons.access_time),
+                    prefixIcon: Icon(Icons.access_time),
                     hintText: 'Select time',
                   ),
                   controller: TextEditingController(
@@ -99,21 +126,28 @@ class _TransportFormState extends State<TransportForm> {
 
             DropdownButtonFormField<String>(
               value: _selectedType,
-              items: _transportTypes.map((type) {
+              items: _transportIcons.keys.map((type) {
                 return DropdownMenuItem(
                   value: type,
-                  child: Text(type),
+                  child: Row(
+                    children: [
+                      Icon(_transportIcons[type], size: 20),
+                      const SizedBox(width: 8),
+                      Text(type),
+                    ],
+                  ),
                 );
               }).toList(),
               decoration: const InputDecoration(
                 labelText: "Transport Type",
-                prefixIcon: Icon(Icons.directions_transit),
+                //prefixIcon: Icon(Icons.directions_transit),
               ),
               validator: (value) => value == null ? "Select a transport type" : null,
               onChanged: (value) => setState(() {
                 _selectedType = value;
               }),
             ),
+
             const SizedBox(height: 20),
 
             TextFormField(
@@ -129,6 +163,7 @@ class _TransportFormState extends State<TransportForm> {
                   if (costValue == null || costValue < 0) {
                     return "Enter a valid positive number";
                   }
+                  cost = costValue;
                 }
                 return null;
               },
@@ -196,9 +231,18 @@ class _TransportFormState extends State<TransportForm> {
         type: 'transport'
       );
 
-      DatabaseService().createActivity(transport).then(
-            (_) => Navigator.pop(context, true),
-      );
+      final db = DatabaseService();
+
+      if (widget.transport == null) {
+        db.createActivity(transport).then((_) => Navigator.pop(context, true));
+      } else {
+        final oldCost = widget.transport!.expenses ?? 0;
+        final newCost = transport.expenses ?? 0;
+        final diff = (newCost - oldCost).abs();
+        final isAdd = newCost > oldCost;
+
+        db.updateActivity(widget.transport!.id! ,transport, diff, isAdd).then((_) => Navigator.pop(context, true));
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill out all required fields')),
