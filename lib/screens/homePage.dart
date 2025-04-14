@@ -25,6 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
             title: const Text("Simply Travel"),
             backgroundColor: Theme.of(context).primaryColor

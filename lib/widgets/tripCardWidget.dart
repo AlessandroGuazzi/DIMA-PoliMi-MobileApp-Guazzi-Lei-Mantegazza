@@ -31,78 +31,79 @@ class _TripCardWidgetState extends State<TripCardWidget> {
 
   Widget _homeCardWidget() {
     DateTime startDate = widget.trip.startDate ?? DateTime.now();
-    String startDateFormat = DateFormat('dd MMM ').format(startDate);
+    String startDateFormat = DateFormat('dd MMM yyyy').format(startDate);
 
     DateTime endDate = widget.trip.endDate ?? DateTime.now();
-    String endDateFormat = DateFormat('dd MMM').format(endDate);
+    String endDateFormat = DateFormat('dd MMM yyyy').format(endDate);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            //profile pic
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                widget.trip.imageRef != null
-                    ? GooglePlacesService().getImageUrl(widget.trip.imageRef!)
-                    : 'https://picsum.photos/800',
-                width: ScreenSize.screenWidth(context) * 0.25,
-                height: ScreenSize.screenWidth(context) * 0.25,
-                fit: BoxFit.cover,
-              ),
-            ),
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.trip.title ?? 'Titolo mancante',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.calendar_today,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                            '$startDateFormat -> $endDateFormat', //· fra ${startDate.difference(DateTime.now()).inDays + 1} giorni',
-                            softWrap: true,
-                            style: Theme.of(context).textTheme.bodyMedium),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.public,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          _displayCityNames(),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          softWrap: true,
-                        )
-                      ],
-                    ),
-                  ],
+    return Padding(
+      padding: const EdgeInsets.only(left: 5, right: 5),
+      child: Card(
+        color: Theme.of(context).cardColor,
+        elevation: 1,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              //profile pic
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  widget.trip.imageRef != null
+                      ? GooglePlacesService().getImageUrl(widget.trip.imageRef!)
+                      : 'https://picsum.photos/800',
+                  width: ScreenSize.screenWidth(context) * 0.25,
+                  height: ScreenSize.screenWidth(context) * 0.25,
+                  fit: BoxFit.cover,
                 ),
               ),
-            ),
-            Icon(Icons.arrow_forward_ios)
-          ],
+
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.trip.title ?? 'Titolo mancante',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.calendar_today,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                              '$startDateFormat - $endDateFormat', //· fra ${startDate.difference(DateTime.now()).inDays + 1} giorni',
+                              softWrap: true,
+                              style: Theme.of(context).textTheme.bodyMedium),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.public,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            _displayCityNames(),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            softWrap: true,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios)
+            ],
+          ),
         ),
       ),
     );

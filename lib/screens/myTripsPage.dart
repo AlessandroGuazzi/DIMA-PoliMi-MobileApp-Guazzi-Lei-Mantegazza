@@ -65,21 +65,19 @@ class _MyTripsPageState extends State<MyTripsPage> {
                     itemCount: trips.length,
                     itemBuilder: (context, index) {
                       final trip = trips[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Material(
-                          child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute<void>(
-                                        builder: (context) => TripPage(
-                                          trip: trip,
-                                          isMyTrip: true,
-                                        )));
-                              },
-                              child: TripCardWidget(trip, false, (isSaved, id) {}, true)),
-                        ),
+                      return Material(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute<void>(
+                                      builder: (context) => TripPage(
+                                        trip: trip,
+                                        isMyTrip: true,
+                                      )));
+                            },
+                            child: TripCardWidget(trip, false, (isSaved, id) {}, true)),
                       );
                     },
                   ),

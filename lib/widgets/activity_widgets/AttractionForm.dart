@@ -1,5 +1,6 @@
 import 'package:dima_project/utils/PlacesType.dart';
 import 'package:dima_project/utils/screenSize.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dima_project/models/tripModel.dart';
@@ -13,7 +14,6 @@ class AttractionForm extends StatefulWidget {
   final AttractionModel? attraction; //per la modifica
 
   const AttractionForm({super.key, required this.trip, this.attraction});
-
 
   @override
   State<AttractionForm> createState() => _AttractionFormState();
@@ -56,7 +56,7 @@ class _AttractionFormState extends State<AttractionForm> {
       descriptionController.text = attraction.description ?? '';
 
       _selectedType = PlacesType.values.firstWhere(
-            (e) => e.name == attraction.attractionType,
+        (e) => e.name == attraction.attractionType,
         orElse: () => PlacesType.tourist_attraction,
       );
 
@@ -82,30 +82,37 @@ class _AttractionFormState extends State<AttractionForm> {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Activity Type
-            DropdownButtonFormField<PlacesType>(
+            DropdownButtonFormField2<PlacesType>(
               value: _selectedType,
+              isExpanded: true,
+              dropdownStyleData: DropdownStyleData(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                )
+              ),
+              decoration: const InputDecoration(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                labelText: "Seleziona il tipo di attività",
+              ),
               items: activityTypes.entries.map((type) {
                 return DropdownMenuItem<PlacesType>(
                   value: type.key,
                   child: Row(
                     children: [
                       Icon(iconSelector(type.value)),
-                      SizedBox(
-                        width: ScreenSize.screenWidth(context) * 0.02,
-                      ),
+                      const SizedBox(width: 8),
                       Text(type.value),
                     ],
                   ),
                 );
               }).toList(),
-              decoration: const InputDecoration(
-                labelText: "Seleziona il tipo di attività",
-              ),
-              validator: (value) =>
-                  value == null ? "Seleziona un tipo di attività" : null,
-              onChanged: (value) => setState(() {
-                _selectedType = value ?? PlacesType.tourist_attraction;
-              }),
+              onChanged: (value) {
+                setState(() {
+                  _selectedType = value!;
+                });
+              },
             ),
             const SizedBox(height: 20),
 
@@ -126,7 +133,8 @@ class _AttractionFormState extends State<AttractionForm> {
             // Address
             TextFormField(
               controller: addressController,
-              decoration: const InputDecoration(labelText: "Indirizzo", prefixIcon: Icon(Icons.location_on)),
+              decoration: const InputDecoration(
+                  labelText: "Indirizzo", prefixIcon: Icon(Icons.location_on)),
             ),
             const SizedBox(height: 20),
 
@@ -160,41 +168,44 @@ class _AttractionFormState extends State<AttractionForm> {
               onTap: () => _selectDateRange(context),
             ),
             const SizedBox(height: 20),
-            
+
             Row(
               children: [
-
                 // Selezione orario inizio
-                Expanded(child: TextFormField(
-                  readOnly: true,
-                  controller: TextEditingController(
-                    text: _startTime != null ? _startTime!.format(context) : '',
+                Expanded(
+                  child: TextFormField(
+                    readOnly: true,
+                    controller: TextEditingController(
+                      text:
+                          _startTime != null ? _startTime!.format(context) : '',
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: 'Inizio',
+                      prefixIcon: Icon(Icons.access_time),
+                    ),
+                    onTap: () => _selectTime(context, isStartTime: true),
                   ),
-                  decoration: const InputDecoration(
-                    hintText: 'Inizio',
-                    prefixIcon: Icon(Icons.access_time),
-                  ),
-                  onTap: () => _selectTime(context, isStartTime: true),
-                ),),
+                ),
 
                 const SizedBox(width: 20),
-                
-                Expanded(child: // Selezione orario fine
-                TextFormField(
-                  readOnly: true,
-                  controller: TextEditingController(
-                    text: _endTime != null ? _endTime!.format(context) : '',
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Fine',
-                    prefixIcon: Icon(Icons.access_time),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+
+                Expanded(
+                  child: // Selezione orario fine
+                      TextFormField(
+                    readOnly: true,
+                    controller: TextEditingController(
+                      text: _endTime != null ? _endTime!.format(context) : '',
                     ),
+                    decoration: InputDecoration(
+                      hintText: 'Fine',
+                      prefixIcon: Icon(Icons.access_time),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onTap: () => _selectTime(context, isStartTime: false),
                   ),
-                  onTap: () => _selectTime(context, isStartTime: false),
-                ),)
-                
+                )
               ],
             ),
 
@@ -335,8 +346,11 @@ class _AttractionFormState extends State<AttractionForm> {
         attractionType: _selectedType.name ?? '',
         address:
             addressController.text.isNotEmpty ? addressController.text : null,
-        expenses: costController.text.isNotEmpty ? double.tryParse(costController.text) ?? 0 : 0,
-        startDate: _startTime != null ? combine(_startDate!, _startTime!) : _startDate,
+        expenses: costController.text.isNotEmpty
+            ? double.tryParse(costController.text) ?? 0
+            : 0,
+        startDate:
+            _startTime != null ? combine(_startDate!, _startTime!) : _startDate,
         endDate: _endTime != null ? combine(_endDate!, _endTime!) : _endDate,
         description: descriptionController.text.isNotEmpty
             ? descriptionController.text
@@ -346,14 +360,19 @@ class _AttractionFormState extends State<AttractionForm> {
 
       final db = DatabaseService();
       if (widget.attraction == null) {
-        db.createActivity(updatedAttraction).then((_) => Navigator.pop(context, true));
+        db
+            .createActivity(updatedAttraction)
+            .then((_) => Navigator.pop(context, true));
       } else {
         final oldCost = widget.attraction!.expenses ?? 0;
         final newCost = updatedAttraction.expenses ?? 0;
         final diff = (newCost - oldCost).abs();
         final isAdd = newCost > oldCost;
 
-        db.updateActivity(widget.attraction!.id!, updatedAttraction, diff, isAdd).then((_) => Navigator.pop(context, true));
+        db
+            .updateActivity(
+                widget.attraction!.id!, updatedAttraction, diff, isAdd)
+            .then((_) => Navigator.pop(context, true));
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
