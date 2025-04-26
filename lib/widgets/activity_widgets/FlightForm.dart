@@ -20,7 +20,7 @@ class _FlightFormState extends State<FlightForm> {
 
   final TextEditingController departureAirportController = TextEditingController();
   final TextEditingController arrivalAirportController = TextEditingController();
-  final TextEditingController flightCompanyController = TextEditingController();
+  //final TextEditingController flightCompanyController = TextEditingController();
   final TextEditingController durationController = TextEditingController();
   final TextEditingController expensesController = TextEditingController();
 
@@ -45,8 +45,6 @@ class _FlightFormState extends State<FlightForm> {
       arrivalIata = flight.arrivalAirPort!['iata']!;
       arrivalName = flight.arrivalAirPort!['name']!;
       arrivalAirportController.text = '$arrivalName ($arrivalIata)';
-
-      flightCompanyController.text = flight.flightCompany ?? '';
       durationController.text = flight.duration.toString();
       expensesController.text = flight.expenses?.toStringAsFixed(2) ?? '';
 
@@ -59,7 +57,7 @@ class _FlightFormState extends State<FlightForm> {
   void dispose() {
     departureAirportController.dispose();
     arrivalAirportController.dispose();
-    flightCompanyController.dispose();
+    //flightCompanyController.dispose();
     durationController.dispose();
     expensesController.dispose();
     super.dispose();
@@ -126,11 +124,11 @@ class _FlightFormState extends State<FlightForm> {
             ),
             const SizedBox(height: 16),
 
-            TextFormField(
+            /*TextFormField(
               controller: flightCompanyController,
               decoration: const InputDecoration(labelText: "Flight Company (optional)"),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 16),*/
 
             // Departure Date
             TextFormField(
@@ -253,7 +251,7 @@ class _FlightFormState extends State<FlightForm> {
           'name': arrivalName,
           'iata': arrivalIata,
         },
-        flightCompany: flightCompanyController.text,
+        //flightCompany: flightCompanyController.text,
         departureDate: departureDateTime,
         arrivalDate: arrivalDateTime,
         duration: durationHours,

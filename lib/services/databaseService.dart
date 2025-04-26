@@ -112,6 +112,12 @@ class DatabaseService {
     return trips;
   }
 
+
+  //method for updating a trip details
+  Future updateTrip(TripModel trip) async {
+    return await tripCollection.doc(trip.id).update(trip.toFirestore());
+  }
+
   Future<List<ActivityModel>> getTripActivities(TripModel trip) async {
     List<ActivityModel> activities = [];
 
@@ -197,6 +203,25 @@ class DatabaseService {
       print('Successfully deleted activity with ID: ${activity.id}');
     } on Exception catch (e) {
       print('Error deleting activity: $e');
+    }
+  }
+
+  Future<void> deleteTrip(String tripId) async {
+    try {
+      // Elimina prima tutte le attività collegate
+      QuerySnapshot activitiesSnapshot = await db
+          .collection('Activities')
+          .where('tripId', isEqualTo: tripId)
+          .get();
+
+      for (QueryDocumentSnapshot doc in activitiesSnapshot.docs) {
+        await doc.reference.delete();
+      }
+      // Poi elimina il trip vero e proprio
+      await db.collection('Trips').doc(tripId).delete();
+
+    } on Exception catch (e) {
+      print('Error deleting trip and its activities: $e');
     }
   }
 

@@ -23,9 +23,10 @@ class _MyTripsPageState extends State<MyTripsPage> {
     _futureTrips = DatabaseService().getHomePageTrips();
   }
 
-  void refreshTrips() {
+  Future<void> refreshTrips() async {
     setState(() {
       _futureTrips = DatabaseService().getHomePageTrips();
+      print("refresheeeeeeed");
     });
   }
 
@@ -70,12 +71,16 @@ class _MyTripsPageState extends State<MyTripsPage> {
                         child: InkWell(
                             onTap: () {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute<void>(
-                                      builder: (context) => TripPage(
-                                        trip: trip,
-                                        isMyTrip: true,
-                                      )));
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (context) => TripPage(
+                                    trip: trip,
+                                    isMyTrip: true,
+                                  ),
+                                ),
+                              ).then((_) {
+                                refreshTrips();
+                              });
                             },
                             child: TripCardWidget(trip, false, (isSaved, id) {}, true)),
                       );

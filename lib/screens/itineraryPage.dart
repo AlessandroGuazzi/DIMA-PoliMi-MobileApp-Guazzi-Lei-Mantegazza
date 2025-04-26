@@ -12,6 +12,7 @@ import 'package:dima_project/widgets/accomodationCardWidget.dart';
 import 'package:dima_project/widgets/attractionCardWidget.dart';
 import 'package:dima_project/widgets/flightCardWidget.dart';
 import 'package:dima_project/widgets/transportCardWidget.dart';
+import 'package:dima_project/widgets/tripProgressBar.dart';
 import 'package:flutter/material.dart';
 
 
@@ -27,14 +28,14 @@ class Itinerarypage extends StatefulWidget {
 
 class _ItinerarypageState extends State<Itinerarypage> {
   late Future<List<ActivityModel>> _futureActivities;
-  //scrollController per le date
-  //final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     //trip = widget.trip; // Initialize with passed data
+    //_isEmpty = true;
     _futureActivities = DatabaseService().getTripActivities(widget.trip);
+    print('è mio viaggio2: ${widget.isMyTrip}');
   }
 
   void refreshTrips() {
@@ -49,6 +50,30 @@ class _ItinerarypageState extends State<Itinerarypage> {
 
   }
 
+  Widget _buildTripProgressBarWithButton() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15, 6, 12, 0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TripProgressBar(
+              startDate: widget.trip.startDate!,
+              endDate: widget.trip.endDate!,
+            ),
+          ),
+          const SizedBox(width: 15),
+          FloatingActionButton(
+            mini: true,
+            onPressed: _showNewActivityOption,
+            child: const Icon(Icons.add),
+            tooltip: "Aggiungi attività",
+          ),
+        ],
+      ),
+    );
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +87,22 @@ class _ItinerarypageState extends State<Itinerarypage> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No activities created'));
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.isMyTrip) _buildTripProgressBarWithButton(),
+
+                      Divider(
+                        color: Theme.of(context).dividerColor,
+                        thickness: 2.5,
+                      ),
+                      const Expanded(
+                        child: Center(
+                          child: Text('No activities created',),
+                        ),
+                      ),
+                    ],
+                  );
                 }
 
                 List<ActivityModel> activities = snapshot.data!;
@@ -88,27 +128,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    //TODO BARRA SOPRA ALL'ITINERIARIO, AGGIUNGI QUA IL BOTTONE
-                    /*if (widget.isMyTrip)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TripProgressBar(
-                                startDate: widget.trip.startDate!,
-                                endDate: widget.trip.endDate!,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            IconButton(
-                              onPressed: _showNewActivityOption,
-                              icon: const Icon(Icons.add),
-                              tooltip: "Aggiungi attività",
-                            )
-                          ],
-                        ),
-                      ),*/
+                    if (widget.isMyTrip) _buildTripProgressBarWithButton(),
 
                     Divider(
                       color: Theme.of(context).dividerColor, // Colore della linea
@@ -224,7 +244,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
           ),
 
           //TODO METTERE IL BOTTONE ALTROVE, DA CAPIRE
-          if(widget.isMyTrip)
+          /*if(widget.isMyTrip)
             Positioned(
                 bottom: 25,
                 right: 25,
@@ -232,7 +252,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
                   onPressed: _showNewActivityOption,
                   child: const Icon(Icons.add),
                 )
-            )
+            )*/
         ]
     );
   }
@@ -338,34 +358,36 @@ class _ItinerarypageState extends State<Itinerarypage> {
               alignment: Alignment.bottomRight, // Posiziona in basso
               child: Material(
                 color: Colors.transparent,
-                child: Container(
-                  width: ScreenSize.screenWidth(context)*0.6,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Text(
-                          'Crea una nuova attività',
-                          style: Theme.of(context).textTheme.titleMedium,
+                child: SingleChildScrollView(
+                  child: Container(
+                    width: ScreenSize.screenWidth(context)*0.6,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
                         ),
-                      ),
-                      _buildOption(Icons.flight, 'Volo', 'flight'),
-                      _buildOption(Icons.hotel, 'Alloggio', 'accommodation'),
-                      _buildOption(Icons.directions_bus, 'Altri Trasporti', 'transport'),
-                      _buildOption(Icons.attractions, 'Attrazione', 'attraction'),
-                      const SizedBox(height: 15),
-                    ],
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Text(
+                            'Crea una nuova attività',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                        _buildOption(Icons.flight, 'Volo', 'flight'),
+                        _buildOption(Icons.hotel, 'Alloggio', 'accommodation'),
+                        _buildOption(Icons.directions_bus, 'Altri Trasporti', 'transport'),
+                        _buildOption(Icons.attractions, 'Attrazione', 'attraction'),
+                        const SizedBox(height: 15),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -374,6 +396,7 @@ class _ItinerarypageState extends State<Itinerarypage> {
         );
       },
     );
+
   }
 
 

@@ -42,7 +42,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
         color: Theme.of(context).cardColor,
         elevation: 1,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(10),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -54,8 +54,8 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   widget.trip.imageRef != null
                       ? GooglePlacesService().getImageUrl(widget.trip.imageRef!)
                       : 'https://picsum.photos/800',
-                  width: ScreenSize.screenWidth(context) * 0.25,
-                  height: ScreenSize.screenWidth(context) * 0.25,
+                  width: ScreenSize.screenWidth(context) * 0.20,
+                  height: ScreenSize.screenWidth(context) * 0.20,
                   fit: BoxFit.cover,
                 ),
               ),

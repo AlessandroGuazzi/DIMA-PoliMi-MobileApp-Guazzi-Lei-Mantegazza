@@ -21,7 +21,7 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
     return Stack(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 0.2, top: 10.0, right: 3.0, bottom: 11.0),
+          padding: const EdgeInsets.only(left: 0.2, top: 10.0, right: 21, bottom: 11.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -87,13 +87,14 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                         "Dettagli Extra:",
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      Row(
-                        children: [
-                          Icon(Icons.timelapse, size: 20, color: Theme.of(context).primaryColor),
-                          const SizedBox(width: 5),
-                          Text('Duration: ${widget.transport.duration ?? "N/A"}'),
-                        ],
-                      ),
+                      if (widget.transport.duration != null)
+                        Row(
+                          children: [
+                            Icon(Icons.timelapse, size: 20, color: Theme.of(context).primaryColor),
+                            const SizedBox(width: 5),
+                            Text('Duration: ${widget.transport.duration}'),
+                          ],
+                        ),
                       Row(
                         children: [
                           Icon(Icons.location_on, size: 20, color: Theme.of(context).primaryColor),

@@ -9,7 +9,7 @@ class FlightModel extends ActivityModel{
   //airport is a map of {'name' : String, 'iata' : String}
   final Map<String, String>? departureAirPort; // Esempio: {"name": "Malpensa", "iata": "MXP"}
   final Map<String, String>? arrivalAirPort;
-  final String? flightCompany;
+  //final String? flightCompany;
   final DateTime? departureDate;
   final DateTime? arrivalDate;
   final num? duration;
@@ -26,7 +26,7 @@ class FlightModel extends ActivityModel{
     num? expenses,
     this.departureAirPort,
     this.arrivalAirPort,
-    this.flightCompany,
+    //this.flightCompany,
     this.departureDate,
     this.arrivalDate,
     this.duration,
@@ -62,7 +62,7 @@ class FlightModel extends ActivityModel{
         'iata': arrivalAirportData['iata'] as String? ?? '',
       }
           : null,
-      flightCompany: data['flightCompany'] as String?,
+      //flightCompany: data['flightCompany'] as String?,
       departureDate: departureTimestamp?.toDate(), // Convert Timestamp to DateTime
       arrivalDate: arrivalTimestamp?.toDate(), // Convert Timestamp to DateTime
       duration: data['duration'] as num?,
@@ -86,7 +86,7 @@ class FlightModel extends ActivityModel{
           'name': arrivalAirPort!['name'],
           'iata': arrivalAirPort!['iata'],
         },
-      if (flightCompany != null) 'flightCompany': flightCompany,
+      //if (flightCompany != null) 'flightCompany': flightCompany,
       if (departureDate != null) 'departureDate': Timestamp.fromDate(departureDate!),
       if (arrivalDate != null) 'arrivalDate': Timestamp.fromDate(arrivalDate!),
       if (duration != null) 'duration': duration,
