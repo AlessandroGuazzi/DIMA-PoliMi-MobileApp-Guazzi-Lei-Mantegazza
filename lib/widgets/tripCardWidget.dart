@@ -3,6 +3,7 @@ import 'package:dima_project/services/googlePlacesService.dart';
 import 'package:dima_project/utils/screenSize.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:dima_project/screens/medalsPage.dart';
 
 import '../models/tripModel.dart';
 
@@ -251,7 +252,9 @@ class _TripCardWidgetState extends State<TripCardWidget> {
   void _goToProfilePage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ProfilePage()),
+      MaterialPageRoute(
+          builder: (context) =>
+              MedalsPage(username: widget.trip.creatorInfo!["username"], userId: widget.trip.creatorInfo!["id"])),
     );
   }
 

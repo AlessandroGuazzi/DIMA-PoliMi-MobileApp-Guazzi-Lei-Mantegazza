@@ -21,6 +21,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late Future<UserModel?> _currentUserFuture;
   late Future<List<TripModel>> _futureTrips;
+  late Future<List<TripModel>> _savedTrips;
 
   Future<UserModel?> _loadCurrentUser() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -151,6 +152,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 return const Center(child: Text('Utente non trovato'));
               }
 
+              _savedTrips = DatabaseService().getTripsByIds(snapshot.data!.savedTrip!);
               return SafeArea(
                 child: Column(
                   children: [
@@ -204,8 +206,43 @@ class _ProfilePageState extends State<ProfilePage> {
                     Expanded(
                       child: TabBarView(
                         children: [
-                          const Center(
-                              child: Text('Lista dei Viaggi Salvati'),
+                          FutureBuilder<List<TripModel>>(
+                            future: _savedTrips,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Container(color: Colors.white,child: const Center(child: CircularProgressIndicator()));
+                              }
+
+                              if (snapshot.hasError) {
+                                return const Center(child: Text('Errore nel caricamento dei viaggi'));
+                              }
+
+                              final trips = snapshot.data!;
+
+                              if (trips.isEmpty) {
+                                return const Center(child: Text('Nessun viaggio salvato'));
+                              }
+
+                              return ListView.builder(
+                                itemCount: trips.length,
+                                itemBuilder: (context, index) {
+                                  final trip = trips[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 5),
+                                    child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute<void>(
+                                                  builder: (context) => TripPage(
+                                                      trip: trip, isMyTrip: true)));
+                                        },
+                                        child: TripCardWidget(trip, false, (a, b) {}, true)),
+                                  );
+                                },
+                              );
+
+                            },
                           ),
                           FutureBuilder<List<TripModel>>(
                             future: _futureTrips,

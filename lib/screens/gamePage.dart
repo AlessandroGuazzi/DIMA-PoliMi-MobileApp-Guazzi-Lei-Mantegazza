@@ -29,6 +29,10 @@ class _GamePageState extends State<GamePage> {
     return countryColors;
   }
 
+  List<T> removeDuplicates<T>(List<T> list) {
+    return list.toSet().toList();
+  }
+
   List<String> extractCountryCodes(List<TripModel> trips) {
     final List<String> countryCodes = [];
 
@@ -123,8 +127,11 @@ class _GamePageState extends State<GamePage> {
                 if (snapshot.data == null) {
                   return const Center(child: Text('Utente non trovato'));
                 }
-                var map = _createCountryColorMap(snapshot.data!);
-                var list = extractCountryCodes(snapshot.data!);
+
+                var completedTrips = snapshot.data!;
+                var map = _createCountryColorMap(completedTrips);
+                var list = extractCountryCodes(completedTrips);
+                list = removeDuplicates(list);
                 var map2 = countCountriesByContinent(list);
                 var tot = countContinents(map2);
                 final List<Map<String, dynamic>> data = [

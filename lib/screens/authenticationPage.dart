@@ -359,6 +359,7 @@ class _AuthPageState extends State<AuthPage> {
         _surname.text.isEmpty ||
         _username.text.isEmpty ||
         selectedBirthDate == null ||
+        _email.text.isEmpty ||
         _nationality.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return false;

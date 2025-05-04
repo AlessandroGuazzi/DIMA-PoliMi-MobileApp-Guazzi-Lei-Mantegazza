@@ -91,14 +91,22 @@ class DatabaseService {
     return trips;
   }
 
-  Future<List<TripModel>> getCompletedTrips() async {
+  Future<List<TripModel>> getCompletedTrips([String userId = "defaultUserId"]) async {
     List<TripModel> trips = [];
 
     try {
-      QuerySnapshot<TripModel> querySnapshot = await tripCollection
-          .where("creatorInfo.id", isEqualTo: currentUserId)
-          .where("endDate", isLessThan: Timestamp.now())
-          .get();
+      QuerySnapshot<TripModel> querySnapshot;
+      if(userId == "defaultUserId") {
+        querySnapshot = await tripCollection
+            .where("creatorInfo.id", isEqualTo: currentUserId)
+            .where("endDate", isLessThan: Timestamp.now())
+            .get();
+      } else {
+        querySnapshot = await tripCollection
+            .where("creatorInfo.id", isEqualTo: userId)
+            .where("endDate", isLessThan: Timestamp.now())
+            .get();
+      }
 
       print("Successfully completed");
 
@@ -281,6 +289,33 @@ class DatabaseService {
       throw Exception("Documento non trovato con ID: ${activity.id}");
     }
     updateTripCost(activity.tripId!, cost, isAdd, activity.type!);
+  }
+
+  Future<List<TripModel>> getTripsByIds(List<String> tripIds) async {
+    List<TripModel> trips = [];
+
+    if (tripIds.isEmpty) return trips;
+
+    try {
+      // Firestore limita whereIn a massimo 10 elementi per query
+      for (int i = 0; i < tripIds.length; i += 10) {
+        final chunk = tripIds.skip(i).take(10).toList();
+
+        QuerySnapshot<TripModel> querySnapshot = await tripCollection
+            .where(FieldPath.documentId, whereIn: chunk)
+            .get();
+
+        for (var docSnapshot in querySnapshot.docs) {
+          trips.add(docSnapshot.data());
+        }
+      }
+
+      print("Successfully fetched trips by IDs");
+    } catch (e) {
+      print("Error fetching trips by IDs: $e");
+    }
+
+    return trips;
   }
 
 }
