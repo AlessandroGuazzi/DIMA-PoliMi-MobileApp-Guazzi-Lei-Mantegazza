@@ -10,127 +10,6 @@ class AuthPage extends StatefulWidget {
   State<AuthPage> createState() => _AuthPageState();
 }
 
-/* class _AuthPageState extends State<AuthPage> {
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _password = TextEditingController();
-  bool isLogin = true;
-
-  Future<void> signIn() async{
-    try{
-      await AuthService().signInWithEmailAndPassword(email: _email.text, password: _password.text);
-    }on FirebaseAuthException catch (error){}
-  }
-
-  Future<void> createUser() async{
-    try{
-      await AuthService().createUserWithEmailAndPassword(email: _email.text, password: _password.text);
-    }on FirebaseAuthException catch (error){}
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Welcome'),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Theme.of(context).primaryColor, Colors.blueAccent],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Center(
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 8,
-            margin: const EdgeInsets.symmetric(horizontal: 30),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Campo email
-                  TextField(
-                    controller: _email,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.indigo),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.indigo, width: 2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Campo password
-                  TextField(
-                    controller: _password,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.indigo),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.indigo, width: 2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Bottone di accesso o registrazione
-                  ElevatedButton(
-                    onPressed: () {
-                      isLogin ? signIn() : createUser();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: Text(isLogin ? 'Accedi' : 'Registrati'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        isLogin = !isLogin;
-                      });
-                    },
-                    child: Text(
-                      isLogin
-                          ? 'Non hai un account? Registrati'
-                          : 'Hai un account? Accedi',
-                      style: const TextStyle(color: Colors.indigo),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-}*/
-
 class _AuthPageState extends State<AuthPage> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
@@ -156,8 +35,29 @@ class _AuthPageState extends State<AuthPage> {
   Future<void> signIn() async {
     try {
       await AuthService().signInWithEmailAndPassword(
-          email: _email.text, password: _password.text);
-    } on FirebaseAuthException catch (error) {}
+          email: _email.text,
+          password: _password.text
+      );
+    } on FirebaseAuthException catch (error) {
+      String message = 'Si è verificato un errore. Riprova.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.white),
+              const SizedBox(width: 10),
+              Text(message),
+            ],
+          ),
+          backgroundColor: Colors.red,
+          action: SnackBarAction(
+            label: 'OK',
+            onPressed: () {},
+            textColor: Colors.white,
+          ),
+        ),
+      );
+    }
   }
 
   final snackBar = SnackBar(
@@ -165,7 +65,7 @@ class _AuthPageState extends State<AuthPage> {
       children: [
         Icon(Icons.warning, color: Colors.white), // Aggiungi un'icona
         SizedBox(width: 10),
-        Text('Compila tutti i campi obbligatori'), // Messaggio
+        Text('Compila tutti i campi obbligatori.'), // Messaggio
       ],
     ),
     backgroundColor: Colors.red, // Colore di sfondo
