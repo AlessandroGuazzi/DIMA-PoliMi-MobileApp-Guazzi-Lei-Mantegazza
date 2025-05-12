@@ -117,20 +117,22 @@ class _AttractioncardwidgetState extends State<Attractioncardwidget> {
   // Scelta icona
   IconData iconSelector(String activityType) {
     switch (activityType.toLowerCase()) {
-      case 'museo':
+      case 'museum':
         return Icons.museum;
-      case 'ristorante':
+      case 'restaurant':
         return Icons.restaurant;
-      case 'concerto':
+      case 'concert':
         return Icons.music_note;
-      case 'stadio':
+      case 'stadium':
         return Icons.stadium;
-      case 'parco naturale':
+      case 'park':
         return Icons.park;
-      case 'monumento':
+      case 'monument':
         return Icons.account_balance;
-      case 'montagna':
+      case 'mountain':
         return Icons.terrain;
+      case 'tourist_attraction':
+        return Icons.attractions;
       default:
         return Icons.photo;
     }

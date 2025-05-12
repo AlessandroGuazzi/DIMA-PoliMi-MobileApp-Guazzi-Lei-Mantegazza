@@ -5,6 +5,9 @@ import 'package:dima_project/models/flightModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/databaseService.dart';
 
+import '../../services/CurrencyService.dart';
+import '../../utils/CountryToCurrency.dart';
+
 class FlightForm extends StatefulWidget {
   final TripModel trip;
 
@@ -33,10 +36,15 @@ class _FlightFormState extends State<FlightForm> {
   late String arrivalIata;
   late String arrivalName;
 
+  num? cost;
+  String _selectedCurrency = 'EUR';
+  late List<String> _currencies;
+
   @override
   void initState() {
     super.initState();
     final flight = widget.flight;
+    _currencies = CountryToCurrency().initializeCurrencies(widget.trip.nations);
     if (flight != null) {
       departureIata = flight.departureAirPort!['iata']!;
       departureName = flight.departureAirPort!['name']!;
@@ -177,10 +185,44 @@ class _FlightFormState extends State<FlightForm> {
             ),
             const SizedBox(height: 16),
 
+            // Costo (opzionale)
             TextFormField(
               controller: expensesController,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: "Expenses (optional)", prefixIcon: Icon(Icons.euro)),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Costo',
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 4.0),
+                  child: DropdownButton<String>(
+                    alignment: Alignment.center,
+                    value: _selectedCurrency,
+                    items: _currencies.map((currency) {
+                      return DropdownMenuItem(
+                        alignment: Alignment.center,
+                        value: currency,
+                        child: CountryToCurrency().formatPopularCurrencies(currency),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedCurrency = value;
+                        });
+                      }
+                    },
+                  ),
+                ),
+              ),
+              validator: (value) {
+                if (value != null && value.isNotEmpty) {
+                  final costValue = double.tryParse(value);
+                  if (costValue == null || costValue < 0) {
+                    return "Per favore inserisci un costo valido";
+                  }
+                  cost = costValue;
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 20),
 
@@ -235,8 +277,32 @@ class _FlightFormState extends State<FlightForm> {
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
+
+      //convert currency to 'EUR' for consistency
+      if(_selectedCurrency != 'EUR' && cost != null) {
+        try {
+          num currencyExchange = await CurrencyService().getExchangeRate(_selectedCurrency, 'EUR');
+          cost = cost! * currencyExchange;
+        } catch (e) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Errore'),
+              content: Text(e.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+      }
+
       final departureDateTime = combineDateAndTime(_departureDate!, _departureTime!);
       final durationHours = double.parse(durationController.text);
       final arrivalDateTime = departureDateTime.add(Duration(minutes: (durationHours * 60).toInt()));
@@ -255,7 +321,7 @@ class _FlightFormState extends State<FlightForm> {
         departureDate: departureDateTime,
         arrivalDate: arrivalDateTime,
         duration: durationHours,
-        expenses: expensesController.text.isNotEmpty ? double.tryParse(expensesController.text) : null,
+        expenses: cost != null ? double.parse(cost!.toStringAsFixed(2)) : null,
         type: 'flight',
       );
 

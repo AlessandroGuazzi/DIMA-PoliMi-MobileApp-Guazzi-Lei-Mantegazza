@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCalendarsUsageDescription</key>
+    <string>Questa app ha bisogno di accedere al tuo calendario per aggiungere eventi del viaggio.</string>
+    <key>NSContactsUsageDescription</key>
+    <string>Questa app ha bisogno di accedere al tuo calendario per aggiungere eventi del viaggio.</string>
 </dict>
 </plist>

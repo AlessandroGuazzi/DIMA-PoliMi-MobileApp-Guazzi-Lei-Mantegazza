@@ -1,30 +1,66 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /*
   In this class we define all theme-related properties of widgets
  */
 class MyThemeData {
+  static Color primaryColor = CupertinoColors.systemBlue;
+  static Color secondaryColor = CupertinoColors.systemTeal;
+  static Color backgroundColor = CupertinoColors.extraLightBackgroundGray;
+  static Color dividerColor = CupertinoColors.lightBackgroundGray;
+  static Color white = CupertinoColors.white;
+
   static ThemeData appTheme = ThemeData(
     brightness: Brightness.light,
-    primaryColor: const Color(0xFF6200EE),
-    secondaryHeaderColor: const Color(0xFF03DAC6),
-    scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-    cardColor: const Color(0xFFFFFFFF),
-    dividerColor: Colors.grey.shade300,
+    primaryColor: primaryColor,
+    secondaryHeaderColor: secondaryColor,
+    scaffoldBackgroundColor: backgroundColor,
+    cardColor: white,
+    dividerColor: dividerColor,
 
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF6200EE),
-      foregroundColor: Colors.white,
+    appBarTheme:  AppBarTheme(
+      backgroundColor: primaryColor,
+      foregroundColor: white,
     ),
 
-    buttonTheme: const ButtonThemeData(
-      buttonColor: Color(0xFF6200EE), // Button color
+    bottomNavigationBarTheme:  BottomNavigationBarThemeData(
+      backgroundColor: white, // Background of the navigation bar
+      selectedItemColor: primaryColor, // Active icon/text color
+      unselectedItemColor: dividerColor, // Inactive icon/text color
+      selectedIconTheme: IconThemeData(size: 28, color: primaryColor), // Size of selected icon
+      unselectedIconTheme: IconThemeData(size: 24), // Size of unselected icon
+      showSelectedLabels: true,
+      type: BottomNavigationBarType.fixed, // Prevent shifting animation
+    ),
+
+    buttonTheme: ButtonThemeData(
+      buttonColor: primaryColor, // Button color
       textTheme: ButtonTextTheme.primary,
+    ),
+
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: primaryColor, // Color of the FAB
+      foregroundColor: white, // Icon/text color
+      elevation: 6, // Shadow depth
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+    ),
+
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+      ),
     ),
 
     iconTheme: IconThemeData(
       size: 20,
-      color: const Color(0xFF6200EE),
+      color: primaryColor,
       opacity:0.9,
     ),
 
@@ -32,12 +68,12 @@ class MyThemeData {
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: dividerColor),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
-          color: Color(0xFF6200EE),
+          color: primaryColor,
           width: 2,
         ),
       ),
@@ -101,7 +137,7 @@ class MyThemeData {
     ),
 
     searchBarTheme: SearchBarThemeData(
-      backgroundColor: WidgetStateProperty.all(Colors.white),
+      backgroundColor: WidgetStateProperty.all(white),
       // Wrap color in MaterialStateProperty.all
       elevation: WidgetStateProperty.all(2.0),
       // Shadow/elevation
@@ -111,7 +147,7 @@ class MyThemeData {
         ),
       ),
       overlayColor:
-          WidgetStateProperty.all(Colors.grey[300]), // Hover effect color
+          WidgetStateProperty.all(dividerColor), // Hover effect color
     ),
   );
 }

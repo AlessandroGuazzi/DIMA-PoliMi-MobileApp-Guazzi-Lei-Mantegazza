@@ -15,7 +15,6 @@ import 'package:dima_project/widgets/transportCardWidget.dart';
 import 'package:dima_project/widgets/tripProgressBar.dart';
 import 'package:flutter/material.dart';
 
-
 class Itinerarypage extends StatefulWidget {
   const Itinerarypage({super.key, required this.trip, required this.isMyTrip});
 
@@ -44,10 +43,13 @@ class _ItinerarypageState extends State<Itinerarypage> {
     });
   }
 
-  void _goToNewItineraryPage(String type)  {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => CreateActivityPage(type: type, trip: widget.trip))).then((value) => refreshTrips());
-
+  void _goToNewItineraryPage(String type) {
+    Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    CreateActivityPage(type: type, trip: widget.trip)))
+        .then((value) => refreshTrips());
   }
 
   Widget _buildTripProgressBarWithButton() {
@@ -65,186 +67,192 @@ class _ItinerarypageState extends State<Itinerarypage> {
           FloatingActionButton(
             mini: true,
             onPressed: _showNewActivityOption,
-            child: const Icon(Icons.add),
             tooltip: "Aggiungi attività",
+            child: const Icon(Icons.add),
           ),
         ],
       ),
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return Stack(
-        children: [
-          FutureBuilder(
-              future: _futureActivities,
-              builder: (context, snapshot){
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (widget.isMyTrip) _buildTripProgressBarWithButton(),
-
-                      Divider(
-                        color: Theme.of(context).dividerColor,
-                        thickness: 2.5,
-                      ),
-                      const Expanded(
-                        child: Center(
-                          child: Text('No activities created',),
-                        ),
-                      ),
-                    ],
-                  );
-                }
-
-                List<ActivityModel> activities = snapshot.data!;
-                print('List of Activities');
-
-                //ordinare le attività in base al timestamp
-                activitiesSort(activities);
-
-                Map<String, List<ActivityModel>> groupedActivities = {};
-
-                for (var activity in activities) {
-                  DateTime date = getActivityDate(activity);
-                  // Formattazione della data per il raggruppamento
-                  String dateKey = "${getItalianWeekday(date.weekday)} ${date.day}/${date.month}";
-
-                  if (!groupedActivities.containsKey(dateKey)) {
-                    groupedActivities[dateKey] = [];
-                  }
-                  groupedActivities[dateKey]!.add(activity);
-                }
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-
-                    if (widget.isMyTrip) _buildTripProgressBarWithButton(),
-
-                    Divider(
-                      color: Theme.of(context).dividerColor, // Colore della linea
-                      thickness: 2.5, // Spessore della linea
-                      //height: ScreenSize.screenHeight(context) * 0.05, // Altezza complessiva
-                    ),
-
-                    // Lista principale scrollabile verticale
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: groupedActivities.length,
-                        itemBuilder: (context, index) {
-                          String dateKey = groupedActivities.keys.elementAt(index);
-                          List<ActivityModel> dayActivities = groupedActivities[dateKey]!;
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // **Intestazione con la data**
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                                child: Text(
-                                  dateKey, // Data formattata (Es: "24/03/2025")
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                              ),
-
-                              ...dayActivities.map((activity) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.5, horizontal: 4.0),
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).cardColor,
-                                          borderRadius: BorderRadius.circular(16), // Rounded edges
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.black12, // Light shadow color
-                                              blurRadius: 8, // Softness of the shadow
-                                              offset: Offset(0, 4), // Position of the shadow
-                                            ),
-                                          ],
-                                        ),
-                                        child: _buildActivityCard(activity),
-                                      ),
-
-
-                                      // EDIT and DELETE buttons
-                                      if (widget.isMyTrip)
-                                        Positioned(
-                                          top: ScreenSize.screenHeight(context) * 0.001,
-                                          right: ScreenSize.screenWidth(context) * 0.003,
-                                          child: PopupMenuButton<int>(
-                                            icon: const Icon(Icons.more_horiz),
-                                            onSelected: (value) async{
-                                              if (value == 1) {
-                                                // Azione Modifica
-                                                await Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) => EditActivityPage(
-                                                      trip: widget.trip,
-                                                      activity: activity,
-                                                    ),
-                                                  ),
-                                                );
-                                                refreshTrips();
-                                              }
-                                              else if (value == 2) {
-                                                // Azione Elimina
-                                                _showDeleteConfirmationDialog(context, activity);
-                                              }
-                                            },
-                                            itemBuilder: (context) => [
-                                              const PopupMenuItem<int>(
-                                                value: 1,
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.edit, color: Colors.black),
-                                                    SizedBox(width: 8),
-                                                    Text("Modifica"),
-                                                  ],
-                                                ),
-                                              ),
-                                              const PopupMenuItem<int>(
-                                                value: 2,
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.delete, color: Colors.red),
-                                                    SizedBox(width: 8),
-                                                    Text("Elimina"),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            ],
-                          );
-                        },
+    return Stack(children: [
+      FutureBuilder(
+          future: _futureActivities,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.isMyTrip) _buildTripProgressBarWithButton(),
+                  Divider(
+                    color: Theme.of(context).dividerColor,
+                    thickness: 2.5,
+                  ),
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        'Inserisci la prima attività',
                       ),
                     ),
-                  ],
-                );
+                  ),
+                ],
+              );
+            }
 
+            List<ActivityModel> activities = snapshot.data!;
 
+            //ordinare le attività in base al timestamp
+            activitiesSort(activities);
+
+            Map<String, List<ActivityModel>> groupedActivities = {};
+
+            for (var activity in activities) {
+              DateTime date = getActivityDate(activity);
+              // Formattazione della data per il raggruppamento
+              String dateKey =
+                  "${getItalianWeekday(date.weekday)} ${date.day}/${date.month}";
+
+              if (!groupedActivities.containsKey(dateKey)) {
+                groupedActivities[dateKey] = [];
               }
-          ),
+              groupedActivities[dateKey]!.add(activity);
+            }
 
-          //TODO METTERE IL BOTTONE ALTROVE, DA CAPIRE
-          /*if(widget.isMyTrip)
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (widget.isMyTrip) _buildTripProgressBarWithButton(),
+
+                Divider(
+                  color: Theme.of(context).dividerColor,
+                  thickness: 2.5,
+                ),
+
+                // Lista principale scrollabile verticale
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: groupedActivities.length,
+                    itemBuilder: (context, index) {
+                      String dateKey = groupedActivities.keys.elementAt(index);
+                      List<ActivityModel> dayActivities =
+                          groupedActivities[dateKey]!;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          // **Intestazione con la data**
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: Text(
+                              dateKey, // Data formattata (Es: "24/03/2025")
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ),
+
+                          ...dayActivities.map((activity) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.5, horizontal: 4.0),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).cardColor,
+                                      borderRadius: BorderRadius.circular(
+                                          16), // Rounded edges
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          // Light shadow color
+                                          blurRadius: 8,
+                                          // Softness of the shadow
+                                          offset: Offset(
+                                              0, 4), // Position of the shadow
+                                        ),
+                                      ],
+                                    ),
+                                    child: _buildActivityCard(activity),
+                                  ),
+
+                                  // EDIT and DELETE buttons
+                                  if (widget.isMyTrip)
+                                    Positioned(
+                                      top: ScreenSize.screenHeight(context) *
+                                          0.001,
+                                      right: ScreenSize.screenWidth(context) *
+                                          0.003,
+                                      child: PopupMenuButton<int>(
+                                        icon: const Icon(Icons.more_horiz),
+                                        onSelected: (value) async {
+                                          if (value == 1) {
+                                            // Azione Modifica
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditActivityPage(
+                                                  trip: widget.trip,
+                                                  activity: activity,
+                                                ),
+                                              ),
+                                            );
+                                            refreshTrips();
+                                          } else if (value == 2) {
+                                            // Azione Elimina
+                                            _showDeleteConfirmationDialog(
+                                                context, activity);
+                                          }
+                                        },
+                                        itemBuilder: (context) => [
+                                          const PopupMenuItem<int>(
+                                            value: 1,
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.edit,
+                                                    color: Colors.black),
+                                                SizedBox(width: 8),
+                                                Text("Modifica"),
+                                              ],
+                                            ),
+                                          ),
+                                          const PopupMenuItem<int>(
+                                            value: 2,
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.delete,
+                                                    color: Colors.red),
+                                                SizedBox(width: 8),
+                                                Text("Elimina"),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          }),
+
+      //TODO METTERE IL BOTTONE ALTROVE, DA CAPIRE
+      /*if(widget.isMyTrip)
             Positioned(
                 bottom: 25,
                 right: 25,
@@ -253,10 +261,8 @@ class _ItinerarypageState extends State<Itinerarypage> {
                   child: const Icon(Icons.add),
                 )
             )*/
-        ]
-    );
+    ]);
   }
-
 
   Widget _buildActivityCard(ActivityModel activity) {
     switch (activity.type) {
@@ -274,7 +280,6 @@ class _ItinerarypageState extends State<Itinerarypage> {
     }
   }
 
-
   void activitiesSort(List<ActivityModel> activities) {
     activities.sort((a, b) {
       DateTime dateA = getActivityDate(a);
@@ -283,11 +288,12 @@ class _ItinerarypageState extends State<Itinerarypage> {
     });
   }
 
-
   DateTime getActivityDate(ActivityModel activity) {
-    if (activity is FlightModel ) {
-      return activity.departureDate ?? DateTime(1970, 1, 1);   //TODO MI RICHIEDE IL NULL CHECK, MA NELL'APP RENDEREMO LA DATA OBBLIGGATORIA
-    } else if (activity is TransportModel){
+    if (activity is FlightModel) {
+      return activity.departureDate ??
+          DateTime(1970, 1,
+              1); //TODO MI RICHIEDE IL NULL CHECK, MA NELL'APP RENDEREMO LA DATA OBBLIGGATORIA
+    } else if (activity is TransportModel) {
       return activity.departureDate ?? DateTime(1970, 1, 1);
     } else if (activity is AccommodationModel) {
       return activity.checkIn ?? DateTime(1970, 1, 1);
@@ -315,10 +321,11 @@ class _ItinerarypageState extends State<Itinerarypage> {
             TextButton(
               onPressed: () {
                 DatabaseService().deleteActivity(activity);
-                Navigator.of(context).pop();// Chiude il popup
+                Navigator.of(context).pop(); // Chiude il popup
                 refreshTrips();
               },
-              child: const Text("Conferma", style: TextStyle(color: Colors.red)),
+              child:
+                  const Text("Conferma", style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -339,8 +346,48 @@ class _ItinerarypageState extends State<Itinerarypage> {
     return giorni[weekday] ?? "N/A";
   }
 
-
   void _showNewActivityOption() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            //handle
+            Padding(
+              padding: const EdgeInsets.fromLTRB(200, 15, 200, 15),
+              child: Container(
+                height: 5,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).dividerColor,
+                  borderRadius:
+                      BorderRadius.all(Radius.circular(100)), // Rounded edges
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                'Crea una nuova attività',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            _buildOption(Icons.flight, 'Volo', 'flight'),
+            _buildOption(Icons.hotel, 'Alloggio', 'accommodation'),
+            _buildOption(Icons.directions_bus, 'Altri Trasporti', 'transport'),
+            _buildOption(Icons.attractions, 'Attrazione', 'attraction'),
+            const SizedBox(height: 15),
+          ],
+        ),
+      ),
+    );
+
+    /*
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -396,29 +443,23 @@ class _ItinerarypageState extends State<Itinerarypage> {
         );
       },
     );
-
+    */
   }
-
 
   Widget _buildOption(IconData icon, String text, String type) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: ListTile(
-        title: Row(
-          children: [
-            Icon(icon),
-            const SizedBox(width: 12),
-            Text(text, style: Theme.of(context).textTheme.titleMedium),
-          ],
-        ),
-          onTap: () {
-            Navigator.of(context).pop(); // Close the modal
-            _goToNewItineraryPage(type); // Navigate
-          }
-      )
-    );
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: ListTile(
+            title: Row(
+              children: [
+                Icon(icon),
+                const SizedBox(width: 12),
+                Text(text, style: Theme.of(context).textTheme.titleMedium),
+              ],
+            ),
+            onTap: () {
+              Navigator.of(context).pop(); // Close the modal
+              _goToNewItineraryPage(type); // Navigate
+            }));
   }
-
-
-
 }

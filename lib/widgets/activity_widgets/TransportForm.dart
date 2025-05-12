@@ -4,6 +4,9 @@ import 'package:dima_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../services/CurrencyService.dart';
+import '../../utils/CountryToCurrency.dart';
+
 class TransportForm extends StatefulWidget {
   const TransportForm({super.key, required this.trip, this.transport});
 
@@ -25,6 +28,8 @@ class _TransportFormState extends State<TransportForm> {
   TimeOfDay? _departureTime;
   String? _selectedType;
   num? cost;
+  String _selectedCurrency = 'EUR';
+  late List<String> _currencies;
 
   //final List<String> _transportTypes = ['Bus', 'Train', 'Car', 'Ferry'];
   final Map<String, IconData> _transportIcons = {
@@ -39,6 +44,8 @@ class _TransportFormState extends State<TransportForm> {
   void initState() {
     super.initState();
     final t = widget.transport;
+    _currencies = CountryToCurrency().initializeCurrencies(widget.trip.nations);
+
     if (t != null) {
       departurePlaceController.text = t.departurePlace!;
       arrivalPlaceController.text = t.arrivalPlace!;
@@ -150,18 +157,39 @@ class _TransportFormState extends State<TransportForm> {
 
             const SizedBox(height: 20),
 
+            // Costo (opzionale)
             TextFormField(
               controller: costController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "Cost (optional)",
-                prefixIcon: Icon(Icons.euro),
+              decoration: InputDecoration(
+                labelText: 'Costo',
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 4.0),
+                  child: DropdownButton<String>(
+                    alignment: Alignment.center,
+                    value: _selectedCurrency,
+                    items: _currencies.map((currency) {
+                      return DropdownMenuItem(
+                        alignment: Alignment.center,
+                        value: currency,
+                        child: CountryToCurrency().formatPopularCurrencies(currency),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedCurrency = value;
+                        });
+                      }
+                    },
+                  ),
+                ),
               ),
               validator: (value) {
                 if (value != null && value.isNotEmpty) {
                   final costValue = double.tryParse(value);
                   if (costValue == null || costValue < 0) {
-                    return "Enter a valid positive number";
+                    return "Per favore inserisci un costo valido";
                   }
                   cost = costValue;
                 }
@@ -214,19 +242,40 @@ class _TransportFormState extends State<TransportForm> {
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
+
+      //convert currency to 'EUR' for consistency
+      if(_selectedCurrency != 'EUR' && cost != null) {
+        try {
+          num currencyExchange = await CurrencyService().getExchangeRate(_selectedCurrency, 'EUR');
+          cost = cost! * currencyExchange;
+        } catch (e) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Errore'),
+              content: Text(e.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+      }
+
       final departureDateTime = combineDateAndTime(_departureDate!, _departureTime!);
-      final double? cost = costController.text.isNotEmpty
-          ? double.tryParse(costController.text)
-          : null;
 
       final transport = TransportModel(
         tripId: widget.trip.id,
         departurePlace: departurePlaceController.text,
         arrivalPlace: arrivalPlaceController.text,
         departureDate: departureDateTime,
-        expenses: cost,
+        expenses: cost != null ? double.parse(cost!.toStringAsFixed(2)) : null,
         transportType: _selectedType!,
         type: 'transport'
       );

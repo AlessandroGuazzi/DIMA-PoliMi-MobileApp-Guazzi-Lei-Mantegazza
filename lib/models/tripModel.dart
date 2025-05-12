@@ -8,7 +8,7 @@ class TripModel {
   //nations is a map of {'name': String, 'flag': String, 'code': String}
   final List<Map<String, dynamic>>? nations;
 
-  //cities is a map of {'name': String, 'lat': num, 'lng': num}
+  //cities is a map of {'name': String, 'place_id': String,  'lat': num, 'lng': num}
   final List<Map<String, dynamic>>? cities;
   final DateTime? startDate;
   final DateTime? endDate;
@@ -99,6 +99,7 @@ class TripModel {
         'cities': cities!
             .map((city) => {
                   'name': city['name'],
+                  'place_id': city['place_id'],
                   'lat': city['lat'],
                   'lng': city['lng'],
                 })

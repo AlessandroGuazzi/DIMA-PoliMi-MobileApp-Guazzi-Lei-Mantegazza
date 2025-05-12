@@ -72,7 +72,7 @@ class _PlacesSearchWidgetState extends State<PlacesSearchWidget> {
                       return Column(
                         children: [
                           ListTile(
-                            title: Text(suggestions['place_name'] ?? ''),
+                            title: Text(suggestions['name'] ?? ''),
                             subtitle: Text(suggestions['other_info'] ?? ''),
                           ),
                           Divider(

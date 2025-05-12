@@ -46,6 +46,7 @@ dependencies:
   google_maps_flutter: ^2.10.1
   pie_chart: ^5.4.0
   dropdown_button2: ^2.3.9
+  add_2_calendar: ^3.0.1
 
 
 dev_dependencies:

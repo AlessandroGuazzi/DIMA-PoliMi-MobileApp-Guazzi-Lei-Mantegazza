@@ -1,22 +1,15 @@
-import 'package:dima_project/models/accommodationModel.dart';
+
 import 'package:dima_project/models/activityModel.dart';
-import 'package:dima_project/models/attractionModel.dart';
-import 'package:dima_project/models/transportModel.dart';
 import 'package:dima_project/models/tripModel.dart';
-import 'package:dima_project/screens/editActivityPage.dart';
-import 'package:dima_project/screens/editTripPage.dart';
 import 'package:dima_project/screens/itineraryPage.dart';
-import 'package:dima_project/screens/tripGeneralsPage.dart';
+import 'package:dima_project/screens/tripExpensesPage.dart';
 import 'package:dima_project/screens/mapPage.dart';
+import 'package:dima_project/screens/tripInfoPage.dart';
+import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:dima_project/services/databaseService.dart';
-import 'package:dima_project/widgets/accomodationCardWidget.dart';
-import 'package:dima_project/widgets/attractionCardWidget.dart';
-import 'package:dima_project/widgets/flightCardWidget.dart';
-import 'package:dima_project/widgets/transportCardWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:dima_project/utils/screenSize.dart';
-import '../models/flightModel.dart';
+import '../services/googlePlacesService.dart';
 
 class TripPage extends StatefulWidget {
   const TripPage({super.key, required this.trip, required this.isMyTrip});
@@ -28,157 +21,189 @@ class TripPage extends StatefulWidget {
   State<TripPage> createState() => _TripPageState();
 }
 
-class _TripPageState extends State<TripPage> {
-
-  late Future<List<ActivityModel>> _futureActivities;
+class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
   late TripModel _trip;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    //trip = widget.trip; // Initialize with passed data
-    _futureActivities = DatabaseService().getTripActivities(widget.trip);
     _trip = widget.trip;
+    _tabController = TabController(length: 3, vsync: this);
   }
 
-  Future<void> refreshPage() async {
-    TripModel newTrip = await DatabaseService().loadTrip(widget.trip.id!);
-    setState(() {
-      _trip = newTrip;
-    });
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3, // Numero di tab
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Simply Travel"),
-          backgroundColor: Theme
-              .of(context)
-              .primaryColor,
-          actions: widget.isMyTrip
-              ? [
-            PopupMenuButton<int>(
-              icon: const Icon(Icons.more_vert), // Cambiato da edit ✏️ a "più opzioni"
-              onSelected: (value) async {
-                if (value == 1) {
-                  // Modifica
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditTripPage(trip: _trip),
-                    ),
-                  );
-                  await refreshPage();
-                } else if (value == 2) {
-                  // Elimina
-                  final shouldDelete = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Conferma eliminazione'),
-                      content: const Text('Sei sicuro di voler eliminare questo viaggio? Non sarà possibile tornare indietro!'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Annulla'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Elimina', style: TextStyle(color: Colors.red)),
-                        ),
-                      ],
-                    ),
-                  );
+    final imageUrl = widget.trip.imageRef != null
+        ? GooglePlacesService().getImageUrl(widget.trip.imageRef!)
+        : 'https://picsum.photos/800';
 
-                  if (shouldDelete == true) {
-                    await DatabaseService().deleteTrip(_trip.id!);
-                    if (context.mounted) {
-                      Navigator.pop(context); // Torni indietro a MyTripsPage
-                    }
-                  }
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem<int>(
-                  value: 1,
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit, color: Colors.black),
-                      SizedBox(width: 8),
-                      Text('Modifica'),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem<int>(
-                  value: 2,
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Elimina'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ]
-              : null,
-
-        ),
-        body: Column(
-          children: [
-            Container(
-              color: Theme
-                  .of(context)
-                  .primaryColor
-                  .withOpacity(0.15),
-              padding: const EdgeInsets.all(16),
-              width: double.infinity, // Espandi per evitare errori di layout
-              child: Text(
-                '${_trip.title}',
-                textAlign: TextAlign.center,
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .headlineLarge,
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            expandedHeight: 250,
+            pinned: true,
+            floating: false,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: false,
+              title: Text(
+                _trip.title ?? 'No title',
               ),
-            ),
-            const Divider(
-              thickness: 2.5,
-            ),
-            const TabBar(
-              tabs: [
-                Tab(text: "Itinerario"),
-                Tab(text: "Generale"), // Tab 2
-                Tab(text: "Mappa"),// Tab 1
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
+              background: Stack(
+                alignment: Alignment.center,
+                fit: StackFit.expand,
                 children: [
-                  Itinerarypage(trip: widget.trip, isMyTrip: widget.isMyTrip),
-                  TripGeneralsPage(tripId: widget.trip.id!),
-                  MapPage(trip: widget.trip,),
+                  Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    color: Colors.black.withOpacity(0.2),
+                    alignment: Alignment.center,
+                    child: Text(
+                      _trip.title ?? 'No title',
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ],
               ),
             ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(48),
+              child: Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: TabBar(
+                  controller: _tabController,
+                  tabs: const [
+                    Tab(text: "Itinerario"),
+                    Tab(text: 'Generale',),
+                    Tab(text: "Spese"),
+                  ],
+                ),
+              ),
+            ),
+            actions: widget.isMyTrip
+                ? [
+              IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: () => _showActions(context),
+              ),
+                  ]
+                : null,
+          ),
+        ],
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            Itinerarypage(trip: _trip, isMyTrip: widget.isMyTrip),
+            TripInfoPage(trip: _trip),
+            TripExpensesPage(tripId: widget.trip.id ?? '',),
           ],
         ),
       ),
     );
   }
 
+  void _showActions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            //handle
+            Padding(
+              padding: EdgeInsets.fromLTRB(200, 15, 200, 15),
+              child: Container(
+                height: 5,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).dividerColor,
+                  borderRadius:
+                  BorderRadius.all(Radius.circular(100)), // Rounded edges
+                ),
+              ),
+            ),
 
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Modifica'),
+              onTap: () async {
+                Navigator.pop(context); // close the bottom sheet
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UpsertTripPage(
+                      trip: widget.trip,
+                      isUpdate: true,
+                    ),
+                  ),
+                );
+                //update ui trip
+                if (result != null) {
+                  setState(() {
+                    _trip = result;
+                  });
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Elimina'),
+              onTap: () async {
+                Navigator.pop(context); // close the bottom sheet
+                final shouldDelete = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Conferma eliminazione'),
+                    content: const Text('Vuoi eliminare questo viaggio?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Annulla'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Elimina',
+                            style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                );
 
-  String _getFlagEmoji(String countryCode) {
-    assert(countryCode.length == 2); // Assicurati che il codice paese sia lungo 2 caratteri
-    int firstLetter = countryCode.codeUnitAt(0) - 0x41 + 0x1F1E6;
-    int secondLetter = countryCode.codeUnitAt(1) - 0x41 + 0x1F1E6;
-    return String.fromCharCode(firstLetter) + String.fromCharCode(secondLetter);
+                if (shouldDelete == true) {
+                  await DatabaseService().deleteTrip(_trip.id!);
+                  if (context.mounted) Navigator.pop(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.map_outlined),
+              title: const Text('Apri mappa'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MapPage(trip: _trip),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
-
 }

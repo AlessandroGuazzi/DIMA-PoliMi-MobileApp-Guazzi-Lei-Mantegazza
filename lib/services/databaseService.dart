@@ -291,10 +291,10 @@ class DatabaseService {
     updateTripCost(activity.tripId!, cost, isAdd, activity.type!);
   }
 
-  Future<List<TripModel>> getTripsByIds(List<String> tripIds) async {
+  Future<List<TripModel>> getTripsByIds(List<String>? tripIds) async {
     List<TripModel> trips = [];
 
-    if (tripIds.isEmpty) return trips;
+    if (tripIds == null || tripIds.isEmpty) return trips;
 
     try {
       // Firestore limita whereIn a massimo 10 elementi per query

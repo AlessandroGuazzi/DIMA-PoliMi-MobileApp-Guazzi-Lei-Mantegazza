@@ -1,7 +1,5 @@
-import 'package:dima_project/screens/mapPage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:dima_project/screens/newTripPage.dart';
+import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:dima_project/widgets/tripCardWidget.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/databaseService.dart';
@@ -32,7 +30,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
 
   void _goToNewTripPage()  {
     Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const NewTripPage())).then((value) => refreshTrips());
+            MaterialPageRoute(builder: (context) => const UpsertTripPage())).then((value) => refreshTrips());
 
   }
 
@@ -59,8 +57,9 @@ class _MyTripsPageState extends State<MyTripsPage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 10, top: 15, bottom: 5),
-                  child: Text('Pianifica i tuoi viaggi', style: Theme.of(context).textTheme.displayLarge,),
+                  child: Text('I tuoi viaggi', style: Theme.of(context).textTheme.headlineLarge,),
                 ),
+                Divider(),
                 Expanded(
                   child: ListView.builder(
                     itemCount: trips.length,

@@ -17,10 +17,14 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-        onMapCreated: _onMapCreated,
-        initialCameraPosition: _initializeCameraPosition(),
-        markers: _initializeMarkers());
+    return Scaffold(
+      appBar:
+          AppBar(),
+      body: GoogleMap(
+          onMapCreated: _onMapCreated,
+          initialCameraPosition: _initializeCameraPosition(),
+          markers: _initializeMarkers()),
+    );
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -36,12 +40,11 @@ class _MapPageState extends State<MapPage> {
             markerId: MarkerId(city['name']),
             position: LatLng(city['lat'], city['lng']),
             infoWindow: InfoWindow(
-              title: city['name'],
-              snippet: "Click for details",
-              onTap: () {
-                _openDetails(city);
-              }
-            )));
+                title: city['name'],
+                snippet: "Click for details",
+                onTap: () {
+                  _openDetails(city);
+                })));
       }
     }
     return markers;
@@ -65,7 +68,7 @@ class _MapPageState extends State<MapPage> {
 
     LatLng center = LatLng((minLat + maxLat) / 2, (minLng + maxLng) / 2);
 
-    return CameraPosition(target: center, zoom: 9);
+    return CameraPosition(target: center, zoom: 5);
   }
 
   void _openDetails(Map<String, dynamic> city) {

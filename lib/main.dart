@@ -21,14 +21,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Simply Travel',
       theme: MyThemeData.appTheme,
-      //home: const MyHomePage(title: 'Flutter Demo Home Page'),
       home: StreamBuilder(
           stream: AuthService().authStateChanges,
           builder: (context, snapshot){
             if(snapshot.hasData){
-              return const MyHomePage(title: 'Flutter Demo Home Page');
+              return const MyHomePage(title: 'Simply Travel');
             }else{
               return AuthPage();
             }

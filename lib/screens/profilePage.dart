@@ -152,7 +152,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 return const Center(child: Text('Utente non trovato'));
               }
 
-              _savedTrips = DatabaseService().getTripsByIds(snapshot.data!.savedTrip!);
+              final user = snapshot.data!;
+              _savedTrips = DatabaseService().getTripsByIds(user.savedTrip);
               return SafeArea(
                 child: Column(
                   children: [
@@ -167,9 +168,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: 2,
                         ),
                         image: DecorationImage(
-                          image: snapshot.data!.profilePic == null
+                          image: user.profilePic == null
                               ? const AssetImage('assets/profile.png')
-                              : NetworkImage(snapshot.data!.profilePic!),
+                              : NetworkImage(user.profilePic!),
                           fit: BoxFit.cover,
                         )
                       ),
@@ -178,14 +179,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     Column(
                       children: [
                         Text(
-                          '${snapshot.data!.name} ${snapshot.data!.surname}',
+                          '${user.name} ${user.surname}',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         Text(
-                          '@${snapshot.data!.username}',
+                          '@${user.username}',
                           style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey[600],
@@ -235,7 +236,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               context,
                                               MaterialPageRoute<void>(
                                                   builder: (context) => TripPage(
-                                                      trip: trip, isMyTrip: true)));
+                                                      trip: trip, isMyTrip: false)));
                                         },
                                         child: TripCardWidget(trip, false, (a, b) {}, true)),
                                   );

@@ -55,8 +55,8 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   widget.trip.imageRef != null
                       ? GooglePlacesService().getImageUrl(widget.trip.imageRef!)
                       : 'https://picsum.photos/800',
-                  width: ScreenSize.screenWidth(context) * 0.20,
-                  height: ScreenSize.screenWidth(context) * 0.20,
+                  width: ScreenSize.screenWidth(context) * 0.22,
+                  height: ScreenSize.screenWidth(context) * 0.22,
                   fit: BoxFit.cover,
                 ),
               ),

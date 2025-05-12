@@ -1,3 +1,4 @@
+import 'package:dima_project/utils/CountryToCurrency.dart';
 import 'package:dima_project/utils/PlacesType.dart';
 import 'package:dima_project/utils/screenSize.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -7,8 +8,11 @@ import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/attractionModel.dart';
 import 'package:dima_project/services/databaseService.dart';
 
+import '../../services/CurrencyService.dart';
 import '../placesSearchWidget.dart';
 
+
+//TODO: gestire valuta in modifica
 class AttractionForm extends StatefulWidget {
   final TripModel trip;
   final AttractionModel? attraction; //per la modifica
@@ -45,10 +49,15 @@ class _AttractionFormState extends State<AttractionForm> {
 
   PlacesType _selectedType = PlacesType.tourist_attraction;
 
+  num? cost;
+  String _selectedCurrency = 'EUR';
+  late List<String> _currencies;
+
   @override
   void initState() {
     super.initState();
     final attraction = widget.attraction;
+    _currencies = CountryToCurrency().initializeCurrencies(widget.trip.nations);
     if (attraction != null) {
       locationController.text = attraction.name!;
       addressController.text = attraction.address ?? '';
@@ -211,20 +220,41 @@ class _AttractionFormState extends State<AttractionForm> {
 
             const SizedBox(height: 20),
 
-            // Cost
+            // Costo (opzionale)
             TextFormField(
               controller: costController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: "Costo (opzionale)",
-                prefixIcon: Icon(Icons.euro),
+              decoration: InputDecoration(
+                labelText: 'Costo',
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 4.0),
+                  child: DropdownButton<String>(
+                    alignment: Alignment.center,
+                    value: _selectedCurrency,
+                    items: _currencies.map((currency) {
+                      return DropdownMenuItem(
+                        alignment: Alignment.center,
+                        value: currency,
+                        child: CountryToCurrency().formatPopularCurrencies(currency),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedCurrency = value;
+                        });
+                      }
+                    },
+                  ),
+                ),
               ),
               validator: (value) {
                 if (value != null && value.isNotEmpty) {
-                  final parsed = double.tryParse(value);
-                  if (parsed == null || parsed < 0) {
-                    return "Inserisci un costo valido";
+                  final costValue = double.tryParse(value);
+                  if (costValue == null || costValue < 0) {
+                    return "Per favore inserisci un costo valido";
                   }
+                  cost = costValue;
                 }
                 return null;
               },
@@ -243,12 +273,7 @@ class _AttractionFormState extends State<AttractionForm> {
             ElevatedButton(
               onPressed: _submitForm,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
               ),
               child: Text('Aggiungi attività'),
             ),
@@ -333,22 +358,44 @@ class _AttractionFormState extends State<AttractionForm> {
   }
 
   void _onSelected(Map<String, String> activity) {
-    locationController.text = activity['place_name'] ?? '';
+    locationController.text = activity['name'] ?? '';
     addressController.text = activity['other_info'] ?? '';
     setState(() {});
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
+
+      //convert currency to 'EUR' for consistency
+      if(_selectedCurrency != 'EUR' && cost != null) {
+        try {
+          num currencyExchange = await CurrencyService().getExchangeRate(_selectedCurrency, 'EUR');
+          cost = cost! * currencyExchange;
+        } catch (e) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Errore'),
+              content: Text(e.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+      }
+
       final updatedAttraction = AttractionModel(
         name: locationController.text,
         tripId: widget.trip.id,
         attractionType: _selectedType.name ?? '',
         address:
             addressController.text.isNotEmpty ? addressController.text : null,
-        expenses: costController.text.isNotEmpty
-            ? double.tryParse(costController.text) ?? 0
-            : 0,
+        expenses: cost != null ? double.parse(cost!.toStringAsFixed(2)) : null,
         startDate:
             _startTime != null ? combine(_startDate!, _startTime!) : _startDate,
         endDate: _endTime != null ? combine(_endDate!, _endTime!) : _endDate,

@@ -1,6 +1,8 @@
 import 'package:dima_project/models/accommodationModel.dart';
 import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/services/CurrencyService.dart';
 import 'package:dima_project/services/databaseService.dart';
+import 'package:dima_project/utils/CountryToCurrency.dart';
 import 'package:dima_project/utils/PlacesType.dart';
 import 'package:dima_project/widgets/placesSearchWidget.dart';
 import 'package:flutter/material.dart';
@@ -26,14 +28,20 @@ class _AccommodationFormState extends State<AccommodationForm> {
   String title = "";
   DateTime? _startDate;
   DateTime? _endDate;
-  TimeOfDay? _checkInTime;
-  TimeOfDay? _checkOutTime;
+  TimeOfDay _checkInTime = const TimeOfDay(hour: 15, minute: 00);
+  TimeOfDay _checkOutTime = const TimeOfDay(hour: 11, minute: 00);
   num? cost;
+  String _selectedCurrency = 'EUR';
+  late List<String> _currencies;
 
   @override
   void initState() {
     super.initState();
     final activity = widget.accommodation;
+
+    //intialize list of currencies
+    _currencies = CountryToCurrency().initializeCurrencies(widget.trip.nations);
+
     if (activity != null) {
       titleController.text = activity.name ?? '';
       addressController.text = activity.address ?? '';
@@ -117,7 +125,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
                           : '',
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Check-in',
+                      labelText: 'Check-in',
                       prefixIcon: Icon(Icons.access_time),
                     ),
                     onTap: () => _selectTime(context, isCheckIn: true),
@@ -152,7 +160,27 @@ class _AccommodationFormState extends State<AccommodationForm> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Costo',
-                prefixIcon: Icon(Icons.euro),
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 4.0),
+                  child: DropdownButton<String>(
+                    alignment: Alignment.center,
+                    value: _selectedCurrency,
+                    items: _currencies.map((currency) {
+                      return DropdownMenuItem(
+                        alignment: Alignment.center,
+                        value: currency,
+                        child: CountryToCurrency().formatPopularCurrencies(currency),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedCurrency = value;
+                        });
+                      }
+                    },
+                  ),
+                ),
               ),
               validator: (value) {
                 if (value != null && value.isNotEmpty) {
@@ -213,11 +241,8 @@ class _AccommodationFormState extends State<AccommodationForm> {
   Future<void> _selectTime(BuildContext context,
       {required bool isCheckIn}) async {
     TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: isCheckIn
-          ? _checkInTime ?? TimeOfDay.now()
-          : _checkOutTime ?? TimeOfDay.now(),
-    );
+        context: context,
+        initialTime: isCheckIn ? _checkInTime : _checkOutTime);
 
     if (pickedTime != null) {
       setState(() {
@@ -262,35 +287,64 @@ class _AccommodationFormState extends State<AccommodationForm> {
   }
 
   void _onSelected(Map<String, String> accommodation) {
-    titleController.text = accommodation['place_name'] ?? '';
+    titleController.text = accommodation['name'] ?? '';
     addressController.text = accommodation['other_info'] ?? '';
     setState(() {});
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
+
+      //convert currency to 'EUR' for consistency
+      if(_selectedCurrency != 'EUR' && cost != null) {
+        try {
+          num currencyExchange = await CurrencyService().getExchangeRate(_selectedCurrency, 'EUR');
+          cost = cost! * currencyExchange;
+        } catch (e) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Errore'),
+              content: Text(e.toString()),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+      }
+
       final updatedAccommodation = AccommodationModel(
         name: titleController.text,
         tripId: widget.trip.id,
-        checkIn: combineDateAndTime(_startDate!, _checkInTime!),
-        checkOut: combineDateAndTime(_endDate!, _checkOutTime!),
+        checkIn: combineDateAndTime(_startDate!, _checkInTime),
+        checkOut: combineDateAndTime(_endDate!, _checkOutTime),
         address:
             addressController.text.isNotEmpty ? addressController.text : null,
         // Se vuoto, lascia null,
-        expenses: cost,
+        expenses: cost != null ? double.parse(cost!.toStringAsFixed(2)) : null,
         contacts: null,
         type: 'accommodation',
       );
       final db = DatabaseService();
       if (widget.accommodation == null) {
-        db.createActivity(updatedAccommodation).then((_) => Navigator.pop(context, true));
+        db
+            .createActivity(updatedAccommodation)
+            .then((_) => Navigator.pop(context, true));
       } else {
         final oldCost = widget.accommodation!.expenses ?? 0;
         final newCost = updatedAccommodation.expenses ?? 0;
         final diff = (newCost - oldCost).abs();
         final isAdd = newCost > oldCost;
 
-        db.updateActivity(widget.accommodation!.id!, updatedAccommodation, diff, isAdd).then((_) => Navigator.pop(context, true));
+        db
+            .updateActivity(
+                widget.accommodation!.id!, updatedAccommodation, diff, isAdd)
+            .then((_) => Navigator.pop(context, true));
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

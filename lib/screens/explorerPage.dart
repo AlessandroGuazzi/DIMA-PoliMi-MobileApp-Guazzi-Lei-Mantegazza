@@ -56,9 +56,9 @@ class _ExplorerPageState extends State<ExplorerPage> {
                         _filterTrips(query);
                       });
                     },
-                    leading: Icon(
+                    leading: const Icon(
                       Icons.search,
-                      color: Theme.of(context).primaryColor,
+                      size: 20,
                     ),
                     backgroundColor:
                         Theme.of(context).searchBarTheme.backgroundColor,

@@ -26,7 +26,7 @@ class GooglePlacesService {
         //create a list of map {name, placeId} to return
         List<Map<String, String>> places = (data['predictions'] as List)
             .map((prediction) => {
-                  'place_name': prediction['structured_formatting']['main_text']
+                  'name': prediction['structured_formatting']['main_text']
                       .toString(),
                   'other_info': prediction['structured_formatting']
                           ['secondary_text']

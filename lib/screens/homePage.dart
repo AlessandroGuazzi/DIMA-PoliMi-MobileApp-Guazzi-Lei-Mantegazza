@@ -14,38 +14,43 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _selectedIndex = 0;
 
+  final List<Widget> _pages = const [
+    ExplorerPage(),
+    MyTripsPage(),
+    ProfilePage(),
+  ];
 
-  Future<void> signOut() async{
+  Future<void> signOut() async {
     await AuthService().signOut();
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(
-            title: const Text("Simply Travel"),
-            backgroundColor: Theme.of(context).primaryColor
-        ),
-        body: const TabBarView(
-            children: [
-              ExplorerPage(),
-              MyTripsPage(),
-              ProfilePage()
-            ]),
-        bottomNavigationBar: const BottomAppBar(
-            color: Colors.white,
-            child: TabBar(
-                indicatorColor: Colors.blueGrey,
-                tabs: [
-                  Tab(icon: Icon(Icons.search)),
-                  Tab(icon: Icon(Icons.home)),
-                  Tab(icon: Icon(Icons.account_box))
-                ])
-        ),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) => setState(() => _selectedIndex = index),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Esplora',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_box),
+            label: 'Profilo',
+          ),
+        ],
       ),
     );
   }
