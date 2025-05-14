@@ -36,7 +36,7 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                     ),
                     child: Icon(
                       iconSelector(widget.transport.transportType ?? 'default'), // Icona dinamica
-                      size: MediaQuery.of(context).size.width * 0.1,
+                      size: 50,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),

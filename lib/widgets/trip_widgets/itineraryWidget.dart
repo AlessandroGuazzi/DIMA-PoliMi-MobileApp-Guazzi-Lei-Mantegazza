@@ -12,20 +12,20 @@ import 'package:dima_project/widgets/activity_widgets/accomodationCardWidget.dar
 import 'package:dima_project/widgets/activity_widgets/attractionCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/transportCardWidget.dart';
-import 'package:dima_project/widgets/tripProgressBar.dart';
+import 'package:dima_project/widgets/trip_widgets/tripProgressBar.dart';
 import 'package:flutter/material.dart';
 
-class Itinerarypage extends StatefulWidget {
-  const Itinerarypage({super.key, required this.trip, required this.isMyTrip});
+class ItineraryWidget extends StatefulWidget {
+  const ItineraryWidget({super.key, required this.trip, required this.isMyTrip});
 
   final TripModel trip;
   final bool isMyTrip;
 
   @override
-  State<Itinerarypage> createState() => _ItinerarypageState();
+  State<ItineraryWidget> createState() => _ItineraryWidgetState();
 }
 
-class _ItinerarypageState extends State<Itinerarypage> {
+class _ItineraryWidgetState extends State<ItineraryWidget> {
   late Future<List<ActivityModel>> _futureActivities;
 
   @override
@@ -34,12 +34,29 @@ class _ItinerarypageState extends State<Itinerarypage> {
     //trip = widget.trip; // Initialize with passed data
     //_isEmpty = true;
     _futureActivities = DatabaseService().getTripActivities(widget.trip);
-    print('è mio viaggio2: ${widget.isMyTrip}');
+  }
+
+  /*
+  This method run each time the widget is updated (rebuild),
+  if the rebuild has new trip data,
+  it triggers an update on the future to fetch the new activities.
+  Overcoming the "limitations" of initState
+   */
+  @override
+  void didUpdateWidget(covariant ItineraryWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.trip.id != widget.trip.id) {
+      refreshTrips();
+    }
   }
 
   void refreshTrips() {
-    setState(() {
-      _futureActivities = DatabaseService().getTripActivities(widget.trip);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _futureActivities = DatabaseService().getTripActivities(widget.trip);
+        });
+      }
     });
   }
 

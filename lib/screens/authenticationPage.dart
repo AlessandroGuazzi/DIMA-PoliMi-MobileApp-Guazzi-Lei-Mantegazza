@@ -1,7 +1,10 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/countryPickerWidget.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -20,17 +23,6 @@ class _AuthPageState extends State<AuthPage> {
   final TextEditingController _nationality = TextEditingController();
   bool isLogin = true;
   DateTime? selectedBirthDate;
-
-  // Lista di nazionalità per il dropdown
-  final List<String> countries = [
-    'Italia',
-    'Francia',
-    'Spagna',
-    'Germania',
-    'Regno Unito',
-    'Stati Uniti',
-    'Altro'
-  ];
 
   Future<void> signIn() async {
     try {
@@ -178,16 +170,18 @@ class _AuthPageState extends State<AuthPage> {
                         ),
                       ),
                       const SizedBox(height: 12),
+
+
                       TextField(
                         controller: _nationality,
-                        decoration: InputDecoration(
+                        readOnly: true,
+                        decoration: const InputDecoration(
                           labelText: 'Nazionalità',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
                         ),
+                        onTap: () => {_openCountryPicker()},
                       ),
                       const SizedBox(height: 12),
+
                     ],
                     TextField(
                       controller: _email,
@@ -265,5 +259,22 @@ class _AuthPageState extends State<AuthPage> {
       return false;
     }
     return true;
+  }
+
+  void _openCountryPicker() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return CountryPickerWidget(selectedCountries: [], onCountriesSelected: _onCountrySelected, isUserNationality: true,);
+      },
+    );
+  }
+
+  void _onCountrySelected(List<Country> country) {
+    _nationality.text = country.first.name;
   }
 }

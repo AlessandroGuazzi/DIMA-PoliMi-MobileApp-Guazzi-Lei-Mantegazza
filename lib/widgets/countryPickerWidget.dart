@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 class CountryPickerWidget extends StatefulWidget {
   final Function(List<Country>) onCountriesSelected;
   final List<Country> selectedCountries;
+  final bool isUserNationality;
 
-  const CountryPickerWidget(this.selectedCountries, {super.key, required this.onCountriesSelected});
+  const CountryPickerWidget(
+      {super.key, required this.selectedCountries,required this.onCountriesSelected, required this.isUserNationality});
 
   @override
   State<CountryPickerWidget> createState() => _CountryPickerWidgetState();
@@ -60,8 +62,11 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
                   ),
                   SizedBox(
                     width: ScreenSize.screenWidth(context) * 0.2,
-                    child: TextButton(
-                        onPressed: () => _confirmCountries(), child: Text('Done')),
+                    child: widget.isUserNationality
+                        ? null
+                        : TextButton(
+                            onPressed: () => _confirmCountries(),
+                            child: Text('Conferma')),
                   )
                 ],
               ),
@@ -69,7 +74,7 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SearchBar(
-                hintText: 'Search countries...',
+                hintText: 'Cerca una nazione...',
                 leading: Icon(Icons.search),
                 backgroundColor:
                     Theme.of(context).searchBarTheme.backgroundColor,
@@ -100,7 +105,6 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
                                 style:
                                     Theme.of(context).textTheme.headlineSmall),
                             title: Text('${country.name}'),
-
                           ),
                         ),
                         Divider(
@@ -127,13 +131,16 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
 
   _selectCountry(Country country, bool isSelected) {
 
-    if (!isSelected && _selectedCountries.length < 5) {
-      _selectedCountries.add(country);
-    } else if (isSelected) {
-      _selectedCountries.remove(country);
-    }
+      if (!isSelected && _selectedCountries.length < 5) {
+        _selectedCountries.add(country);
+        if(widget.isUserNationality) {
+          _confirmCountries();
+        }
+      } else if (isSelected) {
+        _selectedCountries.remove(country);
+      }
+      setState(() {});
 
-    setState(() {});
   }
 
   _confirmCountries() {

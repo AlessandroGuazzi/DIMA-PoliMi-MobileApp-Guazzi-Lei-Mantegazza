@@ -485,8 +485,8 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        return CountryPickerWidget(_selectedCountries,
-            onCountriesSelected: _onCountriesSelected);
+        return CountryPickerWidget(selectedCountries: _selectedCountries,
+            onCountriesSelected: _onCountriesSelected, isUserNationality: false);
       },
     );
   }

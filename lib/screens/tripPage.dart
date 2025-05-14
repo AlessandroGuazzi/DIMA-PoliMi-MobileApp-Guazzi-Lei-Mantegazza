@@ -1,10 +1,10 @@
 
 import 'package:dima_project/models/activityModel.dart';
 import 'package:dima_project/models/tripModel.dart';
-import 'package:dima_project/screens/itineraryPage.dart';
-import 'package:dima_project/screens/tripExpensesPage.dart';
+import 'package:dima_project/widgets/trip_widgets/itineraryWidget.dart';
+import 'package:dima_project/widgets/trip_widgets/tripExpensesWidget.dart';
 import 'package:dima_project/screens/mapPage.dart';
-import 'package:dima_project/screens/tripInfoPage.dart';
+import 'package:dima_project/widgets/trip_widgets/tripInfoWidget.dart';
 import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +12,9 @@ import 'package:flutter/services.dart';
 import '../services/googlePlacesService.dart';
 
 class TripPage extends StatefulWidget {
-  const TripPage({super.key, required this.trip, required this.isMyTrip});
+  TripPage({super.key, required this.trip, required this.isMyTrip});
 
-  final TripModel trip;
+  TripModel trip;
   final bool isMyTrip;
 
   @override
@@ -22,13 +22,11 @@ class TripPage extends StatefulWidget {
 }
 
 class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
-  late TripModel _trip;
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _trip = widget.trip;
     _tabController = TabController(length: 3, vsync: this);
   }
 
@@ -52,10 +50,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
             pinned: true,
             floating: false,
             flexibleSpace: FlexibleSpaceBar(
-              centerTitle: false,
-              title: Text(
-                _trip.title ?? 'No title',
-              ),
+              centerTitle: true,
               background: Stack(
                 alignment: Alignment.center,
                 fit: StackFit.expand,
@@ -68,7 +63,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                     color: Colors.black.withOpacity(0.2),
                     alignment: Alignment.center,
                     child: Text(
-                      _trip.title ?? 'No title',
+                      widget.trip.title ?? 'No title',
                       style: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white),
                       textAlign: TextAlign.center,
                     ),
@@ -103,9 +98,9 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
         body: TabBarView(
           controller: _tabController,
           children: [
-            Itinerarypage(trip: _trip, isMyTrip: widget.isMyTrip),
-            TripInfoPage(trip: _trip),
-            TripExpensesPage(tripId: widget.trip.id ?? '',),
+            ItineraryWidget(trip: widget.trip, isMyTrip: widget.isMyTrip),
+            TripInfoWidget(trip: widget.trip),
+            TripExpensesWidget(tripId: widget.trip.id ?? '',),
           ],
         ),
       ),
@@ -152,8 +147,12 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                 );
                 //update ui trip
                 if (result != null) {
-                  setState(() {
-                    _trip = result;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        widget.trip = result;
+                      });
+                    }
                   });
                 }
               },
@@ -183,7 +182,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                 );
 
                 if (shouldDelete == true) {
-                  await DatabaseService().deleteTrip(_trip.id!);
+                  await DatabaseService().deleteTrip(widget.trip.id!);
                   if (context.mounted) Navigator.pop(context);
                 }
               },
@@ -196,7 +195,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MapPage(trip: _trip),
+                    builder: (context) => MapPage(trip: widget.trip),
                   ),
                 );
               },

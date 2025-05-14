@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dima_project/screens/medalsPage.dart';
 
-import '../models/tripModel.dart';
+import '../../models/tripModel.dart';
 
 class TripCardWidget extends StatefulWidget {
   final TripModel trip;
@@ -48,19 +48,22 @@ class _TripCardWidgetState extends State<TripCardWidget> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              //profile pic
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  widget.trip.imageRef != null
-                      ? GooglePlacesService().getImageUrl(widget.trip.imageRef!)
-                      : 'https://picsum.photos/800',
-                  width: ScreenSize.screenWidth(context) * 0.22,
-                  height: ScreenSize.screenWidth(context) * 0.22,
-                  fit: BoxFit.cover,
-                ),
+              //--- trip-profile pic ---
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                widget.trip.imageRef != null
+                    ? GooglePlacesService().getImageUrl(widget.trip.imageRef!)
+                    : 'https://picsum.photos/800',
+                height: 120,
+                width: 120,
+                fit: BoxFit.cover,
               ),
+            ),
 
+              const SizedBox(width: 12), // spacing between image and text
+
+              //--- trip details text ---
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -74,25 +77,19 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          const Icon(
-                            Icons.calendar_today,
-                          ),
+                          const Icon(Icons.calendar_today),
                           const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                                '$startDateFormat - $endDateFormat', //· fra ${startDate.difference(DateTime.now()).inDays + 1} giorni',
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodyMedium),
+                          Text(
+                            '$startDateFormat - $endDateFormat',
+                            softWrap: true,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
                       ),
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          Icon(
-                            Icons.public,
-                          ),
+                          const Icon(Icons.public),
                           const SizedBox(width: 6),
                           Text(
                             _displayCityNames(),
@@ -105,7 +102,8 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   ),
                 ),
               ),
-              Icon(Icons.arrow_forward_ios)
+
+              const Icon(Icons.arrow_forward_ios),
             ],
           ),
         ),

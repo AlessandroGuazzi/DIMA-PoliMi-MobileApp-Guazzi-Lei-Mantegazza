@@ -38,7 +38,7 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                     ),
                     child: Icon(
                       Icons.flight,
-                      size: MediaQuery.of(context).size.width * 0.1,
+                      size: 50,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),

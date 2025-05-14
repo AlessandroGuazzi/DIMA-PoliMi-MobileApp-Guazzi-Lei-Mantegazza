@@ -4,14 +4,9 @@ import 'package:dima_project/models/userModel.dart';
 import 'package:dima_project/screens/tripPage.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
-import 'package:dima_project/widgets/tripCardWidget.dart';
+import 'package:dima_project/utils/responsive.dart';
+import 'package:dima_project/widgets/trip_widgets/tripCardWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_common/get_reset.dart';
-import 'package:get/get_navigation/src/bottomsheet/bottomsheet.dart';
-
-import '../utils/screenSize.dart';
-
-//TODO: sorting
 
 class ExplorerPage extends StatefulWidget {
   const ExplorerPage({super.key});
@@ -26,6 +21,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
   List<String> _savedTrips = [];
   List<TripModel> _allTrips = [];
   List<TripModel> _filteredTrips = [];
+  TripModel? _selectedTrip;
 
   @override
   void initState() {
@@ -37,114 +33,159 @@ class _ExplorerPageState extends State<ExplorerPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('Build of explorer page...');
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: SearchBar(
-                    hintText: "Cerca una destinazione...",
-                    onChanged: (query) {
-                      setState(() {
-                        _filterTrips(query);
-                      });
-                    },
-                    leading: const Icon(
-                      Icons.search,
-                      size: 20,
-                    ),
-                    backgroundColor:
-                        Theme.of(context).searchBarTheme.backgroundColor,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => _openSortWidget(),
-                  icon: Icon(
-                    Icons.sort,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                )
-              ],
-            ),
-          ),
-          Expanded(
-            //first futureBuilder wait for current user to be loaded
-            child: FutureBuilder<UserModel?>(
-              future: _futureCurrentUser,
-              builder: (context, userSnapshot) {
-                if (userSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (userSnapshot.hasError) {
-                  return Center(child: Text('Error: ${userSnapshot.error}'));
-                } else if (!userSnapshot.hasData) {
-                  return const Center(child: Text('Utente non trovato'));
-                }
+      body: FutureBuilder<UserModel?>(
+        future: _futureCurrentUser,
+        builder: (context, userSnapshot) {
+          if (userSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (userSnapshot.hasError) {
+            return Center(child: Text('Error: ${userSnapshot.error}'));
+          } else if (!userSnapshot.hasData) {
+            return const Center(child: Text('Utente non trovato'));
+          }
 
-                if (_savedTrips.isEmpty) {
-                  _savedTrips = List<String>.from(userSnapshot.data!.savedTrip ?? []);
-                }
+          if (_savedTrips.isEmpty) {
+            _savedTrips = List<String>.from(userSnapshot.data!.savedTrip ?? []);
+          }
 
-                //second future builder wait for trips to be loaded
-                return FutureBuilder<List<TripModel>>(
-                  future: _futureTrips,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('Nessun viaggio pubblico'));
-                    }
+          //second future builder wait for trips to be loaded
+          return FutureBuilder<List<TripModel>>(
+            future: _futureTrips,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: Text('Nessun viaggio pubblico'));
+              }
 
-                    if (_allTrips.isEmpty && _filteredTrips.isEmpty) {
-                      _allTrips = snapshot.data!;
-                      _filteredTrips = _allTrips;
-                    }
+              //id statement ensures that this initialization is done only
+              //the first time the widget is built
+              if (_allTrips.isEmpty && _filteredTrips.isEmpty) {
+                _allTrips = snapshot.data!;
+                _filteredTrips = _allTrips;
+              }
 
+              return ResponsiveLayout(
+                  mobileLayout: _buildMobileLayout(),
+                  tabletLayout: _buildTabletLayout());
+            },
+          );
+        },
+      ),
+    );
+  }
 
-                    return _filteredTrips.isEmpty
-                        ? const Center(
-                            child: Text('No trips match your search'))
-                        : ListView.builder(
-                            itemCount: _filteredTrips.length,
-                            itemBuilder: (context, index) {
-                              final trip = _filteredTrips[index];
-                              bool isSaved = _savedTrips.contains(trip.id);
+  Widget _myTripsList(Function onTileTap) {
+    return Expanded(
+      child: _filteredTrips.isEmpty
+          ? const Center(child: Text('Nessun viaggio trovato'))
+          : ListView.builder(
+              itemCount: _filteredTrips.length,
+              itemBuilder: (context, index) {
+                final trip = _filteredTrips[index];
+                bool isSaved = _savedTrips.contains(trip.id);
 
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute<void>(
-                                            builder: (context) => TripPage(
-                                                trip: trip, isMyTrip: false)));
-                                  },
-                                  child: TripCardWidget(trip, isSaved, _handleTripSave, false)
-                                ),
-                              );
-                            },
-                          );
-                  },
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: GestureDetector(
+                      onTap: () {onTileTap(trip);},
+                      child: TripCardWidget(
+                          trip, isSaved, _handleTripSave, false)),
                 );
               },
             ),
+    );
+  }
+
+  Widget _buildSearchBarSection() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: SearchBar(
+              hintText: "Cerca una destinazione...",
+              onChanged: (query) {
+                setState(() {
+                  _filterTrips(query);
+                });
+              },
+              leading: const Icon(
+                Icons.search,
+                size: 20,
+              ),
+              backgroundColor: Theme.of(context).searchBarTheme.backgroundColor,
+            ),
           ),
+          IconButton(
+            onPressed: () => _openSortWidget(),
+            icon: Icon(
+              Icons.sort,
+              color: Theme.of(context).primaryColor,
+            ),
+          )
         ],
       ),
     );
   }
 
-  void _handleTripSave(bool isSaved, String tripId) async {
+  Widget _buildMobileLayout() {
+    //personalized action for mobile on touch of a trip tile
+    onMobileTileTap(trip) => {
+          Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                  builder: (context) => TripPage(trip: trip, isMyTrip: false)))
+        };
 
+    return Column(
+      children: [
+        //--- Search bar section ---
+        _buildSearchBarSection(),
+        //--- Trip list section
+        _myTripsList(onMobileTileTap),
+      ],
+    );
+  }
+
+  Widget _buildTabletLayout() {
+    onTabletTileTap(trip) => {
+      setState(() {
+        _selectedTrip = trip;
+      })
+    };
+
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: Column(
+            children: [
+              //--- Search bar section ---
+              _buildSearchBarSection(),
+              //--- Trip list section
+              _myTripsList(onTabletTileTap),
+            ],
+          ),
+        ),
+        const VerticalDivider(width: 1),
+        Expanded(
+          flex: 3,
+          child: _selectedTrip != null
+              ? TripPage(trip: _selectedTrip!, isMyTrip: false)
+              : const Center(child: Text('Seleziona un viaggio')),
+        ),
+      ],
+    );
+  }
+
+  void _handleTripSave(bool isSaved, String tripId) async {
     try {
       await DatabaseService().handleTripSave(isSaved, tripId);
       setState(() {
@@ -165,8 +206,8 @@ class _ExplorerPageState extends State<ExplorerPage> {
 
   void _filterTrips(String query) {
     _filteredTrips = _allTrips
-        .where((trip) =>
-        trip.title!.toLowerCase().contains(query.toLowerCase()))
+        .where(
+            (trip) => trip.title!.toLowerCase().contains(query.toLowerCase()))
         .toList();
   }
 
@@ -202,7 +243,8 @@ class _ExplorerPageState extends State<ExplorerPage> {
                 onTap: () {
                   setState(() {
                     _filteredTrips.sort((a, b) =>
-                        (b.timestamp ?? Timestamp.now()).compareTo(a.timestamp ?? Timestamp.now()));
+                        (b.timestamp ?? Timestamp.now())
+                            .compareTo(a.timestamp ?? Timestamp.now()));
                   });
                   Navigator.pop(context);
                 },
