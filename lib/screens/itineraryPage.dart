@@ -8,10 +8,10 @@ import 'package:dima_project/screens/createActivityPage.dart';
 import 'package:dima_project/screens/editActivityPage.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/utils/screenSize.dart';
-import 'package:dima_project/widgets/accomodationCardWidget.dart';
-import 'package:dima_project/widgets/attractionCardWidget.dart';
-import 'package:dima_project/widgets/flightCardWidget.dart';
-import 'package:dima_project/widgets/transportCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/accomodationCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/attractionCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/transportCardWidget.dart';
 import 'package:dima_project/widgets/tripProgressBar.dart';
 import 'package:flutter/material.dart';
 
@@ -353,36 +353,38 @@ class _ItinerarypageState extends State<Itinerarypage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            //handle
-            Padding(
-              padding: const EdgeInsets.fromLTRB(200, 15, 200, 15),
-              child: Container(
-                height: 5,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).dividerColor,
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(100)), // Rounded edges
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              //handle
+              Padding(
+                padding: const EdgeInsets.fromLTRB(200, 15, 200, 15),
+                child: Container(
+                  height: 5,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).dividerColor,
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(100)), // Rounded edges
+                  ),
                 ),
               ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                'Crea una nuova attività',
-                style: Theme.of(context).textTheme.titleMedium,
+          
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  'Crea una nuova attività',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
-            ),
-            _buildOption(Icons.flight, 'Volo', 'flight'),
-            _buildOption(Icons.hotel, 'Alloggio', 'accommodation'),
-            _buildOption(Icons.directions_bus, 'Altri Trasporti', 'transport'),
-            _buildOption(Icons.attractions, 'Attrazione', 'attraction'),
-            const SizedBox(height: 15),
-          ],
+              _buildOption(Icons.flight, 'Volo', 'flight'),
+              _buildOption(Icons.hotel, 'Alloggio', 'accommodation'),
+              _buildOption(Icons.directions_bus, 'Altri Trasporti', 'transport'),
+              _buildOption(Icons.attractions, 'Attrazione', 'attraction'),
+              const SizedBox(height: 15),
+            ],
+          ),
         ),
       ),
     );

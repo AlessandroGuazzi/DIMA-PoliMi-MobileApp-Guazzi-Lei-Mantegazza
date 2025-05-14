@@ -78,10 +78,13 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                             Icons.calendar_today,
                           ),
                           const SizedBox(width: 6),
-                          Text(
-                              '$startDateFormat - $endDateFormat', //· fra ${startDate.difference(DateTime.now()).inDays + 1} giorni',
-                              softWrap: true,
-                              style: Theme.of(context).textTheme.bodyMedium),
+                          Expanded(
+                            child: Text(
+                                '$startDateFormat - $endDateFormat', //· fra ${startDate.difference(DateTime.now()).inDays + 1} giorni',
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodyMedium),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 6),

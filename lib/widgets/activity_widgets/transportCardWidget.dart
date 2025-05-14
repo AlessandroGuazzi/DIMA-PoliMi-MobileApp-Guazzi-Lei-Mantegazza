@@ -21,7 +21,7 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
     return Stack(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 0.2, top: 10.0, right: 21, bottom: 11.0),
+          padding: const EdgeInsets.only(left: 3.0, top: 10.0, right: 3.0, bottom: 11.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -47,18 +47,12 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Text('From: ', style: Theme.of(context).textTheme.titleLarge),
-                            Expanded(
-                              child: Text(
-                                widget.transport.departurePlace ?? 'N/A',
-                                style: Theme.of(context).textTheme.headlineSmall,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.only(right: 30.0),
+                          child: Text(
+                            '${widget.transport.departurePlace ?? ""} → ${widget.transport.arrivalPlace ?? ""}',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
                         ),
                         Row(
                           children: [
@@ -79,7 +73,7 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
               if (isExpanded) ...[
                 const Divider(),
                 Padding(
-                  padding: const EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.only(top: 10, left: 4.0, right: 3.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -87,26 +81,55 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                         "Dettagli Extra:",
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      if (widget.transport.duration != null)
+                      const SizedBox(height: 6),
+
+                      if (widget.transport.transportType != null && widget.transport.transportType!.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            Icon(Icons.category, size: 20, color: Theme.of(context).primaryColor),
+                            const SizedBox(width: 5),
+                            Text("Tipo: ${widget.transport.transportType}"),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+
+                      if (widget.transport.duration != null) ...[
                         Row(
                           children: [
                             Icon(Icons.timelapse, size: 20, color: Theme.of(context).primaryColor),
                             const SizedBox(width: 5),
-                            Text('Duration: ${widget.transport.duration}'),
+                            Text("Durata: ${widget.transport.duration} ore"),
                           ],
                         ),
-                      Row(
-                        children: [
-                          Icon(Icons.location_on, size: 20, color: Theme.of(context).primaryColor),
-                          const SizedBox(width: 5),
-                          Text('Destination: ${widget.transport.arrivalPlace ?? "N/A"}'),
-                        ],
-                      ),
+                        const SizedBox(height: 5),
+                      ],
 
+                      if (widget.transport.arrivalPlace != null && widget.transport.arrivalPlace!.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            Icon(Icons.location_on, size: 20, color: Theme.of(context).primaryColor),
+                            const SizedBox(width: 5),
+                            Expanded(child: Text("Destinazione: ${widget.transport.arrivalPlace!}")),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+
+                      if (widget.transport.expenses != null) ...[
+                        Row(
+                          children: [
+                            Icon(Icons.attach_money, size: 20, color: Theme.of(context).primaryColor),
+                            const SizedBox(width: 5),
+                            Text("Costo: €${widget.transport.expenses!.toStringAsFixed(2)}"),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),
-              ]
+              ],
+
             ],
           ),
         ),

@@ -20,7 +20,7 @@ class _AccommodationCardWidgetState extends State<AccommodationCardWidget> {
     return Stack(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 0.2, top: 10.0, right: 3.0, bottom: 11.0),
+          padding: const EdgeInsets.only(left: 3.0, top: 10.0, right: 3.0, bottom: 11.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -46,9 +46,12 @@ class _AccommodationCardWidgetState extends State<AccommodationCardWidget> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${widget.accommodation.name ?? 'N/A'}',
-                          style: Theme.of(context).textTheme.headlineSmall,
+                        Padding(
+                          padding: const EdgeInsets.only(right: 30.0),
+                          child: Text(
+                            '${widget.accommodation.name ?? 'N/A'}',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
                         ),
 
                         Row(
@@ -85,7 +88,7 @@ class _AccommodationCardWidgetState extends State<AccommodationCardWidget> {
               if (isExpanded) ...[
                 const Divider(),
                 Padding(
-                  padding: const EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.only(top: 10, left: 4.0, right: 3.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -93,11 +96,40 @@ class _AccommodationCardWidgetState extends State<AccommodationCardWidget> {
                         "Dettagli Extra:",
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: 5),
-                      Text(
-                        "Nessuna informazione aggiuntiva.",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
+                      const SizedBox(height: 6),
+
+                      if (widget.accommodation.address != null) ...[
+                        Row(
+                          children: [
+                            Icon(Icons.location_on, color: Theme.of(context).primaryColor),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(widget.accommodation.address!),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 3),
+                      ],
+
+                      if (widget.accommodation.expenses != null) ...[
+                        Row(
+                          children: [
+                            Icon(Icons.attach_money, color: Theme.of(context).primaryColor),
+                            const SizedBox(width: 5),
+                            Text("Costo: €${widget.accommodation.expenses!.toStringAsFixed(2)}"),
+                          ],
+                        ),
+                        const SizedBox(height: 3),
+                      ],
+
+                      if (widget.accommodation.contacts != null && widget.accommodation.contacts!.isNotEmpty) ...[
+                        Text("Contatti:", style: Theme.of(context).textTheme.bodyMedium,),
+                        ...widget.accommodation.contacts!.entries.map((entry) => Padding(
+                          padding: const EdgeInsets.only(left: 8, top: 2),
+                          child: Text("${entry.key}: ${entry.value}"),
+                        )),
+                      ]
+
                     ],
                   ),
                 ),

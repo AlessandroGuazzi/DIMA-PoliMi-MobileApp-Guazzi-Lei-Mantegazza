@@ -38,7 +38,7 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                     ),
                     child: Icon(
                       Icons.flight,
-                      size: MediaQuery.of(context).size.width * 0.09,
+                      size: MediaQuery.of(context).size.width * 0.1,
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
@@ -92,7 +92,7 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
               if (isExpanded) ...[
                 const Divider(),
                 Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 3.0),
+                  padding: const EdgeInsets.only(top: 10, left: 4.0, right: 3.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -100,24 +100,53 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                           "Dettagli Extra:",
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        const SizedBox(height: 5),
-                        Text(
-                          "Partenza: ${widget.flight.departureAirPort?['name']} ",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 6),
 
-                        Text(
-                          "Arrivo: ${widget.flight.arrivalAirPort?['name']}",
-                          style: Theme.of(context).textTheme.bodyMedium,
+                        // Partenza
+                        Row(
+                          children: [
+                            const Icon(Icons.flight_takeoff, size: 20),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                "Partenza: ${widget.flight.departureAirPort?['name']}",
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 3),
 
-                        Text(
-                          "Costo: €${(widget.flight.expenses ?? 0).toStringAsFixed(2)}",
-                          style: Theme.of(context).textTheme.bodyMedium,
+                        // Arrivo
+                        Row(
+                          children: [
+                            const Icon(Icons.flight_land, size: 20),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                "Arrivo: ${widget.flight.arrivalAirPort?['name']}",
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 3),
+
+                        // Costo
+                        Row(
+                          children: [
+                            const Icon(Icons.attach_money, size: 20),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                "Costo: €${(widget.flight.expenses ?? 0).toStringAsFixed(2)}",
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
+
                     ),
 
                 ),
