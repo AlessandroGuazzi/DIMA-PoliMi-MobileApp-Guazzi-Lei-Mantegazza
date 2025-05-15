@@ -17,7 +17,7 @@ class TripModel {
   final Map<String, num>? expenses;
   final bool? isConfirmed;
   final bool? isPast;
-  final bool? isPrivate;
+  bool? isPrivate;
   int? saveCounter;
   final Timestamp? timestamp;
   final String? imageRef;

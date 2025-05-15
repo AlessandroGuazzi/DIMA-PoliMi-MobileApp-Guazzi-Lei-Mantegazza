@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/activityModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/userModel.dart';
+import 'package:flutter/cupertino.dart';
 import 'authService.dart';
 
 class DatabaseService {
@@ -49,22 +50,23 @@ class DatabaseService {
     }
   }
 
-  //Method for retrieval of all  'Trips' documents that are not created by the current user
+  //Method for retrieval of all  'Trips' documents that are not created by the current user and isPrivate=false
   Future<List<TripModel>> getExplorerTrips() async {
     List<TripModel> trips = [];
 
     try {
       QuerySnapshot<TripModel> querySnapshot = await tripCollection
           .where("creatorInfo.id", isNotEqualTo: currentUserId)
+          .where("isPrivate", isEqualTo: false)
           .get();
 
-      print("Trip retrieval completed");
+      debugPrint("Trip retrieval completed");
 
       for (var docSnapshot in querySnapshot.docs) {
         trips.add(docSnapshot.data());
       }
     } catch (e) {
-      print("Error retrieving trip: $e");
+      debugPrint("Error retrieving trip: $e");
     }
 
     return trips;
@@ -119,7 +121,6 @@ class DatabaseService {
 
     return trips;
   }
-
 
   //method for updating a trip details
   Future updateTrip(TripModel trip) async {
@@ -233,7 +234,6 @@ class DatabaseService {
     }
   }
 
-
   Future<void> updateTripCost(String tripId, num cost, bool isAdd, String type) async {
     final tripRef = FirebaseFirestore.instance.collection('Trips').doc(tripId);
 
@@ -316,6 +316,15 @@ class DatabaseService {
     }
 
     return trips;
+  }
+
+  Future<void> updateTripPrivacy(String tripId, bool isPrivate) async {
+    try {
+      await tripCollection.doc(tripId).update({'isPrivate': isPrivate});
+    } on Exception catch (e) {
+      debugPrint('Error updating privacy: $e');
+      rethrow;
+    }
   }
 
 }
