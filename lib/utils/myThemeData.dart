@@ -140,4 +140,143 @@ class MyThemeData {
       ),
     );
   }
+
+  static ThemeData getDarkTheme({required bool isTablet}) {
+    return ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: primaryColor,
+      secondaryHeaderColor: secondaryColor,
+      scaffoldBackgroundColor: CupertinoColors.black,
+      cardColor: CupertinoColors.darkBackgroundGray,
+      dividerColor: CupertinoColors.systemGrey5,
+      appBarTheme: AppBarTheme(
+        backgroundColor: primaryColor,
+        foregroundColor: white,
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: CupertinoColors.darkBackgroundGray,
+        selectedItemColor: primaryColor,
+        unselectedItemColor: CupertinoColors.systemGrey4,
+        selectedIconTheme: IconThemeData(size: isTablet ? 30 : 28),
+        unselectedIconTheme: IconThemeData(size: isTablet ? 26 : 24),
+        showSelectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+      ),
+      cardTheme: CardTheme(
+        color: CupertinoColors.darkBackgroundGray,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      buttonTheme: ButtonThemeData(
+        buttonColor: primaryColor,
+        textTheme: ButtonTextTheme.primary,
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primaryColor,
+        foregroundColor: white,
+        elevation: 6,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: CupertinoColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          textStyle: TextStyle(
+            fontSize: isTablet ? 18 : 14,
+            fontWeight: FontWeight.w600,
+          ),
+          padding: EdgeInsets.symmetric(
+            vertical: isTablet ? 18 : 12,
+            horizontal: isTablet ? 32 : 20,
+          ),
+        ),
+      ),
+      iconTheme: IconThemeData(
+        size: isTablet ? 24 : 20,
+        color: primaryColor,
+        opacity: 0.9,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        fillColor: CupertinoColors.systemGrey6,
+        filled: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: dividerColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: primaryColor,
+            width: 2,
+          ),
+        ),
+        prefixIconColor: CupertinoColors.systemGrey3,
+        labelStyle: TextStyle(color: CupertinoColors.systemGrey3),
+      ),
+      textTheme: TextTheme(
+        displayLarge: TextStyle(
+          fontSize: isTablet ? 36 : 32,
+          fontWeight: FontWeight.bold,
+          letterSpacing: -1.0,
+          color: white,
+        ),
+        headlineLarge: TextStyle(
+          fontSize: isTablet ? 28 : 24,
+          fontWeight: FontWeight.w700,
+          color: white,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: isTablet ? 24 : 20,
+          fontWeight: FontWeight.w600,
+          color: white,
+        ),
+        titleLarge: TextStyle(
+          fontSize: isTablet ? 22 : 18,
+          fontWeight: FontWeight.w600,
+          color: white,
+        ),
+        titleMedium: TextStyle(
+          fontSize: isTablet ? 18 : 16,
+          fontWeight: FontWeight.w500,
+          color: white,
+        ),
+        bodyLarge: TextStyle(
+          fontSize: isTablet ? 18 : 16,
+          fontWeight: FontWeight.normal,
+          height: 1.5,
+          color: CupertinoColors.systemGrey4,
+        ),
+        bodyMedium: TextStyle(
+          fontSize: isTablet ? 16 : 14,
+          fontWeight: FontWeight.normal,
+          color: CupertinoColors.systemGrey3,
+        ),
+        bodySmall: TextStyle(
+          fontSize: isTablet ? 14 : 12,
+          fontWeight: FontWeight.w400,
+          color: CupertinoColors.systemGrey2,
+        ),
+        labelLarge: TextStyle(
+          fontSize: isTablet ? 16 : 14,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.2,
+          color: white,
+        ),
+      ),
+      searchBarTheme: SearchBarThemeData(
+        backgroundColor: WidgetStateProperty.all(CupertinoColors.systemGrey6),
+        elevation: WidgetStateProperty.all(2.0),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50.0),
+          ),
+        ),
+        overlayColor: WidgetStateProperty.all(CupertinoColors.systemGrey),
+      ),
+    );
+  }
 }

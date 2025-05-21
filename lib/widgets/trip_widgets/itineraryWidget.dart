@@ -82,6 +82,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
           ),
           const SizedBox(width: 15),
           FloatingActionButton(
+            heroTag: 'newActivityButton',
             mini: true,
             onPressed: _showNewActivityOption,
             tooltip: "Aggiungi attività",

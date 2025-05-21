@@ -6,8 +6,6 @@ import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/screens/tripPage.dart';
 
-import '../utils/screenSize.dart';
-
 class MyTripsPage extends StatefulWidget {
   const MyTripsPage({super.key});
 
@@ -69,6 +67,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'newTripButton',
         onPressed: _goToNewTripPage,
         child: const Icon(Icons.add),
       ),

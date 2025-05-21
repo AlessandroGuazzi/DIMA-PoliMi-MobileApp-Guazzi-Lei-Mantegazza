@@ -10,6 +10,7 @@ import 'package:dima_project/screens/accountSettings.dart';
 import 'package:intl/intl.dart';
 import '../models/tripModel.dart';
 import '../models/userModel.dart';
+import '../utils/responsive.dart';
 import 'gamePage.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -43,6 +44,224 @@ class _ProfilePageState extends State<ProfilePage> {
     await AuthService().signOut();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLayout: _buildMobileLayout(),
+      tabletLayout: _buildTabletLayout(),
+    );
+  }
+
+  Widget _futureUserBuilder(Widget Function(UserModel user) builder) {
+    return FutureBuilder<UserModel?>(
+      future: _currentUserFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Scaffold(body: Center(child: Text('Errore: ${snapshot.error ?? 'Utente non trovato'}')));
+        }
+
+        final user = snapshot.data!;
+        _savedTrips = DatabaseService().getTripsByIds(user.savedTrip);
+
+        return builder(user);
+      },
+    );
+  }
+
+  Widget _buildMobileLayout() {
+    return DefaultTabController(
+      length: 2,
+      child: _futureUserBuilder((user) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.settings, color: Colors.black),
+                onPressed: () => _showSettingsModal(user),
+              ),
+            ],
+          ),
+          body: SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 0),
+                CircleAvatar(
+                  radius: 75,
+                  backgroundImage: user.profilePic != null
+                      ? NetworkImage(user.profilePic!) as ImageProvider
+                      : const AssetImage('assets/profile.png'),
+                ),
+                const SizedBox(height: 16),
+                Text('${user.name} ${user.surname}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                Text('@${user.username}', style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+                const SizedBox(height: 24),
+                TabBar(
+                  indicatorColor: Theme.of(context).primaryColor,
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Colors.grey,
+                  tabs: const [
+                    Tab(text: 'Viaggi Salvati'),
+                    Tab(text: 'I Tuoi Viaggi'),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildTripList(_savedTrips, isMyTrip: false),
+                      _buildTripList(_futureTrips, isMyTrip: true),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      })
+    );
+  }
+
+  Widget _buildTabletLayout() {
+    return DefaultTabController(
+      length: 2,
+      child: _futureUserBuilder((user) {
+        return Scaffold(
+          body: Row(
+            children: [
+              //left section
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: [
+                    //profile info
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 30),
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 100,
+                              backgroundImage: user.profilePic != null
+                                  ? NetworkImage(user.profilePic!) as ImageProvider
+                                  : const AssetImage('assets/profile.png'),
+                            ),
+                            const SizedBox(height: 16),
+                            Text('${user.name} ${user.surname}', style: Theme.of(context).textTheme.titleLarge),
+                            Text('@${user.username}', style: Theme.of(context).textTheme.bodyMedium),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const Divider(),
+                    //settings info
+                    Expanded(
+                      flex: 1,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16.0),
+                        child: _buildSettingsSection(user),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const VerticalDivider(width: 1),
+              //right section
+              Expanded(
+                flex: 4,
+                child: Column(
+                  children: [
+                    TabBar(
+                      indicatorColor: Theme.of(context).primaryColor,
+                      labelColor: Colors.black,
+                      unselectedLabelColor: Colors.grey,
+                      tabs: const [
+                        Tab(text: 'Viaggi Salvati'),
+                        Tab(text: 'I Tuoi Viaggi'),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          _buildTripList(_savedTrips, isMyTrip: false),
+                          _buildTripList(_futureTrips, isMyTrip: true),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      })
+    );
+  }
+
+  Widget _buildSettingsSection(UserModel user) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          'Impostazioni',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        ListTile(
+          leading: const Icon(Icons.person, color: Colors.black),
+          title: const Text('Modifica Profilo', style: TextStyle(fontSize: 18)),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AccountSettings(currentUserFuture: _currentUserFuture),
+              ),
+            ).then((_) => setState(() {
+              _currentUserFuture = _loadCurrentUser();
+            }));
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.travel_explore_outlined, color: Colors.black),
+          title: const Text('Nazioni Visitate', style: TextStyle(fontSize: 18)),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const GamePage()),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.monetization_on, color: Colors.black),
+          title: const Text('Medaglie', style: TextStyle(fontSize: 18)),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MedalsPage(username: user.username!, userId: user.id!),
+              ),
+            ).then((_) => setState(() {
+              _currentUserFuture = _loadCurrentUser();
+            }));
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.logout, color: Colors.red),
+          title: const Text('Log Out', style: TextStyle(fontSize: 18)),
+          onTap: () async {
+            await signOut();
+          },
+        ),
+      ],
+    );
+  }
 
   void _showSettingsModal(UserModel user) {
     showModalBottomSheet(
@@ -119,203 +338,36 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: FutureBuilder(
-        future: _currentUserFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
+  Widget _buildTripList(Future<List<TripModel>> future, {required bool isMyTrip}) {
+    return FutureBuilder<List<TripModel>>(
+      future: future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text(isMyTrip ? 'Nessun viaggio creato' : 'Nessun viaggio salvato'));
+        }
+
+        final trips = snapshot.data!;
+        return ListView.builder(
+          itemCount: trips.length,
+          itemBuilder: (context, index) {
+            final trip = trips[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TripPage(trip: trip, isMyTrip: isMyTrip),
+                  ),
+                );
+              },
+              child: TripCardWidget(trip, false, (a, b) {}, true),
             );
-          }
-
-          if (snapshot.hasError) {
-            return Scaffold(
-              body: Center(child: Text('Errore: ${snapshot.error}')),
-            );
-          }
-
-          if (snapshot.data == null) {
-            return const Scaffold(
-              body: Center(child: Text('Utente non trovato')),
-            );
-          }
-
-          final user = snapshot.data!;
-          _savedTrips = DatabaseService().getTripsByIds(user.savedTrip);
-
-          return Scaffold(
-            backgroundColor: const Color(0xFFF1F4F8),
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              centerTitle: true,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.settings, color: Colors.black),
-                  onPressed: () {
-                    _showSettingsModal(user); // Passa l'utente!
-                  },
-                ),
-              ],
-            ),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  const SizedBox(height: 0),
-                  Container(
-                    width: ScreenSize.screenWidth(context) * 0.35,
-                    height: ScreenSize.screenHeight(context) * 0.15,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Theme.of(context).primaryColor,
-                        width: 2,
-                      ),
-                      image: DecorationImage(
-                        image: user.profilePic == null
-                            ? const AssetImage('assets/profile.png')
-                            : NetworkImage(user.profilePic!),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Column(
-                    children: [
-                      Text(
-                        '${user.name} ${user.surname}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        '@${user.username}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  TabBar(
-                    indicatorColor: Theme.of(context).primaryColor,
-                    labelColor: Colors.black,
-                    unselectedLabelColor: Colors.grey,
-                    tabs: const [
-                      Tab(text: 'Viaggi Salvati'),
-                      Tab(text: 'I Tuoi Viaggi'),
-                    ],
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        FutureBuilder<List<TripModel>>(
-                          future: _savedTrips,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Container(
-                                color: Colors.white,
-                                child: const Center(child: CircularProgressIndicator()),
-                              );
-                            }
-
-                            if (snapshot.hasError) {
-                              return const Center(child: Text('Errore nel caricamento dei viaggi'));
-                            }
-
-                            final trips = snapshot.data!;
-
-                            if (trips.isEmpty) {
-                              return const Center(child: Text('Nessun viaggio salvato'));
-                            }
-
-                            return ListView.builder(
-                              itemCount: trips.length,
-                              itemBuilder: (context, index) {
-                                final trip = trips[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 5),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute<void>(
-                                          builder: (context) => TripPage(
-                                            trip: trip,
-                                            isMyTrip: false,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: TripCardWidget(trip, false, (a, b) {}, true),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        FutureBuilder<List<TripModel>>(
-                          future: _futureTrips,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Container(
-                                color: Colors.white,
-                                child: const Center(child: CircularProgressIndicator()),
-                              );
-                            }
-
-                            if (snapshot.hasError) {
-                              return const Center(child: Text('Errore nel caricamento dei viaggi'));
-                            }
-
-                            final trips = snapshot.data!;
-
-                            if (trips.isEmpty) {
-                              return const Center(child: Text('Nessun viaggio creato'));
-                            }
-
-                            return ListView.builder(
-                              itemCount: trips.length,
-                              itemBuilder: (context, index) {
-                                final trip = trips[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 5),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute<void>(
-                                          builder: (context) => TripPage(
-                                            trip: trip,
-                                            isMyTrip: true,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: TripCardWidget(trip, false, (a, b) {}, true),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+          },
+        );
+      },
     );
-  }
-
-
-}
+  }}
