@@ -43,10 +43,11 @@ class _TripCardWidgetState extends State<TripCardWidget> {
         color: Theme.of(context).cardColor,
         elevation: 1,
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(8),
           child: Row(
             mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               //--- trip-profile pic ---
             ClipRRect(
@@ -55,54 +56,54 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 widget.trip.imageRef != null
                     ? GooglePlacesService().getImageUrl(widget.trip.imageRef!)
                     : 'https://picsum.photos/800',
-                height: 120,
-                width: 120,
+                height: 100,
+                width: 100,
                 fit: BoxFit.cover,
               ),
             ),
 
-              const SizedBox(width: 12), // spacing between image and text
+              const SizedBox(width: 8),
 
               //--- trip details text ---
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.trip.title ?? 'Titolo mancante',
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const Icon(Icons.calendar_today),
-                          const SizedBox(width: 6),
-                          Text(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.trip.title ?? 'Titolo mancante',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        const Icon(Icons.calendar_today),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
                             '$startDateFormat - $endDateFormat',
-                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const Icon(Icons.public),
-                          const SizedBox(width: 6),
-                          Text(
-                            _displayCityNames(),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            softWrap: true,
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        const Icon(Icons.public),
+                        const SizedBox(width: 6),
+                        Text(
+                          _displayCityNames(),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          softWrap: true,
+                        )
+                      ],
+                    ),
+                  ],
                 ),
               ),
 
+              const SizedBox(width: 8),
               const Icon(Icons.arrow_forward_ios),
             ],
           ),

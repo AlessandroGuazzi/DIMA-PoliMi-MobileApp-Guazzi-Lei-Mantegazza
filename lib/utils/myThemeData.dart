@@ -85,6 +85,12 @@ class MyThemeData {
         prefixIconColor: Colors.grey[700],
         labelStyle: TextStyle(color: Colors.grey[700]),
       ),
+      tabBarTheme: TabBarTheme(
+        indicatorColor: primaryColor,
+        labelColor:Colors.black,
+        unselectedLabelColor: Colors.grey,
+      ),
+
       textTheme: TextTheme(
         displayLarge: TextStyle(
           fontSize: isTablet ? 36 : 32,

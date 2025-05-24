@@ -3,6 +3,7 @@ import 'package:dima_project/screens/tripPage.dart';
 import 'package:dima_project/utils/screenSize.dart';
 import 'package:dima_project/widgets/trip_widgets/tripCardWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
@@ -77,53 +78,60 @@ class _ProfilePageState extends State<ProfilePage> {
       length: 2,
       child: _futureUserBuilder((user) {
         return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            centerTitle: true,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.settings, color: Colors.black),
-                onPressed: () => _showSettingsModal(user),
-              ),
-            ],
-          ),
           body: SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 0),
-                CircleAvatar(
-                  radius: 75,
-                  backgroundImage: user.profilePic != null
-                      ? NetworkImage(user.profilePic!) as ImageProvider
-                      : const AssetImage('assets/profile.png'),
-                ),
-                const SizedBox(height: 16),
-                Text('${user.name} ${user.surname}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                Text('@${user.username}', style: TextStyle(fontSize: 16, color: Colors.grey[600])),
-                const SizedBox(height: 24),
-                TabBar(
-                  indicatorColor: Theme.of(context).primaryColor,
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Colors.grey,
-                  tabs: const [
-                    Tab(text: 'Viaggi Salvati'),
-                    Tab(text: 'I Tuoi Viaggi'),
+            child: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverAppBar(
+                  expandedHeight: 320,
+                  pinned: true,
+                  floating: false,
+                  backgroundColor: CupertinoColors.white,
+                  centerTitle: true,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.settings, color: Colors.black),
+                      onPressed: () => _showSettingsModal(user),
+                    ),
                   ],
-                ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      _buildTripList(_savedTrips, isMyTrip: false),
-                      _buildTripList(_futureTrips, isMyTrip: true),
+                  flexibleSpace: FlexibleSpaceBar(
+                    collapseMode: CollapseMode.pin,
+                    background: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 75,
+                          backgroundImage: user.profilePic != null
+                              ? NetworkImage(user.profilePic!) as ImageProvider
+                              : const AssetImage('assets/profile.png'),
+                        ),
+                        const SizedBox(height: 16),
+                        Text('${user.name} ${user.surname}',
+                            style:Theme.of(context).textTheme.headlineMedium),
+                        Text('@${user.username}',
+                            style: Theme.of(context).textTheme.bodyMedium),
+                      ],
+
+                    ),
+                  ),
+                  bottom: const TabBar(
+                    tabs: [
+                      Tab(text: 'Viaggi Salvati'),
+                      Tab(text: 'I Tuoi Viaggi'),
                     ],
                   ),
                 ),
               ],
+              body: TabBarView(
+                children: [
+                  _buildTripList(_savedTrips, isMyTrip: false),
+                  _buildTripList(_futureTrips, isMyTrip: true),
+                ],
+              ),
             ),
           ),
         );
-      })
+      }),
     );
   }
 
@@ -205,6 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  //For tablet
   Widget _buildSettingsSection(UserModel user) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -263,6 +272,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  //For mobile
   void _showSettingsModal(UserModel user) {
     showModalBottomSheet(
       context: context,
