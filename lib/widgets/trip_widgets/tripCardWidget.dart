@@ -1,6 +1,4 @@
-import 'package:dima_project/screens/profilePage.dart';
 import 'package:dima_project/services/googlePlacesService.dart';
-import 'package:dima_project/utils/screenSize.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dima_project/screens/medalsPage.dart';
@@ -31,11 +29,21 @@ class _TripCardWidgetState extends State<TripCardWidget> {
   }
 
   Widget _homeCardWidget() {
-    DateTime startDate = widget.trip.startDate ?? DateTime.now();
-    String startDateFormat = DateFormat('dd MMM yyyy').format(startDate);
+    DateTime? startDate = widget.trip.startDate;
+    String startDateFormat;
+    if (startDate != null) {
+      startDateFormat = DateFormat('dd MMM yyyy').format(startDate);
+    } else {
+      startDateFormat = 'No data';
+    }
 
-    DateTime endDate = widget.trip.endDate ?? DateTime.now();
-    String endDateFormat = DateFormat('dd MMM yyyy').format(endDate);
+    DateTime? endDate = widget.trip.endDate;
+    String endDateFormat;
+    if(endDate != null) {
+      endDateFormat = DateFormat('dd MMM yyyy').format(endDate);
+    } else {
+      endDateFormat = 'No data';
+    }
 
     return Padding(
       padding: const EdgeInsets.only(left: 5, right: 5),
@@ -50,17 +58,23 @@ class _TripCardWidgetState extends State<TripCardWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               //--- trip-profile pic ---
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                widget.trip.imageRef != null
-                    ? GooglePlacesService().getImageUrl(widget.trip.imageRef!)
-                    : 'https://picsum.photos/800',
-                height: 100,
-                width: 100,
-                fit: BoxFit.cover,
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: widget.trip.imageRef != null
+                    ? Image.network(
+                        GooglePlacesService()
+                            .getImageUrl(widget.trip.imageRef!),
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        'assets/placeholder_landscape.jpg',
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
+                      ),
               ),
-            ),
 
               const SizedBox(width: 8),
 
@@ -137,14 +151,18 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                       ).createShader(bounds);
                     },
                     blendMode: BlendMode.dstIn,
-                    child: Image.network(
-                      widget.trip.imageRef != null
-                          ? GooglePlacesService()
-                              .getImageUrl(widget.trip.imageRef!)
-                          : 'https://picsum.photos/800',
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                    child: widget.trip.imageRef != null
+                        ? Image.network(
+                            GooglePlacesService()
+                                .getImageUrl(widget.trip.imageRef!),
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            'assets/placeholder_landscape.jpg',
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 )),
             Padding(
@@ -154,7 +172,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${widget.trip.title}',
+                    widget.trip.title ?? 'Titolo mancante',
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   const SizedBox(height: 4),
@@ -180,63 +198,53 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   const SizedBox(
                     height: 4,
                   ),
-                  Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        //profile Image
-                        Container(
-                          child: Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  _goToProfilePage();
-                                },
-                                child: Row(
-                                  children: [
-                                    ClipOval(
-                                      child: Image.network(
-                                        //placeholder image
-                                        'https://picsum.photos/30',
-                                        width: 30,
-                                        height: 30,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                    //username
-                                    Text(
-                                      '@${widget.trip.creatorInfo!['username'] ?? 'user'} · ${getTimePassed(widget.trip.timestamp?.toDate() ?? DateTime.now())}',
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
-                                    ),
-                                    const SizedBox(
-                                      width: 4,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  //profile image and username
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _goToProfilePage,
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            child: Image.asset(
+                              'assets/profile.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                        Row(
-                          children: [
-                            Text('${widget.trip.saveCounter ?? 'na'}'),
-                            IconButton(
-                                onPressed: () {
-                                  _handleSaveButton();
-                                },
-                                icon: widget.isSaved
-                                    ? Icon(
-                                        Icons.bookmark_added_rounded,
-                                        color: Theme.of(context).primaryColor,
-                                      )
-                                    : Icon(Icons.bookmark_add_outlined)),
-                          ],
-                        ),
-                      ]),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              '@${widget.trip.creatorInfo?['username'] ?? 'no_username'} · ${getTimePassed(widget.trip.timestamp?.toDate())}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  //save counter and icon
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${widget.trip.saveCounter ?? 'na'}'),
+                      IconButton(
+                        onPressed: _handleSaveButton,
+                        icon: widget.isSaved
+                            ? Icon(
+                          Icons.bookmark_added_rounded,
+                          color: Theme.of(context).primaryColor,
+                        )
+                            : const Icon(Icons.bookmark_add_outlined),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
                 ],
               ),
             ),
@@ -255,12 +263,16 @@ class _TripCardWidgetState extends State<TripCardWidget> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              MedalsPage(username: widget.trip.creatorInfo!["username"], userId: widget.trip.creatorInfo!["id"])),
+          builder: (context) => MedalsPage(
+              username: widget.trip.creatorInfo!["username"],
+              userId: widget.trip.creatorInfo!["id"])),
     );
   }
 
-  String getTimePassed(DateTime postTimestamp) {
+  String getTimePassed(DateTime? postTimestamp) {
+
+    if(postTimestamp == null) return 'no_time';
+
     final now = DateTime.now();
     final difference = now.difference(postTimestamp);
 

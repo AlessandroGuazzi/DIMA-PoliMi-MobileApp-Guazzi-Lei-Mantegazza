@@ -6,10 +6,20 @@ import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/utils/responsive.dart';
 import 'package:dima_project/widgets/trip_widgets/tripCardWidget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ExplorerPage extends StatefulWidget {
-  const ExplorerPage({super.key});
+  final AuthService authService;
+  final DatabaseService databaseService;
+
+  //the constructor can handle injected dependencies for testing
+  ExplorerPage({
+    super.key,
+    AuthService? authService,
+    DatabaseService? databaseService,
+  })  : authService = authService ?? AuthService(),
+        databaseService = databaseService ?? DatabaseService();
 
   @override
   State<ExplorerPage> createState() => _ExplorerPageState();
@@ -26,9 +36,15 @@ class _ExplorerPageState extends State<ExplorerPage> {
   @override
   void initState() {
     super.initState();
-    _futureTrips = DatabaseService().getExplorerTrips();
-    _futureCurrentUser =
-        DatabaseService().getUserByUid(AuthService().currentUser!.uid);
+
+    final User? currentUser = widget.authService.currentUser;
+    if (currentUser != null) {
+      _futureTrips = widget.databaseService.getExplorerTrips();
+      _futureCurrentUser = widget.databaseService.getUserByUid(currentUser.uid);
+    } else {
+      _futureTrips = Future.value([]);
+      _futureCurrentUser = Future.value(null);
+    }
   }
 
   @override
@@ -41,7 +57,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
           if (userSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (userSnapshot.hasError) {
-            return Center(child: Text('Error: ${userSnapshot.error}'));
+            return Center(child: Text('Errore: ${userSnapshot.error}'));
           } else if (!userSnapshot.hasData) {
             return const Center(child: Text('Utente non trovato'));
           }
@@ -84,6 +100,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
       child: _filteredTrips.isEmpty
           ? const Center(child: Text('Nessun viaggio trovato'))
           : ListView.builder(
+              key: const Key('tripList'),
               itemCount: _filteredTrips.length,
               itemBuilder: (context, index) {
                 final trip = _filteredTrips[index];
@@ -92,7 +109,9 @@ class _ExplorerPageState extends State<ExplorerPage> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: GestureDetector(
-                      onTap: () {onTileTap(trip);},
+                      onTap: () {
+                        onTileTap(trip);
+                      },
                       child: TripCardWidget(
                           trip, isSaved, _handleTripSave, false)),
                 );
@@ -156,10 +175,10 @@ class _ExplorerPageState extends State<ExplorerPage> {
 
   Widget _buildTabletLayout() {
     onTabletTileTap(trip) => {
-      setState(() {
-        _selectedTrip = trip;
-      })
-    };
+          setState(() {
+            _selectedTrip = trip;
+          })
+        };
 
     return Row(
       children: [
@@ -187,7 +206,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
 
   void _handleTripSave(bool isSaved, String tripId) async {
     try {
-      await DatabaseService().handleTripSave(isSaved, tripId);
+      await widget.databaseService.handleTripSave(isSaved, tripId);
       setState(() {
         TripModel trip = _filteredTrips.firstWhere((trip) => trip.id == tripId);
         if (isSaved) {
