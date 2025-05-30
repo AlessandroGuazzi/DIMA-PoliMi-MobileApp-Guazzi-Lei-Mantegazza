@@ -213,22 +213,21 @@ class CountryToCurrency {
   }
 
   List<String> initializeCurrencies(List<Map<String, dynamic>>? countries) {
-    if (countries != null || countries!.isNotEmpty) {
-      //extract all countries name from the trip
+    if (countries != null && countries.isNotEmpty) {
       final countriesNames = countries
           .map((country) => country['name'] as String)
           .toList();
 
-      List<String> currencies = [];
+      Set<String> currencies = {};
       for (String country in countriesNames) {
         final currency = CountryToCurrency().getCurrency(country);
         if (currency != '') currencies.add(currency);
       }
 
-      //keep euros as a 'defaul' currency
-      if(!currencies.contains('EUR')) currencies.add('EUR');
+      // Keep euros as a 'default' currency
+      currencies.add('EUR');
 
-      return currencies;
+      return currencies.toList();
     } else {
       return [];
     }

@@ -106,10 +106,13 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                       children: [
                         const Icon(Icons.public),
                         const SizedBox(width: 6),
-                        Text(
-                          _displayCityNames(),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          softWrap: true,
+                        Expanded(
+                          child: Text(
+                            _displayCityNames(),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         )
                       ],
                     ),

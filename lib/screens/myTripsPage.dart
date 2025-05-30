@@ -7,8 +7,14 @@ import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/screens/tripPage.dart';
 
 class MyTripsPage extends StatefulWidget {
-  const MyTripsPage({super.key});
 
+  final DatabaseService databaseService;
+
+  //constructor with injection for mocking
+  MyTripsPage({
+    super.key,
+    DatabaseService? databaseService,
+  })  : databaseService = databaseService ?? DatabaseService();
   @override
   State<MyTripsPage> createState() => _MyTripsPageState();
 }
@@ -20,7 +26,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
   @override
   void initState() {
     super.initState();
-    _futureTrips = DatabaseService().getHomePageTrips();
+    _futureTrips = widget.databaseService.getHomePageTrips();
   }
 
   @override
@@ -33,7 +39,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text('Errore: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('Pianifica il tuo primo viaggio'));
           }
@@ -205,7 +211,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
 
   Future<void> refreshTrips() async {
     setState(() {
-      _futureTrips = DatabaseService().getHomePageTrips();
+      _futureTrips = widget.databaseService.getHomePageTrips();
     });
   }
 

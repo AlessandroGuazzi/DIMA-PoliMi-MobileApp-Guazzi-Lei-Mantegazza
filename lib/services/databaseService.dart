@@ -88,6 +88,7 @@ class DatabaseService {
       }
     } catch (e) {
       print("Error completing: $e");
+      return Future.error(e);
     }
 
     return trips;

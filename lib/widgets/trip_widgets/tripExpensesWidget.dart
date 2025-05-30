@@ -80,7 +80,7 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
           return const Center(child: CircularProgressIndicator());
         }
         if (!snapshot.hasData || snapshot.data == null) {
-          return const Center(child: Text('Trip not found.'));
+          return const Center(child: Text('Viaggio non trovato'));
         }
 
         final tripData = snapshot.data!;
