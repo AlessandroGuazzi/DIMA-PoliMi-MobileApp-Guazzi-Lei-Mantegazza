@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'trip_model_test.mocks.dart';
+import 'mocks.mocks.dart';
 
-@GenerateMocks([DocumentSnapshot])
 void main() {
   group("Trip model testing", () {
     test("fromFirestore method should convert Firestore snapshot to model", () {

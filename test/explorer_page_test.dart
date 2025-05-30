@@ -2,18 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/userModel.dart';
 import 'package:dima_project/screens/explorerPage.dart';
-import 'package:dima_project/services/authService.dart';
-import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/widgets/trip_widgets/tripCardWidget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'mocks.mocks.dart';
 
-import 'explorer_page_test.mocks.dart';
-
-@GenerateMocks([DatabaseService, AuthService, User])
 void main() {
   late MockDatabaseService mockDatabaseService;
   late MockAuthService mockAuthService;

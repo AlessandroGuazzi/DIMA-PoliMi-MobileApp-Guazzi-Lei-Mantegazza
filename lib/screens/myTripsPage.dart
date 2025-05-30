@@ -16,25 +16,11 @@ class MyTripsPage extends StatefulWidget {
 class _MyTripsPageState extends State<MyTripsPage> {
   late Future<List<TripModel>> _futureTrips;
   TripModel? _selectedTrip;
-  late final bool _isTablet;
 
   @override
   void initState() {
     super.initState();
     _futureTrips = DatabaseService().getHomePageTrips();
-  }
-
-  Future<void> refreshTrips() async {
-    setState(() {
-      _futureTrips = DatabaseService().getHomePageTrips();
-      print("refresheeeeeeed");
-    });
-  }
-
-  void _goToNewTripPage() {
-    Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const UpsertTripPage()))
-        .then((value) => refreshTrips());
   }
 
   @override
@@ -59,13 +45,11 @@ class _MyTripsPageState extends State<MyTripsPage> {
               ResponsiveLayout(
                   mobileLayout: _buildMobileLayout(trips),
                   tabletLayout: _buildTabletLayout(trips)),
-
-              // Floating button
-              //TODO: reposition it for tablet
             ],
           );
         },
       ),
+      //TODO: reposition it for tablet
       floatingActionButton: FloatingActionButton(
         heroTag: 'newTripButton',
         onPressed: _goToNewTripPage,
@@ -80,35 +64,101 @@ class _MyTripsPageState extends State<MyTripsPage> {
   between tablet and mobile actions on tap of each card
    */
   Widget _myTripsList(List<TripModel> trips, Function onTileTap) {
+
+    final splitTrips = splitPastFutureTrips(trips);
+    List<TripModel>? pastTrips = splitTrips['pastTrips'];
+    List<TripModel>? futureTrips = splitTrips['futureTrips'];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 10, top: 15, bottom: 5),
-          child: Text(
-            'I tuoi viaggi',
-            style: Theme.of(context).textTheme.headlineLarge,
+
+        //upcoming trips
+        futureTrips == null || futureTrips.isEmpty
+        ? const SizedBox()
+        : Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10, top: 15, bottom: 5),
+                child: Text(
+                  'I tuoi viaggi',
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+              ),
+              const Divider(),
+
+              // 👇 Expanded ListView inside a Flexible space
+              Expanded(
+                child: ListView.builder(
+                  itemCount: futureTrips.length,
+                  itemBuilder: (context, index) {
+                    final trip = futureTrips[index];
+                    return Material(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: InkWell(
+                        onTap: () => onTileTap(trip),
+                        child: TripCardWidget(trip, false, (isSaved, id) {}, true),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
-        Divider(),
-        Expanded(
-          child: ListView.builder(
-            itemCount: trips.length,
-            itemBuilder: (context, index) {
-              final trip = trips[index];
-              return Material(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                child: InkWell(
-                    onTap: () {
-                      onTileTap(trip);
-                    },
-                    child: TripCardWidget(trip, false, (isSaved, id) {}, true)),
-              );
-            },
+
+        //past trips
+        pastTrips == null || pastTrips.isEmpty
+        ? const SizedBox()
+        :   Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10, top: 15, bottom: 5),
+                child: Text(
+                  'Viaggi passati',
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+              ),
+              const Divider(),
+
+              Expanded(
+                child: ListView.builder(
+                  itemCount: pastTrips.length,
+                  itemBuilder: (context, index) {
+                    final trip = pastTrips[index];
+                    return Material(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: InkWell(
+                        onTap: () => onTileTap(trip),
+                        child: TripCardWidget(trip, false, (isSaved, id) {}, true),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ],
     );
+  }
+
+  Map<String, List<TripModel>> splitPastFutureTrips(List<TripModel> trips) {
+
+    final pastTrips = trips.where((trip) =>
+    trip.endDate != null && trip.endDate!.isBefore(DateTime.now())
+    ).toList();
+
+    final List<TripModel> futureTrips = trips.toSet().difference(pastTrips.toSet()).toList();
+
+    return {
+      'pastTrips': pastTrips,
+      'futureTrips': futureTrips,
+    };
   }
 
   Widget _buildMobileLayout(List<TripModel> trips) {
@@ -151,5 +201,17 @@ class _MyTripsPageState extends State<MyTripsPage> {
         ),
       ],
     );
+  }
+
+  Future<void> refreshTrips() async {
+    setState(() {
+      _futureTrips = DatabaseService().getHomePageTrips();
+    });
+  }
+
+  void _goToNewTripPage() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const UpsertTripPage()))
+        .then((value) => refreshTrips());
   }
 }
