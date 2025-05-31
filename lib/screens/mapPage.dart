@@ -53,6 +53,10 @@ class _MapPageState extends State<MapPage> {
   CameraPosition _initializeCameraPosition() {
     List<Map<String, dynamic>> cities = widget.trip.cities ?? [];
 
+    if (cities.isEmpty) {
+      return const CameraPosition(target: LatLng(0, 0), zoom: 1);
+    }
+
     double minLat = cities.first['lat'];
     double maxLat = cities.first['lat'];
     double minLng = cities.first['lng'];

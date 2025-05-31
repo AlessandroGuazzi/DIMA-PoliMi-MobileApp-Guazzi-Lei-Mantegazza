@@ -177,6 +177,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
                   builder: (context) => TripPage(
                     trip: trip,
                     isMyTrip: true,
+                    databaseService: widget.databaseService,
                   ),
                 ),
               ).then((_) {
@@ -195,6 +196,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
               (trip) => {
                     setState(() {
                       _selectedTrip = trip;
+                      print('Selected trip: ${trip.title}');
                     })
                   }),
         ),
@@ -202,7 +204,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
         Expanded(
           flex: 3,
           child: _selectedTrip != null
-              ? TripPage(trip: _selectedTrip!, isMyTrip: true)
+              ? TripPage(trip: _selectedTrip!, isMyTrip: true, databaseService: widget.databaseService,)
               : const Center(child: Text('Seleziona un viaggio')),
         ),
       ],

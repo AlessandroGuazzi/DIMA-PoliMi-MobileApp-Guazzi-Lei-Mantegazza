@@ -58,9 +58,9 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
       }
 
       //initialize dates
-      _startDate = widget.trip!.startDate!;
+      _startDate = widget.trip!.startDate;
       _newStartDate = _startDate;
-      _endDate = widget.trip!.endDate!;
+      _endDate = widget.trip!.endDate;
       _newEndDate = _endDate;
     }
     super.initState();

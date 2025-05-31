@@ -10,7 +10,11 @@ import 'package:flutter/material.dart';
 import '../services/googlePlacesService.dart';
 
 class TripPage extends StatefulWidget {
-  const TripPage({super.key, required this.trip, required this.isMyTrip});
+  final DatabaseService databaseService;
+
+  TripPage(
+      {super.key, required this.trip, required this.isMyTrip, databaseService})
+      : databaseService = databaseService ?? DatabaseService();
 
   final TripModel trip;
   final bool isMyTrip;
@@ -48,9 +52,6 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = _trip.imageRef != null
-        ? GooglePlacesService().getImageUrl(_trip.imageRef!)
-        : 'https://picsum.photos/800';
 
     return Scaffold(
       body: NestedScrollView(
@@ -65,10 +66,12 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                 alignment: Alignment.center,
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+                  _trip.imageRef != null
+                      ? Image.network(
+                          GooglePlacesService().getImageUrl(_trip.imageRef!),
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset('assets/placeholder_landscape.jpg'),
                   Container(
                     color: Colors.black.withOpacity(0.2),
                     alignment: Alignment.center,
@@ -113,10 +116,15 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
         body: TabBarView(
           controller: _tabController,
           children: [
-            ItineraryWidget(trip: _trip, isMyTrip: widget.isMyTrip),
+            ItineraryWidget(
+              trip: _trip,
+              isMyTrip: widget.isMyTrip,
+              databaseService: widget.databaseService,
+            ),
             TripInfoWidget(trip: _trip),
             TripExpensesWidget(
               tripId: _trip.id ?? '',
+              databaseService: widget.databaseService,
             ),
           ],
         ),
@@ -134,7 +142,6 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-
             //handle
             const MyBottomSheetHandle(),
 
@@ -191,11 +198,12 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
               title: _trip.isPrivate ?? true
                   ? const Text('Pubblica')
                   : const Text('Rendi privato'),
-              onTap: () {
+              onTap: () async {
                 bool newPrivacy = !(_trip.isPrivate ?? true);
                 try {
                   //update db
-                  DatabaseService().updateTripPrivacy(_trip.id!, newPrivacy);
+                  await widget.databaseService
+                      .updateTripPrivacy(_trip.id!, newPrivacy);
                   //update locally
                   setState(() {
                     _trip.isPrivate = newPrivacy;
@@ -217,7 +225,6 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                   );
                 }
               },
-
             ),
           ],
         ),
@@ -225,7 +232,8 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> _handleDeleteTrip(BuildContext parentContext, BuildContext bottomSheetContext) async {
+  Future<void> _handleDeleteTrip(
+      BuildContext parentContext, BuildContext bottomSheetContext) async {
     Navigator.pop(bottomSheetContext); // Close the bottom sheet
 
     final shouldDelete = await showDialog<bool>(
@@ -250,7 +258,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
     );
 
     if (shouldDelete == true) {
-      await DatabaseService().deleteTrip(_trip.id!);
+      await widget.databaseService.deleteTrip(_trip.id!);
 
       if (parentContext.mounted) {
         Navigator.pop(parentContext); // Pop the TripPage

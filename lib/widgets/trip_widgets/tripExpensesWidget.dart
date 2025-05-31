@@ -2,25 +2,22 @@ import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/CurrencyService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/utils/responsive.dart';
-import 'package:dima_project/utils/screenSize.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart';
-
 import '../../utils/CountryToCurrency.dart';
 
 class TripExpensesWidget extends StatefulWidget {
-  const TripExpensesWidget({super.key, required this.tripId});
-
+  final DatabaseService databaseService;
   final String tripId;
+
+  TripExpensesWidget({super.key, required this.tripId, databaseService})
+      : databaseService = databaseService ?? DatabaseService();
 
   @override
   State<TripExpensesWidget> createState() => _TripExpensesWidgetState();
 }
 
 class _TripExpensesWidgetState extends State<TripExpensesWidget> {
-
   late Future<TripModel> _futureTrip;
   late int totalCost;
   late double flightExpense;
@@ -40,11 +37,10 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
     Colors.red.shade300,
   ];
 
-
   @override
   void initState() {
     super.initState();
-    _futureTrip = DatabaseService().loadTrip(widget.tripId);
+    _futureTrip = widget.databaseService.loadTrip(widget.tripId);
   }
 
   /*
@@ -57,19 +53,18 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
   void didUpdateWidget(covariant TripExpensesWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     print('Expenses page update');
-    print('${oldWidget.tripId }  ${widget.tripId}');
+    print('${oldWidget.tripId}  ${widget.tripId}');
     if (oldWidget.tripId != widget.tripId) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           setState(() {
-            _futureTrip = DatabaseService().loadTrip(widget.tripId);
+            _futureTrip = widget.databaseService.loadTrip(widget.tripId);
             _widgetUpdated = true;
           });
         }
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -85,20 +80,27 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
 
         final tripData = snapshot.data!;
 
-        _currencies = CountryToCurrency().initializeCurrencies(tripData.nations);
+        _currencies =
+            CountryToCurrency().initializeCurrencies(tripData.nations);
 
         //assign only if it's the first time or if widget is updated
         if (!_expensesInitialized || _widgetUpdated) {
           flightExpense = (tripData.expenses?['flight'])?.toDouble() ?? 0.0;
-          accommodationExpense = (tripData.expenses?['accommodation'])?.toDouble() ?? 0.0;
-          attractionExpense = (tripData.expenses?['attraction'])?.toDouble() ?? 0.0;
-          transportExpense = (tripData.expenses?['transport'])?.toDouble() ?? 0.0;
-          totalCost = (flightExpense + attractionExpense + accommodationExpense + transportExpense).round();
+          accommodationExpense =
+              (tripData.expenses?['accommodation'])?.toDouble() ?? 0.0;
+          attractionExpense =
+              (tripData.expenses?['attraction'])?.toDouble() ?? 0.0;
+          transportExpense =
+              (tripData.expenses?['transport'])?.toDouble() ?? 0.0;
+          totalCost = (flightExpense +
+                  attractionExpense +
+                  accommodationExpense +
+                  transportExpense)
+              .round();
 
           _expensesInitialized = true;
           _widgetUpdated = false;
         }
-
 
         Map<String, double> dataMap = {
           "Voli": flightExpense,
@@ -127,15 +129,19 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Le tue spese',
-                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       Text('Panoramica delle spese'),
                                     ],
@@ -147,27 +153,28 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                                       return DropdownMenuItem(
                                         alignment: Alignment.center,
                                         value: currency,
-                                        child: CountryToCurrency().formatPopularCurrencies(currency),
+                                        child: CountryToCurrency()
+                                            .formatPopularCurrencies(currency),
                                       );
                                     }).toList(),
                                     onChanged: (value) {
                                       if (value != null) {
-                                          _updatePieChart(_selectedCurrency, value);
+                                        _updatePieChart(
+                                            _selectedCurrency, value);
                                       }
                                     },
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 22),
-
-                              ResponsiveLayout(mobileLayout: _mobileLayout(dataMap), tabletLayout: _tabletLayout(dataMap)),
-
+                              ResponsiveLayout(
+                                  mobileLayout: _mobileLayout(dataMap),
+                                  tabletLayout: _tabletLayout(dataMap)),
                             ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 16),
-
                     ],
                   ),
                 ),
@@ -204,15 +211,15 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
           width: 350,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            children:
-            List.generate(dataMap.length, (index) {
+            children: List.generate(dataMap.length, (index) {
               final entry = dataMap.entries.elementAt(index);
               final color = colorList[index];
               final label = entry.key;
               final value = entry.value;
 
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -233,7 +240,8 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                     ),
                     Text(
                       '${value.toStringAsFixed(0)} $_selectedCurrency (${(totalCost > 0 ? (value / totalCost) * 100 : 0).toStringAsFixed(0)}%)',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -264,7 +272,6 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
           chartValuesOptions: const ChartValuesOptions(showChartValues: false),
         ),
         const SizedBox(height: 25),
-
         Column(
           children: List.generate(dataMap.length, (index) {
             final entry = dataMap.entries.elementAt(index);
@@ -273,7 +280,8 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
             final value = entry.value;
 
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
               child: Row(
                 children: [
                   Container(
@@ -293,7 +301,8 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                   ),
                   Text(
                     '${value.toStringAsFixed(0)} $_selectedCurrency (${(totalCost > 0 ? ((value / totalCost).toInt()) * 100 : 0).toStringAsFixed(0)}%)',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -306,14 +315,17 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
 
   Future<void> _updatePieChart(String base, String target) async {
     num rate = await CurrencyService().getExchangeRate(base, target);
-        setState(() {
-          flightExpense = flightExpense * rate;
-          accommodationExpense = accommodationExpense * rate;
-          attractionExpense = attractionExpense * rate;
-          transportExpense = transportExpense * rate;
-          totalCost = (flightExpense + attractionExpense + accommodationExpense + transportExpense).round();
-          _selectedCurrency = target;
-        });
+    setState(() {
+      flightExpense = flightExpense * rate;
+      accommodationExpense = accommodationExpense * rate;
+      attractionExpense = attractionExpense * rate;
+      transportExpense = transportExpense * rate;
+      totalCost = (flightExpense +
+              attractionExpense +
+              accommodationExpense +
+              transportExpense)
+          .round();
+      _selectedCurrency = target;
+    });
   }
-
 }

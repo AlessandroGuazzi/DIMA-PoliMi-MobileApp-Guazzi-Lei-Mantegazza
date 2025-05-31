@@ -1,5 +1,10 @@
+import 'package:dima_project/models/activityModel.dart';
+import 'package:dima_project/models/airportModel.dart';
+import 'package:dima_project/models/attractionModel.dart';
+import 'package:dima_project/models/flightModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/screens/myTripsPage.dart';
+import 'package:dima_project/screens/tripPage.dart';
 import 'package:dima_project/widgets/trip_widgets/tripCardWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -138,8 +143,26 @@ void main() {
             endDate: DateTime.now().add(const Duration(days: 5))),
       ];
 
+      final activities = [
+        AttractionModel(
+          id: '1',
+          tripId: '1',
+          type: 'attraction',
+
+        ),
+        FlightModel(
+          id: '2',
+          tripId: '1',
+          type: 'flight',
+        ),
+      ];
+
+      //mock db behaviour
       when(mockDatabaseService.getHomePageTrips())
           .thenAnswer((_) async => trips);
+      when(mockDatabaseService.getTripActivities(any))
+          .thenAnswer((_) async => activities);
+      when(mockDatabaseService.loadTrip(any)).thenAnswer((_) async => trips[0]);
 
       await pumpTestableWidget(tester);
       await tester.pumpAndSettle();
@@ -147,22 +170,20 @@ void main() {
       expect(find.byType(TripCardWidget), findsNWidgets(2));
       expect(find.text('Seleziona un viaggio'), findsOneWidget);
 
-      /*
       //simulate click on one of the trips
-      await tester.tap(find.byType(TripCardWidget).first);
+      await tester.tap(find.widgetWithText(TripCardWidget, 'Paris'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Paris'), findsNWidgets(2));
+      expect(find.byType(TripPage), findsOneWidget);
+      expect(find.textContaining('Paris'), findsNWidgets(2));
       expect(find.text('Rome'), findsOneWidget);
       expect(find.text('Seleziona un viaggio'), findsNothing);
-       */
 
       addTearDown(() {
         // Restore original values after test
         tester.view.physicalSize = originalPhysicalSize;
         tester.view.devicePixelRatio = originalDevicePixelRatio;
       });
-
     });
   });
 }

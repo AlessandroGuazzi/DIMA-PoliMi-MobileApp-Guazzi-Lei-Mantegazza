@@ -16,7 +16,11 @@ import 'package:dima_project/widgets/trip_widgets/tripProgressBar.dart';
 import 'package:flutter/material.dart';
 
 class ItineraryWidget extends StatefulWidget {
-  const ItineraryWidget({super.key, required this.trip, required this.isMyTrip});
+  final DatabaseService databaseService;
+
+  ItineraryWidget(
+      {super.key, required this.trip, required this.isMyTrip, databaseService})
+      : databaseService = databaseService ?? DatabaseService();
 
   final TripModel trip;
   final bool isMyTrip;
@@ -33,7 +37,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
     super.initState();
     //trip = widget.trip; // Initialize with passed data
     //_isEmpty = true;
-    _futureActivities = DatabaseService().getTripActivities(widget.trip);
+    _futureActivities = widget.databaseService.getTripActivities(widget.trip);
   }
 
   /*
@@ -54,7 +58,8 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
-          _futureActivities = DatabaseService().getTripActivities(widget.trip);
+          _futureActivities =
+              widget.databaseService.getTripActivities(widget.trip);
         });
       }
     });
@@ -75,10 +80,12 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
       child: Row(
         children: [
           Expanded(
-            child: TripProgressBar(
-              startDate: widget.trip.startDate!,
-              endDate: widget.trip.endDate!,
-            ),
+            child: widget.trip.startDate != null && widget.trip.endDate != null
+                ? TripProgressBar(
+                    startDate: widget.trip.startDate!,
+                    endDate: widget.trip.endDate!,
+                  )
+                : const Text('Nessuna data specificata'),
           ),
           const SizedBox(width: 15),
           FloatingActionButton(
@@ -322,7 +329,8 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
   }
 
   //DELETE MESSAGE
-  void _showDeleteConfirmationDialog(BuildContext context, ActivityModel activity) {
+  void _showDeleteConfirmationDialog(
+      BuildContext context, ActivityModel activity) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -338,7 +346,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
             ),
             TextButton(
               onPressed: () {
-                DatabaseService().deleteActivity(activity);
+                widget.databaseService.deleteActivity(activity);
                 Navigator.of(context).pop(); // Chiude il popup
                 refreshTrips();
               },
@@ -388,7 +396,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
                   ),
                 ),
               ),
-          
+
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: Text(
@@ -398,7 +406,8 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
               ),
               _buildOption(Icons.flight, 'Volo', 'flight'),
               _buildOption(Icons.hotel, 'Alloggio', 'accommodation'),
-              _buildOption(Icons.directions_bus, 'Altri Trasporti', 'transport'),
+              _buildOption(
+                  Icons.directions_bus, 'Altri Trasporti', 'transport'),
               _buildOption(Icons.attractions, 'Attrazione', 'attraction'),
               const SizedBox(height: 15),
             ],
