@@ -1,5 +1,5 @@
 import 'package:dima_project/models/attractionModel.dart';
-import 'package:dima_project/widgets/activityDividerWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/utils/screenSize.dart';
 
@@ -142,34 +142,38 @@ class _AttractioncardwidgetState extends State<Attractioncardwidget> {
                         ],
 
                         if (widget.attraction.description != null && widget.attraction.description!.isNotEmpty) ...[
-                          Container(
-                            margin: const EdgeInsets.only(top: 8),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).secondaryHeaderColor,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Descrizione:",
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  widget.attraction.description!,
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
+                          Padding(
+                            padding: EdgeInsets.only(right: ScreenSize.screenWidth(context) * 0.01),
+                            child: Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(top: 8),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                /*boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    spreadRadius: 1,
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],*/
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Descrizione:",
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    widget.attraction.description!,
+                                    style: Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],

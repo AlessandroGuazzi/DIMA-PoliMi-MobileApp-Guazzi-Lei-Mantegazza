@@ -1,5 +1,5 @@
 import 'package:dima_project/utils/screenSize.dart';
-import 'package:dima_project/widgets/activityDividerWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/models/accommodationModel.dart';
 

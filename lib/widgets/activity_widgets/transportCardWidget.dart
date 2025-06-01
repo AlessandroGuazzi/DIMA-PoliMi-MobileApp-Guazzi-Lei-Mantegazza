@@ -1,5 +1,5 @@
 import 'package:dima_project/models/transportModel.dart';
-import 'package:dima_project/widgets/activityDividerWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/utils/screenSize.dart';
 
@@ -26,7 +26,7 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // **Prima riga con info base**
-              Row(
+              Row( //TODO PER SISTEMARE L'ALTEZZA INCORPORARE IN UN INTRISECHHEIGHT
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -43,7 +43,7 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
 
                   const activityDivider(),
 
-                  Expanded(
+                  Expanded(  //todo bisogna centrare questo se si usa l'intrisec height
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

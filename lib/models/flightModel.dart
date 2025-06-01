@@ -26,7 +26,6 @@ class FlightModel extends ActivityModel{
     num? expenses,
     this.departureAirPort,
     this.arrivalAirPort,
-    //this.flightCompany,
     this.departureDate,
     this.arrivalDate,
     this.duration,
@@ -54,12 +53,14 @@ class FlightModel extends ActivityModel{
           ? {
         'name': departureAirportData['name'] as String? ?? '',
         'iata': departureAirportData['iata'] as String? ?? '',
+        'iso' : departureAirportData['iso'] as String? ?? ''
       }
           : null,
       arrivalAirPort: arrivalAirportData != null
           ? {
         'name': arrivalAirportData['name'] as String? ?? '',
         'iata': arrivalAirportData['iata'] as String? ?? '',
+        'iso' : arrivalAirportData['iso'] as String? ?? ''
       }
           : null,
       //flightCompany: data['flightCompany'] as String?,
@@ -80,13 +81,14 @@ class FlightModel extends ActivityModel{
         'departureAirPort': {
           'name': departureAirPort!['name'],
           'iata': departureAirPort!['iata'],
+          'iso' : departureAirPort!['iso']
         },
       if (arrivalAirPort != null)
         'arrivalAirPort': {
           'name': arrivalAirPort!['name'],
           'iata': arrivalAirPort!['iata'],
+          'iso' : arrivalAirPort!['iso']
         },
-      //if (flightCompany != null) 'flightCompany': flightCompany,
       if (departureDate != null) 'departureDate': Timestamp.fromDate(departureDate!),
       if (arrivalDate != null) 'arrivalDate': Timestamp.fromDate(arrivalDate!),
       if (duration != null) 'duration': duration,

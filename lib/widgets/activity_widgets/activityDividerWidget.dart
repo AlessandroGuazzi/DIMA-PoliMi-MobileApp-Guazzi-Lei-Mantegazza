@@ -15,3 +15,6 @@ class activityDivider extends StatelessWidget {
     );
   }
 }
+
+
+//width: ScreenSize.screenWidth(context) * 0.03,

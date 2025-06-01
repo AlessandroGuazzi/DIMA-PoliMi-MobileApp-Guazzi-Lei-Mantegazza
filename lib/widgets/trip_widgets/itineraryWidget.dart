@@ -75,30 +75,43 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
   }
 
   Widget _buildTripProgressBarWithButton() {
+    final now = DateTime.now();
+    final startDate = widget.trip.startDate;
+    final endDate = widget.trip.endDate;
+
+    final bool isTripActive = endDate != null && endDate.isAfter(now);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 6, 12, 0),
       child: Row(
         children: [
           Expanded(
-            child: widget.trip.startDate != null && widget.trip.endDate != null
+            child: startDate != null && endDate != null
                 ? TripProgressBar(
-                    startDate: widget.trip.startDate!,
-                    endDate: widget.trip.endDate!,
-                  )
+              startDate: startDate,
+              endDate: endDate,
+            )
                 : const Text('Nessuna data specificata'),
           ),
           const SizedBox(width: 15),
-          FloatingActionButton(
+          isTripActive
+              ? FloatingActionButton(
             heroTag: 'newActivityButton',
             mini: true,
             onPressed: _showNewActivityOption,
             tooltip: "Aggiungi attività",
             child: const Icon(Icons.add),
+          )
+              : const Icon(
+            Icons.check_circle_outline,
+            size: 35,
+            color: Colors.green,
           ),
         ],
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -276,16 +289,6 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
             );
           }),
 
-      //TODO METTERE IL BOTTONE ALTROVE, DA CAPIRE
-      /*if(widget.isMyTrip)
-            Positioned(
-                bottom: 25,
-                right: 25,
-                child: FloatingActionButton(
-                  onPressed: _showNewActivityOption,
-                  child: const Icon(Icons.add),
-                )
-            )*/
     ]);
   }
 
@@ -416,63 +419,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
       ),
     );
 
-    /*
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: "Nuova attività",
-      transitionDuration: const Duration(milliseconds: 250),
-      pageBuilder: (context, anim1, anim2) {
-        return const SizedBox.shrink(); // Necessario per evitare problemi di rendering
-      },
-      transitionBuilder: (context, anim1, anim2, child) {
-        return Transform.translate(
-          offset: Offset(0, (1 - anim1.value) * 300), // Effetto slide dal basso
-          child: Opacity(
-            opacity: anim1.value,
-            child: Align(
-              alignment: Alignment.bottomRight, // Posiziona in basso
-              child: Material(
-                color: Colors.transparent,
-                child: SingleChildScrollView(
-                  child: Container(
-                    width: ScreenSize.screenWidth(context)*0.6,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(
-                            'Crea una nuova attività',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ),
-                        _buildOption(Icons.flight, 'Volo', 'flight'),
-                        _buildOption(Icons.hotel, 'Alloggio', 'accommodation'),
-                        _buildOption(Icons.directions_bus, 'Altri Trasporti', 'transport'),
-                        _buildOption(Icons.attractions, 'Attrazione', 'attraction'),
-                        const SizedBox(height: 15),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-    */
+
   }
 
   Widget _buildOption(IconData icon, String text, String type) {
