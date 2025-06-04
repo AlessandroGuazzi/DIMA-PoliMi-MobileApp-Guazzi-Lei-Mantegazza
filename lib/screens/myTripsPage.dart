@@ -196,7 +196,6 @@ class _MyTripsPageState extends State<MyTripsPage> {
               (trip) => {
                     setState(() {
                       _selectedTrip = trip;
-                      print('Selected trip: ${trip.title}');
                     })
                   }),
         ),
@@ -204,7 +203,7 @@ class _MyTripsPageState extends State<MyTripsPage> {
         Expanded(
           flex: 3,
           child: _selectedTrip != null
-              ? TripPage(trip: _selectedTrip!, isMyTrip: true, databaseService: widget.databaseService,)
+              ? TripPage(trip: _selectedTrip!, isMyTrip: true, databaseService: widget.databaseService, onTripDeleted: () => refreshTrips(),)
               : const Center(child: Text('Seleziona un viaggio')),
         ),
       ],
@@ -214,12 +213,13 @@ class _MyTripsPageState extends State<MyTripsPage> {
   Future<void> refreshTrips() async {
     setState(() {
       _futureTrips = widget.databaseService.getHomePageTrips();
+      _selectedTrip = null;
     });
   }
 
   void _goToNewTripPage() {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const UpsertTripPage()))
+        MaterialPageRoute(builder: (context) => UpsertTripPage()))
         .then((value) => refreshTrips());
   }
 }

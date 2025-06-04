@@ -10,15 +10,15 @@ import '../../screens/mapPage.dart';
 
 class TripInfoWidget extends StatefulWidget {
   final TripModel trip;
+  final bool isMyTrip;
 
-  const TripInfoWidget({super.key, required this.trip});
+  const TripInfoWidget({super.key, required this.trip, required this.isMyTrip});
 
   @override
   State<TripInfoWidget> createState() => _TripInfoWidgetState();
 }
 
 class _TripInfoWidgetState extends State<TripInfoWidget> {
-
   late DateTime start;
   late DateTime end;
 
@@ -28,9 +28,9 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
     end = widget.trip.endDate!;
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return SingleChildScrollView(
       child: Card(
         margin: const EdgeInsets.all(12),
@@ -55,9 +55,8 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
               const Divider(),
 
               //from now on the layout will be slightly different to adapt to bigger screen
-              ResponsiveLayout(mobileLayout: _mobileLayout(), tabletLayout: _tabletLayout())
-
-
+              ResponsiveLayout(
+                  mobileLayout: _mobileLayout(), tabletLayout: _tabletLayout())
             ],
           ),
         ),
@@ -81,13 +80,15 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
                   context,
                   Icons.flag,
                   widget.trip.nations!.map((c) => c['name']).join(' · '),
-                  Theme.of(context).textTheme.bodyMedium!, 20),
+                  Theme.of(context).textTheme.bodyMedium!,
+                  20),
               const SizedBox(height: 8),
               _buildInfoRow(
                   context,
                   Icons.location_city,
                   widget.trip.cities!.map((c) => c['name']).join(' · '),
-                  Theme.of(context).textTheme.bodyMedium!, 20),
+                  Theme.of(context).textTheme.bodyMedium!,
+                  20),
             ],
           ),
         ),
@@ -101,19 +102,17 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
                 ),
               );
             },
-            child: Row(
+            child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('Apri mappa'),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Icon(Icons.map),
               ],
             )),
-
         const Divider(
           height: 30,
         ),
-
         _buildInfoRow(context, Icons.event, 'Quando',
             Theme.of(context).textTheme.headlineMedium!, 30),
         const SizedBox(height: 8),
@@ -126,34 +125,30 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
                   Icons.date_range,
                   '${DateFormat('dd MMM yyyy').format(start)} - ${DateFormat('dd MMM yyyy').format(end)}',
                   Theme.of(context).textTheme.bodyMedium!,
-                  20
-              ),
+                  20),
               const SizedBox(height: 8),
-              _buildInfoRow(
-                  context,
-                  Icons.schedule,
-                  getTripStatusText(),
+              _buildInfoRow(context, Icons.schedule, getTripStatusText(),
                   Theme.of(context).textTheme.bodyMedium!, 20),
             ],
           ),
         ),
         const SizedBox(height: 8),
-        ElevatedButton(
-            onPressed: () {
-              Add2Calendar.addEvent2Cal(_buildEvent());
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Aggiungi al calendario'),
-                const SizedBox(width: 8),
-                Icon(Icons.calendar_month),
-              ],
-            )
-        ),
+        widget.isMyTrip
+            ? ElevatedButton(
+                onPressed: () {
+                  Add2Calendar.addEvent2Cal(_buildEvent());
+                },
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Aggiungi al calendario'),
+                    SizedBox(width: 8),
+                    Icon(Icons.calendar_month),
+                  ],
+                ))
+            : const SizedBox(),
       ],
     );
-
   }
 
   Widget _tabletLayout() {
@@ -161,34 +156,31 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInfoRow(context, Icons.explore, 'Dove',
-            Theme.of(context).textTheme.headlineMedium!, 30),
-        const SizedBox(height: 8),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Column(
-                  children: [
-                    _buildInfoRow(
-                        context,
-                        Icons.flag,
-                        widget.trip.nations!.map((c) => c['name']).join(' · '),
-                        Theme.of(context).textTheme.bodyMedium!, 20),
-                    const SizedBox(height: 8),
-                    _buildInfoRow(
-                        context,
-                        Icons.location_city,
-                        widget.trip.cities!.map((c) => c['name']).join(' · '),
-                        Theme.of(context).textTheme.bodyMedium!, 20),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  _buildInfoRow(context, Icons.explore, 'Dove',
+                      Theme.of(context).textTheme.headlineMedium!, 30),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(
+                      context,
+                      Icons.flag,
+                      widget.trip.nations!.map((c) => c['name']).join(' · '),
+                      Theme.of(context).textTheme.bodyMedium!,
+                      20),
+                  _buildInfoRow(
+                      context,
+                      Icons.location_city,
+                      widget.trip.cities!.map((c) => c['name']).join(' · '),
+                      Theme.of(context).textTheme.bodyMedium!,
+                      20),
+                ],
               ),
             ),
-            const SizedBox(width: 8),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -208,15 +200,10 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
                 )),
           ],
         ),
-
-        const Divider(
-          height: 30,
-        ),
-
+        const Divider(),
         _buildInfoRow(context, Icons.event, 'Quando',
             Theme.of(context).textTheme.headlineMedium!, 30),
         const SizedBox(height: 8),
-
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -231,32 +218,30 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
                         Icons.date_range,
                         '${DateFormat('dd MMM yyyy').format(start)} - ${DateFormat('dd MMM yyyy').format(end)}',
                         Theme.of(context).textTheme.bodyMedium!,
-                        20
-                    ),
+                        20),
                     const SizedBox(width: 8),
-                    _buildInfoRow(
-                        context,
-                        Icons.schedule,
-                        getTripStatusText(),
+                    _buildInfoRow(context, Icons.schedule, getTripStatusText(),
                         Theme.of(context).textTheme.bodyMedium!, 20),
                   ],
                 ),
               ),
             ),
             const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: () {
-                Add2Calendar.addEvent2Cal(_buildEvent());
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Aggiungi al calendario'),
-                  const SizedBox(width: 8),
-                  Icon(Icons.calendar_month),
-                ],
-              ),
-            ),
+            widget.isMyTrip
+                ? ElevatedButton(
+                    onPressed: () {
+                      Add2Calendar.addEvent2Cal(_buildEvent());
+                    },
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Aggiungi al calendario'),
+                        SizedBox(width: 8),
+                        Icon(Icons.calendar_month),
+                      ],
+                    ),
+                  )
+                : const SizedBox(),
           ],
         )
       ],
@@ -282,13 +267,15 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
     return '$durationDays giorni • $statusText';
   }
 
-  Widget _buildInfoRow(
-      BuildContext context, IconData icon, String text, TextStyle style, double iconSize) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String text,
+      TextStyle style, double iconSize) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Icon(icon, size: iconSize),
+        SizedBox(
+          width: 20, // fixed width for icon column
+          child: Icon(icon, size: iconSize),
+        ),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
@@ -305,7 +292,8 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
     final trip = widget.trip;
 
     return Event(
-      title: 'Viaggio a ${trip.nations!.map((c) => '${c['name']} ${c['flag']}').join(', ')}',
+      title:
+          'Viaggio a ${trip.nations!.map((c) => '${c['name']} ${c['flag']}').join(', ')}',
       description: 'Il mio viaggio con Simply Travel',
       location: trip.cities!.map((c) => c['name']).join(', '),
       startDate: trip.startDate!,

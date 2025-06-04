@@ -132,10 +132,12 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
                     color: Theme.of(context).dividerColor,
                     thickness: 2.5,
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Text(
-                        'Inserisci la prima attività',
+                        widget.isMyTrip
+                        ? 'Inserisci la prima attività'
+                        : 'Nessuna attività',
                       ),
                     ),
                   ),

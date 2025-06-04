@@ -1,4 +1,5 @@
 import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/utils/screenSize.dart';
 import 'package:dima_project/widgets/myBottomSheetHandle.dart';
 import 'package:dima_project/widgets/trip_widgets/itineraryWidget.dart';
 import 'package:dima_project/widgets/trip_widgets/tripExpensesWidget.dart';
@@ -11,9 +12,14 @@ import '../services/googlePlacesService.dart';
 
 class TripPage extends StatefulWidget {
   final DatabaseService databaseService;
+  final VoidCallback? onTripDeleted;
 
   TripPage(
-      {super.key, required this.trip, required this.isMyTrip, databaseService})
+      {super.key,
+      required this.trip,
+      required this.isMyTrip,
+      databaseService,
+      this.onTripDeleted})
       : databaseService = databaseService ?? DatabaseService();
 
   final TripModel trip;
@@ -52,7 +58,6 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -121,7 +126,10 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
               isMyTrip: widget.isMyTrip,
               databaseService: widget.databaseService,
             ),
-            TripInfoWidget(trip: _trip),
+            TripInfoWidget(
+              trip: _trip,
+              isMyTrip: widget.isMyTrip,
+            ),
             TripExpensesWidget(
               tripId: _trip.id ?? '',
               databaseService: widget.databaseService,
@@ -234,7 +242,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
 
   Future<void> _handleDeleteTrip(
       BuildContext parentContext, BuildContext bottomSheetContext) async {
-    Navigator.pop(bottomSheetContext); // Close the bottom sheet
+    Navigator.pop(bottomSheetContext);
 
     final shouldDelete = await showDialog<bool>(
       context: parentContext,
@@ -261,7 +269,12 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
       await widget.databaseService.deleteTrip(_trip.id!);
 
       if (parentContext.mounted) {
-        Navigator.pop(parentContext); // Pop the TripPage
+        if (ScreenSize.isTablet(parentContext)) {
+          //callback to notify parent
+          if (widget.onTripDeleted != null) widget.onTripDeleted!();
+        } else {
+          Navigator.pop(parentContext); // Pop the TripPage
+        }
 
         // Show confirmation SnackBar after popping
         Future.delayed(const Duration(milliseconds: 100), () {

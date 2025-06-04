@@ -43,7 +43,8 @@ class GooglePlacesService {
     }
   }
 
-  Future<Map<String, double>> getCoordinates(String placeId) async {
+  Future<Map<String, double>> getCoordinates(String? placeId) async {
+    if (placeId == null) return {'lat': 0, 'lng': 0};
     final url =
         Uri.parse('https://maps.googleapis.com/maps/api/place/details/json'
             '?place_id=$placeId'
@@ -66,7 +67,12 @@ class GooglePlacesService {
     }
   }
 
-  Future<String> getCountryImageRef(String country) async {
+  Future<String> getCountryImageRef(String? country) async {
+
+    if (country == null) {
+      return '';
+    }
+
     final url = Uri.parse(
       'https://maps.googleapis.com/maps/api/place/findplacefromtext/json'
           '?input=$country'

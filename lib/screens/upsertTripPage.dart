@@ -7,7 +7,6 @@ import 'package:dima_project/utils/PlacesType.dart';
 import 'package:dima_project/widgets/placesSearchWidget.dart';
 import 'package:dima_project/widgets/countryPickerWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -16,8 +15,20 @@ import '../models/userModel.dart';
 class UpsertTripPage extends StatefulWidget {
   final TripModel? trip;
   final bool? isUpdate;
+  final DatabaseService databaseService;
+  final AuthService authService;
+  final GooglePlacesService googlePlacesService;
 
-  const UpsertTripPage({super.key, this.trip, this.isUpdate});
+  UpsertTripPage(
+      {super.key,
+      this.trip,
+      this.isUpdate,
+      databaseService,
+      authService,
+      googlePlacesService})
+      : databaseService = databaseService ?? DatabaseService(),
+        authService = authService ?? AuthService(),
+        googlePlacesService = googlePlacesService ?? GooglePlacesService();
 
   @override
   State<UpsertTripPage> createState() => _UpsertTripPageState();
@@ -28,6 +39,9 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController countriesController = TextEditingController();
   TextEditingController citiesController = TextEditingController();
+  TextEditingController datesController = TextEditingController();
+  TextEditingController newStartDateController = TextEditingController();
+  TextEditingController newEndDateController = TextEditingController();
 
   String title = "";
   List<Country> _selectedCountries = [];
@@ -41,9 +55,10 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
 
   @override
   void initState() {
+    //meaning that we are in update mode
     if (widget.trip != null) {
       //initialize title
-      titleController = TextEditingController(text: widget.trip!.title);
+      titleController.text = widget.trip!.title ?? '';
       //initialize countries
       if (widget.trip!.nations != null && widget.trip!.nations!.isNotEmpty) {
         _selectedCountries = widget.trip!.nations!
@@ -62,6 +77,13 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
       _newStartDate = _startDate;
       _endDate = widget.trip!.endDate;
       _newEndDate = _endDate;
+      if (_newStartDate != null) {
+        newStartDateController.text =
+            DateFormat('dd/MM/yy').format(_newStartDate!);
+      }
+      if (_newEndDate != null) {
+        newEndDateController.text = DateFormat('dd/MM/yy').format(_newEndDate!);
+      }
     }
     super.initState();
   }
@@ -235,11 +257,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
                 // dates input
                 TextFormField(
                   readOnly: true,
-                  controller: TextEditingController(
-                    text: _startDate != null && _endDate != null
-                        ? "${DateFormat('dd/MM/yy').format(_startDate!)} - ${DateFormat('dd/MM/yy').format(_endDate!)}"
-                        : '',
-                  ),
+                  controller: datesController,
                   decoration: InputDecoration(
                     hintText: 'Quando partirai?',
                     prefixIcon: Icon(Icons.date_range),
@@ -412,11 +430,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
                 //end date input
                 TextFormField(
                   readOnly: true,
-                  controller: TextEditingController(
-                    text: _newEndDate != null
-                        ? DateFormat('dd/MM/yy').format(_newEndDate!)
-                        : '',
-                  ),
+                  controller: newEndDateController,
                   decoration: InputDecoration(
                     labelText: 'Quando tornerai?',
                     prefixIcon: Icon(Icons.date_range),
@@ -464,7 +478,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
 
   void _onCountriesSelected(List<Country> selectedCountries) {
     List<Country> newSelection = List.from(_selectedCountries);
-    print('length: ${_selectedCountries.length}');
+
     //to avoid duplicates & maximum 5 countries due to google api limit
     for (Country country in selectedCountries) {
       if (!newSelection.contains(country) && newSelection.length < 5) {
@@ -480,12 +494,14 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        return CountryPickerWidget(selectedCountries: _selectedCountries,
-            onCountriesSelected: _onCountriesSelected, isUserNationality: false);
+        return CountryPickerWidget(
+            selectedCountries: _selectedCountries,
+            onCountriesSelected: _onCountriesSelected,
+            isUserNationality: false);
       },
     );
   }
@@ -501,10 +517,11 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
       if (!exists) {
         _selectedCities.add(city);
       } else {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Questa tappa è già nel tuo itinerario'),
-            margin: EdgeInsets.all(10.0),
+            content: const Text('Questa tappa è già nel tuo itinerario'),
+            margin: const EdgeInsets.all(10.0),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             behavior: SnackBarBehavior.floating,
@@ -522,7 +539,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
@@ -550,6 +567,8 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
       setState(() {
         _startDate = pickedDateRange.start;
         _endDate = pickedDateRange.end;
+        datesController.text =
+            "${DateFormat('dd/MM/yy').format(_startDate!)} - ${DateFormat('dd/MM/yy').format(_endDate!)}";
       });
     }
   }
@@ -560,12 +579,14 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
     DateTime? newStartDate = await showDatePicker(
       context: context,
       firstDate: DateTime.now(),
-      lastDate: _startDate!,
-      initialDate: _newStartDate!,
+      lastDate: _startDate ?? DateTime.now(),
+      initialDate: _newStartDate ?? DateTime.now(),
     );
     if (newStartDate != null) {
       setState(() {
         _newStartDate = newStartDate;
+        newStartDateController.text =
+            DateFormat('dd/MM/yy').format(_newStartDate!);
       });
     }
   }
@@ -573,13 +594,14 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
   Future<void> _selectEndDate(BuildContext context) async {
     DateTime? newEndDate = await showDatePicker(
       context: context,
-      firstDate: _endDate!,
+      firstDate: _endDate ?? DateTime.now(),
       lastDate: DateTime(2100),
-      initialDate: _newEndDate,
+      initialDate: _newEndDate ?? DateTime.now(),
     );
     if (newEndDate != null) {
       setState(() {
         _newEndDate = newEndDate;
+        newEndDateController.text = DateFormat('dd/MM/yy').format(_newEndDate!);
       });
     }
   }
@@ -592,9 +614,10 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
       });
 
       if (widget.isUpdate == null || !widget.isUpdate!) {
+        //TODO: current user can be handled better
         //code for insertion
-        UserModel? currentUser = await DatabaseService()
-            .getUserByUid(AuthService().currentUser!.uid);
+        UserModel? currentUser = await widget.databaseService
+            .getUserByUid(widget.authService.currentUser!.uid);
         Map<String, dynamic> creatorInfo = {};
         if (currentUser != null) {
           creatorInfo = {
@@ -621,7 +644,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
             await reformatCitiesWithCoordinates();
 
         //retrieve image Reference from google
-        String imageRef = await GooglePlacesService()
+        String imageRef = await widget.googlePlacesService
             .getCountryImageRef(countriesMap.first['name']);
 
         final trip = TripModel(
@@ -634,7 +657,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
           timestamp: Timestamp.now(),
           imageRef: imageRef,
         );
-        DatabaseService()
+        widget.databaseService
             .createTrip(trip)
             .then((value) => Navigator.pop(context, true));
       } else {
@@ -658,9 +681,8 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
             timestamp: widget.trip!.timestamp,
             imageRef: widget.trip!.imageRef,
           );
-          DatabaseService()
-              .updateTrip(updatedTrip)
-              .then((value) => Navigator.pop(context, updatedTrip));
+          widget.databaseService.updateTrip(updatedTrip).then((_) =>
+              {if (context.mounted) Navigator.pop(context, updatedTrip)});
         }
       }
     } else {
@@ -677,7 +699,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
         try {
           // Fetch coordinates using placeId
           Map<String, double> coordinates =
-              await GooglePlacesService().getCoordinates(placeId);
+              await widget.googlePlacesService.getCoordinates(placeId);
           citiesMap.add({
             'name': city['name'],
             'place_id': placeId,
@@ -690,5 +712,26 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
       }
     }
     return citiesMap;
+  }
+
+  //methods for testing purposes
+  @visibleForTesting
+  void simulateCountrySelection(List<Country> countries) {
+    _onCountriesSelected(countries);
+  }
+
+  @visibleForTesting
+  void simulateCitySelection(List<Map<String, String>> cities) {
+    for (var city in cities) {
+      _onCitySelected(city);
+    }
+  }
+
+  @visibleForTesting
+  void simulateDateSelection(DateTime start, DateTime end) {
+    setState(() {
+      _startDate = start;
+      _endDate = end;
+    });
   }
 }

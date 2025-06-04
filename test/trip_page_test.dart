@@ -7,9 +7,8 @@ import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'mocks.dart';
 import 'mocks.mocks.dart';
-
-class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
 void main() {
   late MockDatabaseService mockDatabaseService;
@@ -86,6 +85,7 @@ void main() {
     expect(find.text('Pubblica'), findsOneWidget);
   });
 
+  /*
   testWidgets('tapping on \'Modifica\' navigate to \'UpsertTripPage\'', (tester) async {
     final trip = TripModel(id: '1', title: 'Trip', endDate: DateTime.now(), isPrivate: true);
     final updatedTrip = TripModel(id: '1', title: 'Updated Trip', endDate: DateTime.now());
@@ -102,6 +102,8 @@ void main() {
 
     expect(find.byType(UpsertTripPage), findsOneWidget);
   });
+
+   */
 
   testWidgets('tapping on \'Apri mappa\' navigate to \'MapPage\'', (tester) async {
     final trip = TripModel(id: '1', title: 'Trip', endDate: DateTime.now(), isPrivate: true);

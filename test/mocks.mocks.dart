@@ -11,6 +11,7 @@ import 'package:dima_project/models/tripModel.dart' as _i3;
 import 'package:dima_project/models/userModel.dart' as _i6;
 import 'package:dima_project/services/authService.dart' as _i9;
 import 'package:dima_project/services/databaseService.dart' as _i5;
+import 'package:dima_project/services/googlePlacesService.dart' as _i11;
 import 'package:firebase_auth/firebase_auth.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i10;
@@ -929,4 +930,82 @@ class MockDocumentSnapshot<T extends Object?> extends _i1.Mock
         #[],
         [field],
       ));
+}
+
+/// A class which mocks [GooglePlacesService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGooglePlacesService extends _i1.Mock
+    implements _i11.GooglePlacesService {
+  MockGooglePlacesService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String get apiKey => (super.noSuchMethod(
+        Invocation.getter(#apiKey),
+        returnValue: _i10.dummyValue<String>(
+          this,
+          Invocation.getter(#apiKey),
+        ),
+      ) as String);
+
+  @override
+  _i8.Future<List<Map<String, String>>> searchAutocomplete(
+    String? query,
+    List<String>? countryCodes,
+    String? searchType,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #searchAutocomplete,
+          [
+            query,
+            countryCodes,
+            searchType,
+          ],
+        ),
+        returnValue: _i8.Future<List<Map<String, String>>>.value(
+            <Map<String, String>>[]),
+      ) as _i8.Future<List<Map<String, String>>>);
+
+  @override
+  _i8.Future<Map<String, double>> getCoordinates(String? placeId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getCoordinates,
+          [placeId],
+        ),
+        returnValue: _i8.Future<Map<String, double>>.value(<String, double>{}),
+      ) as _i8.Future<Map<String, double>>);
+
+  @override
+  _i8.Future<String> getCountryImageRef(String? country) => (super.noSuchMethod(
+        Invocation.method(
+          #getCountryImageRef,
+          [country],
+        ),
+        returnValue: _i8.Future<String>.value(_i10.dummyValue<String>(
+          this,
+          Invocation.method(
+            #getCountryImageRef,
+            [country],
+          ),
+        )),
+      ) as _i8.Future<String>);
+
+  @override
+  String getImageUrl(String? imageRef) => (super.noSuchMethod(
+        Invocation.method(
+          #getImageUrl,
+          [imageRef],
+        ),
+        returnValue: _i10.dummyValue<String>(
+          this,
+          Invocation.method(
+            #getImageUrl,
+            [imageRef],
+          ),
+        ),
+      ) as String);
 }

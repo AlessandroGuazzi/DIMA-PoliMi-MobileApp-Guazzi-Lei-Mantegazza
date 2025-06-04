@@ -83,11 +83,9 @@ void main() {
 
   testWidgets('displays loading indicator while fetching user',
       (WidgetTester tester) async {
-    // Return a delayed future to simulate loading state
-
+    //delayed
     await tester.pumpWidget(buildTestableWidget());
 
-    // Initially should show loading spinner
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
     // Let the future complete
@@ -108,10 +106,6 @@ void main() {
 
     //assert first that the search bar is empty
     await tester.enterText(find.byType(SearchBar), '');
-    await tester.pumpAndSettle();
-
-    // Scroll to the bottom to build all items
-    await tester.drag(find.byType(ListView), const Offset(0, -1000));
     await tester.pumpAndSettle();
 
     //assert that there's the same number of trip widget as the length of the trips returned
