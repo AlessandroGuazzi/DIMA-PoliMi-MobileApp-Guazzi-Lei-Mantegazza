@@ -22,8 +22,8 @@ class _MapPageState extends State<MapPage> {
           AppBar(),
       body: GoogleMap(
           onMapCreated: _onMapCreated,
-          initialCameraPosition: _initializeCameraPosition(),
-          markers: _initializeMarkers()),
+          initialCameraPosition: initializeCameraPosition(),
+          markers: initializeMarkers()),
     );
   }
 
@@ -31,7 +31,7 @@ class _MapPageState extends State<MapPage> {
     _mapController = controller;
   }
 
-  Set<Marker> _initializeMarkers() {
+  Set<Marker> initializeMarkers() {
     List<Map<String, dynamic>> cities = widget.trip.cities ?? [];
     Set<Marker> markers = <Marker>{};
     if (cities.isNotEmpty) {
@@ -43,14 +43,15 @@ class _MapPageState extends State<MapPage> {
                 title: city['name'],
                 snippet: "Click for details",
                 onTap: () {
-                  _openDetails(city);
+                  openDetails(city);
                 })));
       }
     }
     return markers;
   }
 
-  CameraPosition _initializeCameraPosition() {
+
+  CameraPosition initializeCameraPosition() {
     List<Map<String, dynamic>> cities = widget.trip.cities ?? [];
 
     if (cities.isEmpty) {
@@ -75,7 +76,7 @@ class _MapPageState extends State<MapPage> {
     return CameraPosition(target: center, zoom: 5);
   }
 
-  void _openDetails(Map<String, dynamic> city) {
+  void openDetails(Map<String, dynamic> city) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -92,7 +93,7 @@ class _MapPageState extends State<MapPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("Close"),
+              child: const Text("Chiudi"),
             ),
           ],
         );
