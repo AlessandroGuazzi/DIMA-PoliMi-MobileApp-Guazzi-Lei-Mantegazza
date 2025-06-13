@@ -60,10 +60,18 @@ class _TripCardWidgetState extends State<TripCardWidget> {
               //--- trip-profile pic ---
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
+                child:Image.asset(
+                  'assets/placeholder_landscape.jpg',
+                  height: 100,
+                  width: 100,
+                  fit: BoxFit.cover,
+                ),
+                /*
                 child: widget.trip.imageRef != null
+                //TODO: fix image ref
                     ? Image.network(
                         GooglePlacesService()
-                            .getImageUrl(widget.trip.imageRef!),
+                            .getImageUrl(widget.trip.imageRef ?? ''),
                         height: 100,
                         width: 100,
                         fit: BoxFit.cover,
@@ -74,6 +82,8 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                         width: 100,
                         fit: BoxFit.cover,
                       ),
+
+                 */
               ),
 
               const SizedBox(width: 8),
@@ -154,10 +164,18 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                       ).createShader(bounds);
                     },
                     blendMode: BlendMode.dstIn,
-                    child: widget.trip.imageRef != null
+                    child: Image.asset(
+                      'assets/placeholder_landscape.jpg',
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                      /*
+                    child: widget.trip.imageRef == null
+                    //TODO: fix image ref
+
                         ? Image.network(
                             GooglePlacesService()
-                                .getImageUrl(widget.trip.imageRef!),
+                                .getImageUrl(widget.trip.imageRef ?? ''),
                             width: double.infinity,
                             fit: BoxFit.cover,
                           )
@@ -166,6 +184,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                             width: double.infinity,
                             fit: BoxFit.cover,
                           ),
+                    */
                   ),
                 )),
             Padding(

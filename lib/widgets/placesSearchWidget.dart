@@ -10,19 +10,21 @@ class PlacesSearchWidget extends StatefulWidget {
   final List<String> selectedCountryCodes;
   final Function(Map<String, String>) onPlaceSelected;
   final PlacesType type;
+  final GooglePlacesService googlePlacesService;
 
-  const PlacesSearchWidget(
+  PlacesSearchWidget(
       {super.key,
       required this.selectedCountryCodes,
-      required this.onPlaceSelected, required this.type});
+      required this.onPlaceSelected,
+      required this.type,
+      googlePlacesService})
+      : googlePlacesService = googlePlacesService ?? GooglePlacesService();
 
   @override
-  _PlacesSearchWidgetState createState() => _PlacesSearchWidgetState();
+  PlacesSearchWidgetState createState() => PlacesSearchWidgetState();
 }
 
-class _PlacesSearchWidgetState extends State<PlacesSearchWidget> {
-  TextEditingController _placesController = TextEditingController();
-
+class PlacesSearchWidgetState extends State<PlacesSearchWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,14 +33,14 @@ class _PlacesSearchWidgetState extends State<PlacesSearchWidget> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(150, 15, 150, 15),
+              padding: const EdgeInsets.fromLTRB(150, 15, 150, 15),
               child: Container(
                 height: 5,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Theme.of(context).dividerColor,
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(100)), // Rounded edges
+                  borderRadius: const BorderRadius.all(
+                      Radius.circular(100)), // Rounded edges
                 ),
               ),
             ),
@@ -107,19 +109,9 @@ class _PlacesSearchWidgetState extends State<PlacesSearchWidget> {
                         String placeType = widget.type.name;
                         //this is needed due to how google places api treat cities call
                         if (placeType == 'cities') placeType = '(cities)';
-                        places = await GooglePlacesService().searchAutocomplete(
+                        places = await widget.googlePlacesService.searchAutocomplete(
                             query, widget.selectedCountryCodes, placeType);
                       }
-
-                      /*
-                      cities = [
-                        "New York", "Los Angeles", "Chicago", "Houston", "Phoenix",
-                        "London", "Manchester", "Birmingham", "Liverpool", "Glasgow",
-                        "Paris", "Marseille", "Lyon", "Toulouse", "Nice",
-                        "Berlin", "Hamburg", "Munich", "Cologne", "Frankfurt",
-                        "Madrid"];
-                        */
-
                       return places;
                     })),
           ],

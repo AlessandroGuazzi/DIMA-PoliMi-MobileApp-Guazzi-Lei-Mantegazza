@@ -6,6 +6,8 @@
 import 'dart:async' as _i8;
 
 import 'package:cloud_firestore/cloud_firestore.dart' as _i2;
+import 'package:country_picker/src/country.dart' as _i13;
+import 'package:country_picker/src/country_service.dart' as _i12;
 import 'package:dima_project/models/activityModel.dart' as _i7;
 import 'package:dima_project/models/tripModel.dart' as _i3;
 import 'package:dima_project/models/userModel.dart' as _i6;
@@ -1008,4 +1010,32 @@ class MockGooglePlacesService extends _i1.Mock
           ),
         ),
       ) as String);
+}
+
+/// A class which mocks [CountryService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockCountryService extends _i1.Mock implements _i12.CountryService {
+  MockCountryService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  List<_i13.Country> getAll() => (super.noSuchMethod(
+        Invocation.method(
+          #getAll,
+          [],
+        ),
+        returnValue: <_i13.Country>[],
+      ) as List<_i13.Country>);
+
+  @override
+  List<_i13.Country> findCountriesByCode(List<String>? codes) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #findCountriesByCode,
+          [codes],
+        ),
+        returnValue: <_i13.Country>[],
+      ) as List<_i13.Country>);
 }

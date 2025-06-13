@@ -6,9 +6,15 @@ class CountryPickerWidget extends StatefulWidget {
   final Function(List<Country>) onCountriesSelected;
   final List<Country> selectedCountries;
   final bool isUserNationality;
+  final CountryService countryService;
 
-  const CountryPickerWidget(
-      {super.key, required this.selectedCountries,required this.onCountriesSelected, required this.isUserNationality});
+  CountryPickerWidget(
+      {super.key,
+      required this.selectedCountries,
+      required this.onCountriesSelected,
+      required this.isUserNationality,
+      countryService})
+      : countryService = countryService ?? CountryService();
 
   @override
   State<CountryPickerWidget> createState() => _CountryPickerWidgetState();
@@ -23,7 +29,7 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
   void initState() {
     super.initState();
     setState(() {
-      _allCountries = CountryService().getAll();
+      _allCountries = widget.countryService.getAll();
       _filteredCountries = List.from(_allCountries);
       _selectedCountries = widget.selectedCountries;
     });
@@ -130,17 +136,15 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
   }
 
   _selectCountry(Country country, bool isSelected) {
-
-      if (!isSelected && _selectedCountries.length < 5) {
-        _selectedCountries.add(country);
-        if(widget.isUserNationality) {
-          _confirmCountries();
-        }
-      } else if (isSelected) {
-        _selectedCountries.remove(country);
+    if (!isSelected && _selectedCountries.length < 5) {
+      _selectedCountries.add(country);
+      if (widget.isUserNationality) {
+        _confirmCountries();
       }
-      setState(() {});
-
+    } else if (isSelected) {
+      _selectedCountries.remove(country);
+    }
+    setState(() {});
   }
 
   _confirmCountries() {

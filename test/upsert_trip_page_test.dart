@@ -5,9 +5,9 @@ import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:dima_project/services/googlePlacesService.dart';
 import 'package:dima_project/widgets/countryPickerWidget.dart';
 import 'package:dima_project/widgets/placesSearchWidget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 import 'package:mockito/mockito.dart';
 
 import 'mocks.dart';
@@ -208,7 +208,8 @@ void main() {
       expect(find.textContaining('France'), findsOneWidget);
     });
 
-    testWidgets('Selecting date field open DateRangePickerDialog', (tester) async {
+    testWidgets('Selecting date field open DateRangePickerDialog',
+        (tester) async {
       await pumpTestableWidget(tester, null, false);
 
       // Tap to trigger _selectDateRange
@@ -231,8 +232,8 @@ void main() {
         {'name': 'Roma', 'place_id': '123', 'lat': 123, 'lng': 456},
         {'name': 'Paris', 'place_id': '456', 'lat': 123, 'lng': 456},
       ],
-      startDate: DateTime(2025, 6, 10),
-      endDate: DateTime(2025, 6, 15),
+      startDate: DateTime.now(),
+      endDate: DateTime.now().add(const Duration(days: 7)),
       imageRef: 'testing_ref',
     );
     testWidgets('correctly initialize all data', (WidgetTester tester) async {
@@ -242,8 +243,11 @@ void main() {
       expect(find.widgetWithText(TextFormField, 'Test trip'), findsOneWidget);
       expect(
           find.widgetWithText(TextFormField, 'Aggiungi tappe'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, '10/06/25'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, '15/06/25'), findsOneWidget);
+      final startDate = DateFormat('dd/MM/yy').format(DateTime.now());
+      final endDate = DateFormat('dd/MM/yy')
+          .format(DateTime.now().add(const Duration(days: 7)));
+      expect(find.widgetWithText(TextFormField, startDate), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, endDate), findsOneWidget);
       expect(find.byType(ElevatedButton), findsOneWidget);
     });
 
@@ -351,15 +355,17 @@ void main() {
   });
 
   group('General mode tests', () {
-    testWidgets('Tapping country field opens CountryPickerWidget', (tester) async {
+    testWidgets('Tapping country field opens CountryPickerWidget',
+        (tester) async {
       await pumpTestableWidget(tester, null, false);
 
-      await tester.tap(find.widgetWithText(TextFormField, 'Che nazioni visiterai?'));
+      await tester
+          .tap(find.widgetWithText(TextFormField, 'Che nazioni visiterai?'));
       await tester.pumpAndSettle();
 
       expect(find.byType(CountryPickerWidget), findsOneWidget);
     });
-    
+
     testWidgets('Tapping city field opens PlacesSearchWidget', (tester) async {
       await pumpTestableWidget(tester, null, false);
 
@@ -367,8 +373,9 @@ void main() {
       final state = tester.state(find.byType(UpsertTripPage)) as dynamic;
       await state.simulateCountrySelection([Country.parse('Italy')]);
       await tester.pumpAndSettle();
-      
-      await tester.tap(find.widgetWithText(TextFormField, 'Che città visiterai?'));
+
+      await tester
+          .tap(find.widgetWithText(TextFormField, 'Che città visiterai?'));
       await tester.pumpAndSettle();
 
       expect(find.byType(PlacesSearchWidget), findsOneWidget);
