@@ -48,6 +48,7 @@ dependencies:
   dropdown_button2: ^2.3.9
   add_2_calendar: ^3.0.1
   mockito: ^5.4.4
+  duration_picker: ^1.0.2
 
 
 dev_dependencies:

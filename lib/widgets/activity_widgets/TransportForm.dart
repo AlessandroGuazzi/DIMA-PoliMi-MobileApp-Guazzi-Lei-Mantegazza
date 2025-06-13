@@ -30,6 +30,9 @@ class _TransportFormState extends State<TransportForm> {
   num? cost;
   String _selectedCurrency = 'EUR';
   late List<String> _currencies;
+  Duration? _selectedDuration;
+  final TextEditingController _durationController = TextEditingController();
+
 
   //final List<String> _transportTypes = ['Bus', 'Train', 'Car', 'Ferry'];
   final Map<String, IconData> _transportIcons = {
@@ -56,6 +59,11 @@ class _TransportFormState extends State<TransportForm> {
         costController.text = t.expenses.toString();
         cost = t.expenses ?? 0;
       }
+      if (t.duration != null) {
+        final d = Duration(minutes: t.duration!.toInt());
+        _selectedDuration = d;
+        _durationController.text = "${d.inHours}h ${d.inMinutes % 60}m";
+      }
     }
   }
 
@@ -64,6 +72,7 @@ class _TransportFormState extends State<TransportForm> {
     departurePlaceController.dispose();
     arrivalPlaceController.dispose();
     costController.dispose();
+    _durationController.dispose();
     super.dispose();
   }
 
@@ -198,6 +207,30 @@ class _TransportFormState extends State<TransportForm> {
             ),
             const SizedBox(height: 20),
 
+            TextFormField(
+              controller: _durationController,
+              readOnly: true,
+              decoration: const InputDecoration(
+                labelText: 'Durata (opzionale)',
+                prefixIcon: Icon(Icons.timer),
+                hintText: 'Seleziona durata',
+              ),
+              onTap: () async {
+                final duration = await showDialog<Duration>(
+                  context: context,
+                  builder: (_) => DurationPickerDialog(initialDuration: _selectedDuration ?? const Duration()),
+                );
+                if (duration != null) {
+                  setState(() {
+                    _selectedDuration = duration;
+                    _durationController.text = "${duration.inHours}h ${duration.inMinutes % 60}m";
+                  });
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+
+
             ElevatedButton(
               onPressed: _submitForm,
               child: const Text("Save Transport"),
@@ -276,6 +309,7 @@ class _TransportFormState extends State<TransportForm> {
         arrivalPlace: arrivalPlaceController.text,
         departureDate: departureDateTime,
         expenses: cost != null ? double.parse(cost!.toStringAsFixed(2)) : null,
+        duration: _selectedDuration?.inMinutes,
         transportType: _selectedType!,
         type: 'transport'
       );
@@ -299,3 +333,65 @@ class _TransportFormState extends State<TransportForm> {
     }
   }
 }
+
+
+
+class DurationPickerDialog extends StatefulWidget {
+  final Duration initialDuration;
+
+  const DurationPickerDialog({Key? key, required this.initialDuration}) : super(key: key);
+
+  @override
+  State<DurationPickerDialog> createState() => _DurationPickerDialogState();
+}
+
+class _DurationPickerDialogState extends State<DurationPickerDialog> {
+  late int hours;
+  late int minutes;
+
+  @override
+  void initState() {
+    super.initState();
+    hours = widget.initialDuration.inHours;
+    minutes = widget.initialDuration.inMinutes % 60;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Seleziona durata'),
+      content: Row(
+        children: [
+          Expanded(
+            child: DropdownButton<int>(
+              value: hours,
+              isExpanded: true,
+              onChanged: (val) => setState(() => hours = val!),
+              items: List.generate(24, (i) => DropdownMenuItem(value: i, child: Text('$i h'))),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: DropdownButton<int>(
+              value: minutes,
+              isExpanded: true,
+              onChanged: (val) => setState(() => minutes = val!),
+              items: List.generate(60, (i) => DropdownMenuItem(value: i, child: Text('$i m'))),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Annulla'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context, Duration(hours: hours, minutes: minutes)),
+          child: const Text('Conferma'),
+        ),
+      ],
+    );
+  }
+}
+

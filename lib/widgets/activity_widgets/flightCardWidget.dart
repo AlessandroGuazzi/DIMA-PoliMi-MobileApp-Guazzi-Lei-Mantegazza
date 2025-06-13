@@ -67,9 +67,15 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                               color: Theme.of(context).primaryColor,
                             ),
                             const SizedBox(width: 5),
-                            Text('Departure Time: ${widget.flight.departureDate != null ? '${widget.flight.departureDate!.hour.toString().padLeft(2, '0')}:${widget.flight.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}'),
+                            Expanded( // <-- aggiunto qui
+                              child: Text(
+                                'Departure Time: ${widget.flight.departureDate != null ? '${widget.flight.departureDate!.hour.toString().padLeft(2, '0')}:${widget.flight.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
+                                overflow: TextOverflow.ellipsis, // opzionale
+                              ),
+                            ),
                           ],
                         ),
+
 
                         Row(
                           children: [
@@ -79,7 +85,11 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                               color: Theme.of(context).primaryColor,
                             ),
                             const SizedBox(width: 5),
-                            Text('Arrival Time: ${widget.flight.arrivalDate != null ? '${widget.flight.arrivalDate!.hour.toString().padLeft(2, '0')}:${widget.flight.arrivalDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}')
+                            Expanded(
+                                child: Text(
+                                  'Arrival Time: ${widget.flight.arrivalDate != null ? '${widget.flight.arrivalDate!.hour.toString().padLeft(2, '0')}:${widget.flight.arrivalDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
+                                  overflow: TextOverflow.ellipsis,)
+                            )
                           ],
                         )
                       ],

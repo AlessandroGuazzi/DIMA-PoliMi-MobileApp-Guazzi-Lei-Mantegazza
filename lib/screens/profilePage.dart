@@ -289,58 +289,60 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min, // Questo fa sì che la colonna abbia solo l'altezza necessaria
-              children: [
-                // Lista delle impostazioni
-                ListView(
-                  shrinkWrap: true, // Per evitare errori di overflow
-                  physics: const NeverScrollableScrollPhysics(), // Disabilita lo scrolling della lista
-                  children: [
-                    ListTile(
-                      title: const Text('Modifica Profilo', style: TextStyle(fontSize: 18)),
-                      leading: const Icon(Icons.person, color: Colors.black),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => AccountSettings(currentUserFuture: _currentUserFuture)),
-                        ).then((value) => setState(() {_currentUserFuture = _loadCurrentUser();}));
-                      },
-                    ),
-                    ListTile(
-                      title: const Text('Nazioni Visitate', style: TextStyle(fontSize: 18)),
-                      leading: const Icon(Icons.travel_explore_outlined, color: Colors.black),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const GamePage()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      title: const Text('Medaglie', style: TextStyle(fontSize: 18)),
-                      leading: const Icon(Icons.monetization_on, color: Colors.black),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MedalsPage(username: user.username!, userId: user.id!)),
-                        ).then((value) => setState(() {_currentUserFuture = _loadCurrentUser();}));
-                      },
-                    ),
-                    ListTile(
-                      title: const Text('Log Out', style: TextStyle(fontSize: 18)),
-                      leading: const Icon(Icons.logout, color: Colors.red),
-                      onTap: () async {
-                        await signOut();
-                        Navigator.of(context).pop(); // Chiudi la sheet
-                      },
-                    ),
-                  ],
-                ),
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // Questo fa sì che la colonna abbia solo l'altezza necessaria
+                children: [
+                  // Lista delle impostazioni
+                  ListView(
+                    shrinkWrap: true, // Per evitare errori di overflow
+                    physics: const NeverScrollableScrollPhysics(), // Disabilita lo scrolling della lista
+                    children: [
+                      ListTile(
+                        title: const Text('Modifica Profilo', style: TextStyle(fontSize: 18)),
+                        leading: const Icon(Icons.person, color: Colors.black),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AccountSettings(currentUserFuture: _currentUserFuture)),
+                          ).then((value) => setState(() {_currentUserFuture = _loadCurrentUser();}));
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Nazioni Visitate', style: TextStyle(fontSize: 18)),
+                        leading: const Icon(Icons.travel_explore_outlined, color: Colors.black),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const GamePage()),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Medaglie', style: TextStyle(fontSize: 18)),
+                        leading: const Icon(Icons.monetization_on, color: Colors.black),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => MedalsPage(username: user.username!, userId: user.id!)),
+                          ).then((value) => setState(() {_currentUserFuture = _loadCurrentUser();}));
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Log Out', style: TextStyle(fontSize: 18)),
+                        leading: const Icon(Icons.logout, color: Colors.red),
+                        onTap: () async {
+                          await signOut();
+                          Navigator.of(context).pop(); // Chiudi la sheet
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

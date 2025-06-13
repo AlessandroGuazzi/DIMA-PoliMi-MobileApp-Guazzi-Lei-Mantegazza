@@ -63,6 +63,16 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                             ),
                           ],
                         ),
+                        if (widget.transport.duration != null && widget.transport.duration != 0)
+                          Row(
+                            children: [
+                              Icon(Icons.access_time_filled_outlined, size: 20, color: Theme.of(context).primaryColor),
+                              const SizedBox(width: 3),
+                              Text(
+                                'Arrival Time: ${widget.transport.departureDate != null ? '${(widget.transport.departureDate!.hour).toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                   ),
@@ -94,17 +104,6 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                         const SizedBox(height: 5),
                       ],
 
-                      if (widget.transport.duration != null) ...[
-                        Row(
-                          children: [
-                            Icon(Icons.timelapse, size: 20, color: Theme.of(context).primaryColor),
-                            const SizedBox(width: 5),
-                            Text("Durata: ${widget.transport.duration} ore"),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                      ],
-
                       if (widget.transport.arrivalPlace != null && widget.transport.arrivalPlace!.isNotEmpty) ...[
                         Row(
                           children: [
@@ -115,6 +114,20 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                         ),
                         const SizedBox(height: 5),
                       ],
+
+                      if (widget.transport.duration != null) ...[
+                        Row(
+                          children: [
+                            Icon(Icons.timelapse, size: 20, color: Theme.of(context).primaryColor),
+                            const SizedBox(width: 5),
+                            Text(
+                              "Durata: ${widget.transport.duration! ~/ 60}h ${widget.transport.duration! % 60}m",
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+
 
                       if (widget.transport.expenses != null) ...[
                         Row(
