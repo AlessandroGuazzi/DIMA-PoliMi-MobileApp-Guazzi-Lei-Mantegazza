@@ -997,19 +997,19 @@ class MockGooglePlacesService extends _i1.Mock
       ) as _i8.Future<String>);
 
   @override
-  String getImageUrl(String? imageRef) => (super.noSuchMethod(
+  _i8.Future<String> getImageUrl(_i3.TripModel? trip) => (super.noSuchMethod(
         Invocation.method(
           #getImageUrl,
-          [imageRef],
+          [trip],
         ),
-        returnValue: _i10.dummyValue<String>(
+        returnValue: _i8.Future<String>.value(_i10.dummyValue<String>(
           this,
           Invocation.method(
             #getImageUrl,
-            [imageRef],
+            [trip],
           ),
-        ),
-      ) as String);
+        )),
+      ) as _i8.Future<String>);
 }
 
 /// A class which mocks [CountryService].

@@ -65,39 +65,34 @@ class _MyTripsPageState extends State<MyTripsPage> {
     );
   }
 
-  /*
-  This method builds the list of trips tiles, already differentiating
-  between tablet and mobile actions on tap of each card
-   */
   Widget _myTripsList(List<TripModel> trips, Function onTileTap) {
-
     final splitTrips = splitPastFutureTrips(trips);
     List<TripModel>? pastTrips = splitTrips['pastTrips'];
     List<TripModel>? futureTrips = splitTrips['futureTrips'];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-
-        //upcoming trips
-        futureTrips == null || futureTrips.isEmpty
-        ? const SizedBox()
-        : Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10, top: 15, bottom: 5),
-                child: Text(
-                  'I tuoi viaggi',
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-              ),
-              const Divider(),
-
-              // 👇 Expanded ListView inside a Flexible space
-              Expanded(
-                child: ListView.builder(
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TabBar(
+            //labelColor: Theme.of(context).primaryColor,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: Theme.of(context).primaryColor,
+            labelStyle: Theme.of(context).textTheme.headlineMedium,
+            unselectedLabelStyle: Theme.of(context).textTheme.bodyMedium,
+            tabs: const [
+              Tab(text: 'I tuoi viaggi'),     // Upcoming Trips
+              Tab(text: 'Viaggi passati'),   // Past Trips
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                // Upcoming Trips
+                (futureTrips == null || futureTrips.isEmpty)
+                    ? const Center(child: Text('Nessun viaggio in programma.'))
+                    : ListView.builder(
                   itemCount: futureTrips.length,
                   itemBuilder: (context, index) {
                     final trip = futureTrips[index];
@@ -110,29 +105,11 @@ class _MyTripsPageState extends State<MyTripsPage> {
                     );
                   },
                 ),
-              ),
-            ],
-          ),
-        ),
 
-        //past trips
-        pastTrips == null || pastTrips.isEmpty
-        ? const SizedBox()
-        :   Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10, top: 15, bottom: 5),
-                child: Text(
-                  'Viaggi passati',
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-              ),
-              const Divider(),
-
-              Expanded(
-                child: ListView.builder(
+                // Past Trips
+                (pastTrips == null || pastTrips.isEmpty)
+                    ? const Center(child: Text('Nessun viaggio passato.'))
+                    : ListView.builder(
                   itemCount: pastTrips.length,
                   itemBuilder: (context, index) {
                     final trip = pastTrips[index];
@@ -145,11 +122,11 @@ class _MyTripsPageState extends State<MyTripsPage> {
                     );
                   },
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -32,12 +32,14 @@ class TripPage extends StatefulWidget {
 class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
   late TabController _tabController;
   late TripModel _trip;
+  late Future<String> _futureImageUrl;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _trip = widget.trip;
+    _futureImageUrl = GooglePlacesService().getImageUrl(_trip);
   }
 
   @override
@@ -46,6 +48,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
     if (oldWidget.trip != widget.trip) {
       setState(() {
         _trip = widget.trip;
+        _futureImageUrl = GooglePlacesService().getImageUrl(_trip);
       });
     }
   }
@@ -67,29 +70,47 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
             floating: false,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
-              background: Stack(
-                alignment: Alignment.center,
-                fit: StackFit.expand,
-                children: [
-                  _trip.imageRef != null
-                      ? Image.network(
-                          GooglePlacesService().getImageUrl(_trip.imageRef!),
-                          fit: BoxFit.cover,
-                        )
-                      : Image.asset('assets/placeholder_landscape.jpg'),
-                  Container(
-                    color: Colors.black.withOpacity(0.2),
+              background: FutureBuilder<String>(
+                future: _futureImageUrl,
+                builder: (context, snapshot) {
+                  Widget imageWidget;
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    imageWidget = const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasData && snapshot.data != null && snapshot.data != '') {
+                    imageWidget = Image.network(
+                      snapshot.data!,
+                      fit: BoxFit.cover,
+                    );
+                  } else {
+                    imageWidget = Image.asset(
+                      'assets/placeholder_landscape.jpg',
+                      fit: BoxFit.cover,
+                    );
+                  }
+
+                  return Stack(
                     alignment: Alignment.center,
-                    child: Text(
-                      _trip.title ?? 'No title',
-                      style: Theme.of(context)
-                          .textTheme
-                          .displayLarge
-                          ?.copyWith(color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
+                    fit: StackFit.expand,
+                    children: [
+                      //image fetched from google
+                      imageWidget,
+
+                      Container(
+                        color: Colors.black.withOpacity(0.2),
+                        alignment: Alignment.center,
+                        child: Text(
+                          _trip.title ?? 'No title',
+                          style: Theme.of(context)
+                              .textTheme
+                              .displayLarge
+                              ?.copyWith(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
             bottom: PreferredSize(

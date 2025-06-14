@@ -20,7 +20,7 @@ class TripModel {
   bool? isPrivate;
   int? saveCounter;
   final Timestamp? timestamp;
-  final String? imageRef;
+  String? imageRef;
 
   //constructor
   TripModel({

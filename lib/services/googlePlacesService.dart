@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'package:dima_project/services/databaseService.dart';
 import 'package:http/http.dart' as http;
+
+import '../models/tripModel.dart';
 
 class GooglePlacesService {
   final String apiKey = 'AIzaSyDKIlpTjMwBYqqmw-8lNs5PId8zWzPg5cY';
@@ -68,17 +71,16 @@ class GooglePlacesService {
   }
 
   Future<String> getCountryImageRef(String? country) async {
-
     if (country == null) {
       return '';
     }
 
     final url = Uri.parse(
       'https://maps.googleapis.com/maps/api/place/findplacefromtext/json'
-          '?input=$country'
-          '&inputtype=textquery'
-          '&fields=photos'
-          '&key=$apiKey',
+      '?input=$country'
+      '&inputtype=textquery'
+      '&fields=photos'
+      '&key=$apiKey',
     );
 
     final response = await http.get(url);
@@ -87,7 +89,8 @@ class GooglePlacesService {
       final data = jsonDecode(response.body);
       if (data['status'] == 'OK') {
         if (data['candidates'] != null && data['candidates'].isNotEmpty) {
-          final photoRef = data['candidates'][0]['photos'][0]['photo_reference'];
+          final photoRef =
+              data['candidates'][0]['photos'][0]['photo_reference'];
           return photoRef;
         } else {
           throw Exception('No photos found for the country: $country');
@@ -100,11 +103,40 @@ class GooglePlacesService {
     }
   }
 
-  String getImageUrl(String imageRef) {
-    return 'https://maps.googleapis.com/maps/api/place/photo'
-        '?maxheight=500'
-        '&maxwidth=500'
-        '&photo_reference=$imageRef'
-        '&key=$apiKey';
+  Future<String> getImageUrl(TripModel trip) async {
+    String url = '';
+    if (trip.imageRef != null) {
+      url = 'https://maps.googleapis.com/maps/api/place/photo'
+          '?maxheight=500'
+          '&maxwidth=500'
+          '&photo_reference=${trip.imageRef}'
+          '&key=$apiKey';
+
+      //check if url is still valid
+      try {
+        final response = await http.head(Uri.parse(url));
+        if (response.statusCode != 200) {
+          print('UPDATE for imageREf needed');
+          //update imageRef
+          final country = (trip.nations?.isNotEmpty ?? false)
+              ? trip.nations!.first['name'] ?? 'Italy'
+              : 'Italy';
+          final newImageRef = await getCountryImageRef(country);
+          //store new image ref
+          //TODO: verify correct update
+          trip.imageRef = newImageRef;
+          await DatabaseService().updateTrip(trip);
+          //update url with new image ref
+          url = 'https://maps.googleapis.com/maps/api/place/photo'
+              '?maxheight=500'
+              '&maxwidth=500'
+              '&photo_reference=$newImageRef'
+              '&key=$apiKey';
+        }
+      } catch (e) {
+        return '';
+      }
+    }
+    return url;
   }
 }

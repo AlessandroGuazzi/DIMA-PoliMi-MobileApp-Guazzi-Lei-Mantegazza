@@ -1,5 +1,3 @@
-import 'package:dima_project/models/activityModel.dart';
-import 'package:dima_project/models/airportModel.dart';
 import 'package:dima_project/models/attractionModel.dart';
 import 'package:dima_project/models/flightModel.dart';
 import 'package:dima_project/models/tripModel.dart';

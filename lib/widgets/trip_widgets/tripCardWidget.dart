@@ -19,6 +19,14 @@ class TripCardWidget extends StatefulWidget {
 }
 
 class _TripCardWidgetState extends State<TripCardWidget> {
+  late Future<String> _futureImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureImageUrl = GooglePlacesService().getImageUrl(widget.trip);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.isHome) {
@@ -39,7 +47,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
 
     DateTime? endDate = widget.trip.endDate;
     String endDateFormat;
-    if(endDate != null) {
+    if (endDate != null) {
       endDateFormat = DateFormat('dd MMM yyyy').format(endDate);
     } else {
       endDateFormat = 'No data';
@@ -60,12 +68,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
               //--- trip-profile pic ---
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child:Image.asset(
-                  'assets/placeholder_landscape.jpg',
-                  height: 100,
-                  width: 100,
-                  fit: BoxFit.cover,
-                ),
+                child: _loadTripImage(100, 100),
                 /*
                 child: widget.trip.imageRef != null
                 //TODO: fix image ref
@@ -164,12 +167,8 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                       ).createShader(bounds);
                     },
                     blendMode: BlendMode.dstIn,
-                    child: Image.asset(
-                      'assets/placeholder_landscape.jpg',
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                      /*
+                    child: _loadTripImage(null, null),
+                    /*
                     child: widget.trip.imageRef == null
                     //TODO: fix image ref
 
@@ -220,53 +219,53 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   const SizedBox(
                     height: 4,
                   ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  //profile image and username
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: _goToProfilePage,
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 15,
-                            child: Image.asset(
-                              'assets/profile.png',
-                              fit: BoxFit.cover,
-                            ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      //profile image and username
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: _goToProfilePage,
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 15,
+                                child: Image.asset(
+                                  'assets/profile.png',
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  '@${widget.trip.creatorInfo?['username'] ?? 'no_username'} · ${getTimePassed(widget.trip.timestamp?.toDate())}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              '@${widget.trip.creatorInfo?['username'] ?? 'no_username'} · ${getTimePassed(widget.trip.timestamp?.toDate())}',
-                              style: Theme.of(context).textTheme.bodySmall,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                        ),
+                      ),
+
+                      //save counter and icon
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('${widget.trip.saveCounter ?? 'na'}'),
+                          IconButton(
+                            onPressed: _handleSaveButton,
+                            icon: widget.isSaved
+                                ? Icon(
+                                    Icons.bookmark_added_rounded,
+                                    color: Theme.of(context).primaryColor,
+                                  )
+                                : const Icon(Icons.bookmark_add_outlined),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-
-                  //save counter and icon
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('${widget.trip.saveCounter ?? 'na'}'),
-                      IconButton(
-                        onPressed: _handleSaveButton,
-                        icon: widget.isSaved
-                            ? Icon(
-                          Icons.bookmark_added_rounded,
-                          color: Theme.of(context).primaryColor,
-                        )
-                            : const Icon(Icons.bookmark_add_outlined),
-                      ),
                     ],
                   ),
-                ],
-              ),
                 ],
               ),
             ),
@@ -292,8 +291,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
   }
 
   String getTimePassed(DateTime? postTimestamp) {
-
-    if(postTimestamp == null) return 'no_time';
+    if (postTimestamp == null) return 'no_time';
 
     final now = DateTime.now();
     final difference = now.difference(postTimestamp);
@@ -326,5 +324,40 @@ class _TripCardWidgetState extends State<TripCardWidget> {
     } else {
       return 'Nessun Luogo';
     }
+  }
+
+  Widget _loadTripImage(double? height, double? width) {
+    return FutureBuilder<String>(
+      future: _futureImageUrl,
+      builder: (context, snapshot) {
+        Widget imageWidget;
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          imageWidget = SizedBox(
+            height: height,
+            width: width,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else if (snapshot.hasData &&
+            snapshot.data != null &&
+            snapshot.data != '') {
+          imageWidget = Image.network(
+            snapshot.data!,
+            fit: BoxFit.cover,
+            height: height,
+            width: width,
+          );
+        } else {
+          imageWidget = Image.asset(
+            'assets/placeholder_landscape.jpg',
+            fit: BoxFit.cover,
+          );
+        }
+
+        return imageWidget;
+      },
+    );
   }
 }
