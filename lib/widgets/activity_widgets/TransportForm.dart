@@ -8,8 +8,11 @@ import '../../services/CurrencyService.dart';
 import '../../utils/CountryToCurrency.dart';
 
 class TransportForm extends StatefulWidget {
-  const TransportForm({super.key, required this.trip, this.transport});
+  TransportForm({
+    super.key, required this.trip, this.transport, databaseService
+  }) : databaseService = databaseService ?? DatabaseService();
 
+  final DatabaseService databaseService;
   final TripModel trip;
   final TransportModel? transport; // aggiunto per gestire modifica
 
@@ -314,7 +317,7 @@ class _TransportFormState extends State<TransportForm> {
         type: 'transport'
       );
 
-      final db = DatabaseService();
+      final db = widget.databaseService;
 
       if (widget.transport == null) {
         db.createActivity(transport).then((_) => Navigator.pop(context, true));

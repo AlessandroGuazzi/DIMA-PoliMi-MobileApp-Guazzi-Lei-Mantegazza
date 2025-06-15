@@ -10,9 +10,15 @@ import '../../utils/CountryToCurrency.dart';
 
 class FlightForm extends StatefulWidget {
   final TripModel trip;
-
+  final DatabaseService databaseService;
   final FlightModel? flight; // Se è null → creazione, altrimenti modifica
-  const FlightForm({super.key, required this.trip, this.flight});
+
+  FlightForm({
+    super.key,
+    required this.trip,
+    this.flight,
+    databaseService,
+  }) : databaseService = databaseService ?? DatabaseService();
 
   @override
   State<FlightForm> createState() => _FlightFormState();
@@ -23,7 +29,6 @@ class _FlightFormState extends State<FlightForm> {
 
   final TextEditingController departureAirportController = TextEditingController();
   final TextEditingController arrivalAirportController = TextEditingController();
-  //final TextEditingController flightCompanyController = TextEditingController();
   final TextEditingController durationController = TextEditingController();
   final TextEditingController expensesController = TextEditingController();
 
@@ -325,7 +330,7 @@ class _FlightFormState extends State<FlightForm> {
         type: 'flight',
       );
 
-      final db = DatabaseService();
+      final db = widget.databaseService;
 
       if (widget.flight == null) {
         // Caso: creazione

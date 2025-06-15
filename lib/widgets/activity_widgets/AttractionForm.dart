@@ -16,8 +16,11 @@ import '../placesSearchWidget.dart';
 class AttractionForm extends StatefulWidget {
   final TripModel trip;
   final AttractionModel? attraction; //per la modifica
+  final DatabaseService databaseService;
 
-  const AttractionForm({super.key, required this.trip, this.attraction});
+  AttractionForm({
+    super.key, required this.trip, this.attraction, databaseService
+  }) : databaseService = databaseService ?? DatabaseService();
 
   @override
   State<AttractionForm> createState() => _AttractionFormState();
@@ -405,7 +408,7 @@ class _AttractionFormState extends State<AttractionForm> {
         type: "attraction",
       );
 
-      final db = DatabaseService();
+      final db = widget.databaseService;
       if (widget.attraction == null) {
         db
             .createActivity(updatedAttraction)

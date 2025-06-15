@@ -10,8 +10,12 @@ import 'package:intl/intl.dart';
 
 //TODO: address is not really the address yet, but probably we don't care
 class AccommodationForm extends StatefulWidget {
-  const AccommodationForm({super.key, required this.trip, this.accommodation});
 
+  AccommodationForm({
+    super.key, required this.trip, this.accommodation, databaseService,
+  }) : databaseService = databaseService ?? DatabaseService();
+
+  final DatabaseService databaseService;
   final AccommodationModel? accommodation; // per la modifica
   final TripModel trip;
 
@@ -330,7 +334,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
         contacts: null,
         type: 'accommodation',
       );
-      final db = DatabaseService();
+      final db = widget.databaseService;
       if (widget.accommodation == null) {
         db
             .createActivity(updatedAccommodation)
