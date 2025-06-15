@@ -1,7 +1,5 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:dima_project/utils/responsive.dart';
-import 'package:dima_project/utils/screenSize.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -136,7 +134,7 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
         widget.isMyTrip
             ? ElevatedButton(
                 onPressed: () {
-                  Add2Calendar.addEvent2Cal(_buildEvent());
+                  Add2Calendar.addEvent2Cal(buildEvent(widget.trip));
                 },
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
@@ -230,7 +228,7 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
             widget.isMyTrip
                 ? ElevatedButton(
                     onPressed: () {
-                      Add2Calendar.addEvent2Cal(_buildEvent());
+                      Add2Calendar.addEvent2Cal(buildEvent(widget.trip));
                     },
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
@@ -252,7 +250,8 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
     final now = DateTime.now();
 
     final durationDays = end.difference(start).inDays + 1;
-    final daysUntilStart = start.difference(now).inDays;
+    final daysUntilStart = (start.difference(now).inHours / 24).round();
+
 
     String statusText;
     if (now.isAfter(end)) {
@@ -288,9 +287,8 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
     );
   }
 
-  Event _buildEvent() {
-    final trip = widget.trip;
-
+  @visibleForTesting
+  Event buildEvent(TripModel trip) {
     return Event(
       title:
           'Viaggio a ${trip.nations!.map((c) => '${c['name']} ${c['flag']}').join(', ')}',

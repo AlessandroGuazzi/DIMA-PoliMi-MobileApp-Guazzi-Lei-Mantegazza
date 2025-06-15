@@ -17,6 +17,8 @@ void main() {
       Country.parse('France'),
       Country.parse('Germany'),
       Country.parse('Spain'),
+      Country.parse('United Kingdom'),
+      Country.parse('United States'),
     ];
     when(mockCountryService.getAll()).thenReturn(countriesList);
   });
@@ -83,18 +85,95 @@ void main() {
   });
   group('countries selection tests (isUserNationality = false)', () {
     testWidgets('selecting a country adds it to the list',
-        (WidgetTester tester) async {});
+        (WidgetTester tester) async {
+      List<Country> selected = [];
+
+      await pumpTestableWidget(tester, selected, (_) {}, false);
+      await tester.pumpAndSettle();
+
+      final italyTile = find.textContaining('Italy');
+      await tester.tap(italyTile);
+      await tester.pumpAndSettle();
+
+      expect(selected.any((c) => c.name == 'Italy'), isTrue);
+    });
     testWidgets('unselecting a country removes it from the list',
-        (WidgetTester tester) async {});
-    testWidgets(
-        'maximum 5 countries can be selected', (WidgetTester tester) async {});
+        (WidgetTester tester) async {
+      List<Country> selected = [Country.parse('Germany')];
+
+      await pumpTestableWidget(tester, selected, (_) {}, false);
+      await tester.pumpAndSettle();
+
+      final germanyTile = find.textContaining('Germany');
+      await tester.tap(germanyTile);
+      await tester.pumpAndSettle();
+
+      expect(selected.any((c) => c.name == 'Germany'), isFalse);
+    });
+    testWidgets('maximum 5 countries can be selected',
+        (WidgetTester tester) async {
+      List<Country> selected = [
+        Country.parse('Italy'),
+        Country.parse('France'),
+        Country.parse('Germany'),
+        Country.parse('Spain'),
+        Country.parse('United Kingdom'),
+      ];
+
+      await pumpTestableWidget(tester, selected, (_) {}, false);
+      await tester.pumpAndSettle();
+
+      //attempt to click a 6th country
+      final usTile = find.textContaining('United States');
+      await tester.tap(usTile);
+      await tester.pumpAndSettle();
+
+      expect(selected.length, equals(5));
+      expect(selected.any((c) => c.name == 'United States'), isFalse);
+    });
+
     testWidgets('tapping \'Conferma\' executes callback',
-        (WidgetTester tester) async {});
+        (WidgetTester tester) async {
+      List<Country> selected = [];
+
+      await pumpTestableWidget(tester, [], (newSelection) {
+        selected = newSelection;
+      }, false);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.textContaining('France'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Conferma'));
+      await tester.pumpAndSettle();
+
+      expect(selected.length, equals(1));
+      expect(selected.first.name, equals('France'));
+    });
   });
 
   group('user nationality selection tests (isUserNationality = true)', () {
-    testWidgets('confirm button is hide', (WidgetTester tester) async {});
+    testWidgets('confirm button is hidden', (WidgetTester tester) async {
+      await pumpTestableWidget(tester, [], (_) {}, true);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Conferma'), findsNothing);
+    });
     testWidgets('tapping a country executes callback and pops the screen.',
-        (WidgetTester tester) async {});
+        (WidgetTester tester) async {
+      Country? selectedCountry;
+
+      await pumpTestableWidget(tester, [], (selection) {
+        selectedCountry = selection.first;
+      }, true);
+      await tester.pumpAndSettle();
+
+      final franceTile = find.textContaining('France');
+      await tester.tap(franceTile);
+      await tester.pumpAndSettle();
+
+      expect(selectedCountry?.name, equals('France'));
+      expect(find.byType(CountryPickerWidget), findsNothing); // Widget popped
+    });
   });
 }
