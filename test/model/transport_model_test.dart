@@ -3,7 +3,7 @@ import 'package:dima_project/models/transportModel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'mocks.mocks.dart';
+import '../mocks.mocks.dart';
 
 void main() {
   group("TransportModel test", () {

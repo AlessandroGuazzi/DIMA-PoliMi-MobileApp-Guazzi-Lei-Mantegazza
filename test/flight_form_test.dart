@@ -34,14 +34,14 @@ void main() {
         endDate: DateTime(2025, 12, 20),
       );
       flight = FlightModel(
-        id: 'flight_1',
-        tripId: testTrip.id,
-        departureAirPort: departureAirport,
-        arrivalAirPort: arrivalAirport,
-        departureDate: DateTime(2025, 12, 12, 10, 0),
-        duration: 9.0,
-        expenses: 500.0,
-        type: 'flight'
+          id: 'flight_1',
+          tripId: testTrip.id,
+          departureAirPort: departureAirport,
+          arrivalAirPort: arrivalAirport,
+          departureDate: DateTime(2025, 12, 12, 10, 0),
+          duration: 9.0,
+          expenses: 500.0,
+          type: 'flight'
       );
 
       // Stub the database call - stesso pattern del test funzionante
@@ -147,7 +147,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.pump(const Duration(milliseconds: 200));
 
-        // Verifica che createActivity sia stato chiamato
+      // Verifica che createActivity sia stato chiamato
       verify(mockDatabaseService.updateActivity(any, any, any, any)).called(1);
 
       // Cattura l'argomento passato per verificare i dati

@@ -178,6 +178,7 @@ class _TransportFormState extends State<TransportForm> {
                 prefixIcon: Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 4.0),
                   child: DropdownButton<String>(
+                    key: const Key('currencyDropdown'),
                     alignment: Alignment.center,
                     value: _selectedCurrency,
                     items: _currencies.map((currency) {

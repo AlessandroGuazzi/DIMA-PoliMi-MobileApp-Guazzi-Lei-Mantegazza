@@ -3,7 +3,7 @@ import 'package:dima_project/models/tripModel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'mocks.mocks.dart';
+import '../mocks.mocks.dart';
 
 void main() {
   group("Trip model testing", () {

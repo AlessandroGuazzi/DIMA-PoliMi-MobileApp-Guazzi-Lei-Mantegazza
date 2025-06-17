@@ -3,7 +3,7 @@ import 'package:dima_project/models/attractionModel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'mocks.mocks.dart'; // genera usando mockito: MockDocumentSnapshot
+import '../mocks.mocks.dart'; // genera usando mockito: MockDocumentSnapshot
 
 void main() {
   group("AttractionModel test", () {

@@ -147,7 +147,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
                           : '',
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Check-out',
+                      labelText: 'Check-out',
                       prefixIcon: Icon(Icons.access_time),
                     ),
                     onTap: () => _selectTime(context, isCheckIn: false),
