@@ -28,8 +28,8 @@ class PlacesSearchWidgetState extends State<PlacesSearchWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: ScreenSize.screenHeight(context) * 0.9,
-        color: Theme.of(context).scaffoldBackgroundColor,
+        height: ScreenSize.screenHeight(context) * 0.8,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(25)),
         child: Column(
           children: [
             Padding(

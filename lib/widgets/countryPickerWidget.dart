@@ -38,8 +38,8 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: ScreenSize.screenHeight(context) * 0.9,
-        color: Theme.of(context).scaffoldBackgroundColor,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(25)),
+        height: ScreenSize.screenHeight(context) * 0.8,
         child: Column(
           children: [
             Padding(
@@ -56,26 +56,27 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: ScreenSize.screenWidth(context) * 0.2,
-                  ),
-                  Icon(
-                    Icons.flag_circle_sharp,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  SizedBox(
-                    width: ScreenSize.screenWidth(context) * 0.2,
-                    child: widget.isUserNationality
-                        ? null
-                        : TextButton(
-                            onPressed: () => _confirmCountries(),
-                            child: Text('Conferma')),
-                  )
-                ],
-              ),
+              child: SizedBox(
+                width: double.infinity,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const Icon(
+                      Icons.flag_circle_sharp,
+                      size: 30,
+                    ),
+                    if (!widget.isUserNationality)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _confirmCountries,
+                          child: Text('Conferma', style: Theme.of(context).textTheme.bodyMedium,),
+                        ),
+                      ),
+                  ],
+                ),
+              )
+
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),

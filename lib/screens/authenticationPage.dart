@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/screenSize.dart';
 import '../widgets/countryPickerWidget.dart';
 
 class AuthPage extends StatefulWidget {
@@ -27,9 +28,7 @@ class _AuthPageState extends State<AuthPage> {
   Future<void> signIn() async {
     try {
       await AuthService().signInWithEmailAndPassword(
-          email: _email.text,
-          password: _password.text
-      );
+          email: _email.text, password: _password.text);
     } on FirebaseAuthException catch (error) {
       String message = 'Si è verificato un errore. Riprova.';
       ScaffoldMessenger.of(context).showSnackBar(
@@ -55,16 +54,16 @@ class _AuthPageState extends State<AuthPage> {
   final snackBar = SnackBar(
     content: const Row(
       children: [
-        Icon(Icons.warning, color: Colors.white), // Aggiungi un'icona
+        Icon(Icons.warning, color: Colors.white),
         SizedBox(width: 10),
-        Text('Compila tutti i campi obbligatori.'), // Messaggio
+        Text('Compila tutti i campi obbligatori.'),
       ],
     ),
-    backgroundColor: Colors.red, // Colore di sfondo
+    backgroundColor: Colors.red,
     action: SnackBarAction(
-      label: 'OK', // Etichetta del pulsante
-      onPressed: () {}, // Azione al click
-      textColor: Colors.white, // Colore del testo del pulsante
+      label: 'OK',
+      onPressed: () {},
+      textColor: Colors.white,
     ),
   );
 
@@ -108,137 +107,133 @@ class _AuthPageState extends State<AuthPage> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Theme.of(context).primaryColor, Colors.blueAccent],
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).secondaryHeaderColor
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: Center(
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+          child: ConstrainedBox(
+            constraints:  const BoxConstraints(
+              maxWidth: 700,
             ),
-            elevation: 8,
-            margin: const EdgeInsets.symmetric(horizontal: 30),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!isLogin) ...[
-                      TextField(
-                        controller: _name,
-                        decoration: InputDecoration(
-                          labelText: 'Nome',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 8,
+              margin: const EdgeInsets.symmetric(horizontal: 30),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset('assets/app_logo.png',
+                          width: 150, height: 150),
+                      if (!isLogin) ...[
+                        TextField(
+                          controller: _name,
+                          decoration: InputDecoration(
+                            labelText: 'Nome',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _surname,
-                        decoration: InputDecoration(
-                          labelText: 'Cognome',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _surname,
+                          decoration: const InputDecoration(
+                            labelText: 'Cognome',
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _username,
-                        decoration: InputDecoration(
-                          labelText: 'Username',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _username,
+                          decoration: InputDecoration(
+                            labelText: 'Username',
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _birthDate,
-                        readOnly: true,
-                        onTap: () => _selectDate(context),
-                        decoration: InputDecoration(
-                          labelText: 'Data di Nascita',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _birthDate,
+                          readOnly: true,
+                          onTap: () => _selectDate(context),
+                          decoration: InputDecoration(
+                            labelText: 'Data di Nascita',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            suffixIcon: const Icon(Icons.calendar_today),
                           ),
-                          suffixIcon: const Icon(Icons.calendar_today),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-
-
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _nationality,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Nazionalità',
+                          ),
+                          onTap: () => {_openCountryPicker()},
+                        ),
+                        const SizedBox(height: 12),
+                      ],
                       TextField(
-                        controller: _nationality,
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Nazionalità',
+                        controller: _email,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
                         ),
-                        onTap: () => {_openCountryPicker()},
                       ),
                       const SizedBox(height: 12),
-
-                    ],
-                    TextField(
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                      TextField(
+                        controller: _password,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _password,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (isLogin) {
-                          signIn();
-                        } else {
-                          if (_validateFields()) {
-                            createUser();
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (isLogin) {
+                            signIn();
+                          } else {
+                            if (_validateFields()) {
+                              createUser();
+                            }
                           }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
+                        child: Text(isLogin ? 'Accedi' : 'Registrati'),
                       ),
-                      child: Text(isLogin ? 'Accedi' : 'Registrati'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          isLogin = !isLogin;
-                        });
-                      },
-                      child: Text(
-                        isLogin
-                            ? 'Non hai un account? Registrati'
-                            : 'Hai un account? Accedi',
-                        style: const TextStyle(color: Colors.indigoAccent),
-                      ),
-                    )
-                  ],
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            isLogin = !isLogin;
+                          });
+                        },
+                        child: Text(
+                          isLogin
+                              ? 'Non hai un account? Registrati'
+                              : 'Hai un account? Accedi',
+                          style: TextStyle(
+                              color: Theme.of(context).secondaryHeaderColor),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -265,11 +260,15 @@ class _AuthPageState extends State<AuthPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        return CountryPickerWidget(selectedCountries: [], onCountriesSelected: _onCountrySelected, isUserNationality: true,);
+        return CountryPickerWidget(
+          selectedCountries: [],
+          onCountriesSelected: _onCountrySelected,
+          isUserNationality: true,
+        );
       },
     );
   }

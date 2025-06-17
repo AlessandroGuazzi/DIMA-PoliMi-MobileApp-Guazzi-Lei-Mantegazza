@@ -6,12 +6,13 @@ import 'package:flutter/material.dart';
  */
 class MyThemeData {
   static Color primaryColor = CupertinoColors.activeGreen;
-  static Color secondaryColor = CupertinoColors.systemPurple;
+  static Color secondaryColor = CupertinoColors.activeBlue;
   static Color backgroundColor = CupertinoColors.extraLightBackgroundGray;
-  static Color dividerColor = CupertinoColors.lightBackgroundGray;
+  static Color dividerColor = CupertinoColors.extraLightBackgroundGray;
   static Color white = CupertinoColors.white;
+  static Color black = CupertinoColors.black;
 
-  static ThemeData getTheme({required bool isTablet}) {
+  static ThemeData getLightTheme({required bool isTablet}) {
     return ThemeData(
       brightness: Brightness.light,
       primaryColor: primaryColor,
@@ -67,23 +68,20 @@ class MyThemeData {
       ),
       iconTheme: IconThemeData(
         size: isTablet ? 24 : 20,
-        color: primaryColor,
+        color: black,
         opacity: 0.9,
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
+        enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: dividerColor),
+          borderSide: BorderSide(color: dividerColor, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: primaryColor,
-            width: 2,
-          ),
+          borderSide: BorderSide(color: secondaryColor, width: 2),
         ),
-        prefixIconColor: Colors.grey[700],
         labelStyle: TextStyle(color: Colors.grey[700]),
+        prefixIconColor: Colors.grey[700],
       ),
       tabBarTheme: TabBarTheme(
         indicatorColor: primaryColor,
@@ -148,17 +146,21 @@ class MyThemeData {
   }
 
   static ThemeData getDarkTheme({required bool isTablet}) {
+    Color white = CupertinoColors.white;
+    Color black = CupertinoColors.black;
+    Color dividerColor = CupertinoColors.systemGrey5;
     return ThemeData(
       brightness: Brightness.dark,
       primaryColor: primaryColor,
       secondaryHeaderColor: secondaryColor,
-      scaffoldBackgroundColor: CupertinoColors.black,
-      cardColor: CupertinoColors.darkBackgroundGray,
+      scaffoldBackgroundColor: CupertinoColors.darkBackgroundGray,
+      cardColor: black,
       dividerColor: CupertinoColors.systemGrey5,
       appBarTheme: AppBarTheme(
         backgroundColor: primaryColor,
         foregroundColor: white,
       ),
+
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: CupertinoColors.darkBackgroundGray,
         selectedItemColor: primaryColor,
@@ -169,7 +171,7 @@ class MyThemeData {
         type: BottomNavigationBarType.fixed,
       ),
       cardTheme: CardTheme(
-        color: CupertinoColors.darkBackgroundGray,
+        color: black,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       buttonTheme: ButtonThemeData(
@@ -203,11 +205,11 @@ class MyThemeData {
       ),
       iconTheme: IconThemeData(
         size: isTablet ? 24 : 20,
-        color: primaryColor,
+        color: white,
         opacity: 0.9,
       ),
       inputDecorationTheme: InputDecorationTheme(
-        fillColor: CupertinoColors.systemGrey6,
+        fillColor: black,
         filled: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -274,11 +276,15 @@ class MyThemeData {
         ),
       ),
       searchBarTheme: SearchBarThemeData(
-        backgroundColor: WidgetStateProperty.all(CupertinoColors.systemGrey6),
+        backgroundColor: WidgetStateProperty.all(black),
         elevation: WidgetStateProperty.all(2.0),
         shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(50.0),
+            side: const BorderSide(
+              color: Colors.white,
+              width: 1.0,
+            ),
           ),
         ),
         overlayColor: WidgetStateProperty.all(CupertinoColors.systemGrey),

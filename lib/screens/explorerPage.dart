@@ -129,6 +129,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
         children: [
           Expanded(
             child: SearchBar(
+              elevation: WidgetStateProperty.all(1),
               hintText: "Cerca una destinazione...",
               onChanged: (query) {
                 setState(() {
@@ -137,18 +138,18 @@ class _ExplorerPageState extends State<ExplorerPage> {
               },
               leading: const Icon(
                 Icons.search,
-                size: 20,
               ),
+              trailing: [
+                GestureDetector(
+                    onTap: () => _openSortWidget(),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Icons.filter_alt_outlined),
+                    ))
+              ],
               backgroundColor: Theme.of(context).searchBarTheme.backgroundColor,
             ),
           ),
-          IconButton(
-            onPressed: () => _openSortWidget(),
-            icon: Icon(
-              Icons.sort,
-              color: Theme.of(context).primaryColor,
-            ),
-          )
         ],
       ),
     );
@@ -235,8 +236,8 @@ class _ExplorerPageState extends State<ExplorerPage> {
       context: context,
       builder: (BuildContext context) {
         return Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(25)),
           padding: const EdgeInsets.all(8),
-          color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

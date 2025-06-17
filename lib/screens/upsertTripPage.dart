@@ -4,6 +4,7 @@ import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/services/googlePlacesService.dart';
 import 'package:dima_project/utils/PlacesType.dart';
+import 'package:dima_project/utils/responsive.dart';
 import 'package:dima_project/widgets/placesSearchWidget.dart';
 import 'package:dima_project/widgets/countryPickerWidget.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../models/userModel.dart';
+import '../utils/screenSize.dart';
 
 class UpsertTripPage extends StatefulWidget {
   final TripModel? trip;
@@ -95,208 +97,209 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
           color: Colors.white,
           child: const Center(child: CircularProgressIndicator()));
     } else {
-      if (widget.isUpdate == null || !widget.isUpdate!) {
-        //code for insertion
-        return _insertionForm();
-      } else {
-        //code for update
-        return _updateForm();
-      }
+      return Scaffold(
+        appBar: AppBar(
+          title: widget.isUpdate == null || !widget.isUpdate!
+              ? const Text("Crea un nuovo viaggio!")
+              : const Text("Modifica il tuo viaggio!"),
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).primaryColor,
+                Theme.of(context).secondaryHeaderColor
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Center(
+            child: Card(
+              margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+              elevation: 8,
+              child: ResponsiveLayout(
+                  mobileLayout: _buildMobileLayout(),
+                  tabletLayout: _buildTabletLayout()),
+            ),
+          ),
+        ),
+      );
     }
   }
 
+  Widget _buildMobileLayout() {
+    if (widget.isUpdate == null || !widget.isUpdate!) {
+      //code for insertion
+      return _insertionForm();
+    } else {
+      //code for update
+      return _updateForm();
+    }
+  }
+
+  Widget _buildTabletLayout() {
+    return Row(
+      children: [
+        Expanded(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: _buildMobileLayout(),
+            )),
+        Expanded(
+            flex: 3,
+            child: Center(
+                child: SizedBox(
+                    height: ScreenSize.screenHeight(context) * 0.7,
+                    width: ScreenSize.screenHeight(context) * 0.7,
+                    child: Image.asset('assets/trip_illustration.png')))),
+      ],
+    );
+  }
+
   Widget _insertionForm() {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text("Crea un nuovo viaggio!"),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0), // Padding for all sides
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                // Title input
-                TextFormField(
-                  controller: titleController,
-                  decoration: InputDecoration(
-                    labelText: 'Titolo',
-                    hintText: 'Inserisci il titolo del viaggio',
-                    prefixIcon: Icon(Icons.title),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Per favore inserisci un titolo';
-                    }
-                    return null;
-                  },
+    return Padding(
+      padding: const EdgeInsets.all(16), // Padding for all sides
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              !ScreenSize.isTablet(context)
+                  ? Image.asset('assets/trip_illustration.png', height: 150, width: 150)
+                  : const SizedBox(width: 0, height: 0),
+              SizedBox(height: 16),
+              // Title input
+              TextFormField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: 'Titolo',
+                  hintText: 'Inserisci il titolo del viaggio',
+                  prefixIcon: Icon(Icons.title),
                 ),
-                SizedBox(height: 16),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Per favore inserisci un titolo';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
 
-                // Countries picker input
-                TextFormField(
-                  controller: countriesController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    hintText: 'Che nazioni visiterai?',
-                    prefixIcon: Icon(Icons.location_on),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (_selectedCountries.isEmpty) {
-                      return 'Per favore seleziona almeno una nazione';
-                    }
-                    return null;
-                  },
-                  onTap: () {
-                    _openCountryPicker();
-                  },
+              // Countries picker input
+              TextFormField(
+                controller: countriesController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  hintText: 'Che nazioni visiterai?',
+                  prefixIcon: Icon(Icons.location_on),
                 ),
+                validator: (value) {
+                  if (_selectedCountries.isEmpty) {
+                    return 'Per favore seleziona almeno una nazione';
+                  }
+                  return null;
+                },
+                onTap: () {
+                  _openCountryPicker();
+                },
+              ),
 
-                _selectedCountries.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Wrap(
-                          spacing: 8.0,
-                          runSpacing: 4.0,
-                          children: _selectedCountries.map((country) {
-                            return Chip(
-                              backgroundColor:
-                                  Theme.of(context).scaffoldBackgroundColor,
-                              label:
-                                  Text('${country.flagEmoji} ${country.name}'),
-                              onDeleted: () {
-                                setState(() {
-                                  _selectedCountries.remove(country);
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      )
-                    : const SizedBox(),
+              _selectedCountries.isNotEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Wrap(
+                        spacing: 8.0,
+                        runSpacing: 4.0,
+                        children: _selectedCountries.map((country) {
+                          return Chip(
+                            backgroundColor: Theme.of(context).cardColor,
+                            label: Text('${country.flagEmoji} ${country.name}'),
+                            onDeleted: () {
+                              setState(() {
+                                _selectedCountries.remove(country);
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    )
+                  : const SizedBox(),
 
-                SizedBox(height: 16),
+              SizedBox(height: 16),
 
-                // City search input
-                TextFormField(
-                  controller: citiesController,
-                  enabled: _selectedCountries.isEmpty ? false : true,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    hintText: 'Che città visiterai?',
-                    prefixIcon: Icon(Icons.location_city),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (_selectedCities.isEmpty) {
-                      return 'Per favore inserisci almeno una città';
-                    }
-                    return null;
-                  },
-                  onTap: () {
-                    _openCitiesSearch();
-                  },
+              // City search input
+              TextFormField(
+                controller: citiesController,
+                enabled: _selectedCountries.isEmpty ? false : true,
+                readOnly: true,
+                decoration: InputDecoration(
+                  hintText: 'Che città visiterai?',
+                  prefixIcon: Icon(Icons.location_city),
                 ),
+                validator: (value) {
+                  if (_selectedCities.isEmpty) {
+                    return 'Per favore inserisci almeno una città';
+                  }
+                  return null;
+                },
+                onTap: () {
+                  _openCitiesSearch();
+                },
+              ),
 
-                _selectedCities.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
-                          children: _selectedCities.map((city) {
-                            return Chip(
-                              backgroundColor:
-                                  Theme.of(context).scaffoldBackgroundColor,
-                              label: Text(city['name'] ?? 'null'),
-                              onDeleted: () {
-                                setState(() {
-                                  _selectedCities.remove(city);
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      )
-                    : const SizedBox(),
+              _selectedCities.isNotEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: _selectedCities.map((city) {
+                          return Chip(
+                            backgroundColor: Theme.of(context).cardColor,
+                            label: Text(city['name'] ?? 'null'),
+                            onDeleted: () {
+                              setState(() {
+                                _selectedCities.remove(city);
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    )
+                  : const SizedBox(),
 
-                SizedBox(height: 16),
+              SizedBox(height: 16),
 
-                // dates input
-                TextFormField(
-                  readOnly: true,
-                  controller: datesController,
-                  decoration: InputDecoration(
-                    hintText: 'Quando partirai?',
-                    prefixIcon: Icon(Icons.date_range),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (_startDate == null || _endDate == null) {
-                      return "Per favore seleziona delle date";
-                    }
-                    return null;
-                  },
-                  onTap: () => _selectDateRange(context),
+              // dates input
+              TextFormField(
+                readOnly: true,
+                controller: datesController,
+                decoration: InputDecoration(
+                  hintText: 'Quando partirai?',
+                  prefixIcon: Icon(Icons.date_range),
                 ),
-                SizedBox(height: 32),
+                validator: (value) {
+                  if (_startDate == null || _endDate == null) {
+                    return "Per favore seleziona delle date";
+                  }
+                  return null;
+                },
+                onTap: () => _selectDateRange(context),
+              ),
+              SizedBox(height: 32),
 
-                // Submit button
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Text('Crea il viaggio'),
+              // Submit button
+              ElevatedButton(
+                onPressed: _submitForm,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
                 ),
-              ],
-            ),
+                child: Text('Crea il viaggio'),
+              ),
+              SizedBox(height: 16),
+            ],
           ),
         ),
       ),
@@ -304,172 +307,119 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
   }
 
   Widget _updateForm() {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Modifica il tuo viaggio"),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0), // Padding for all sides
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                // Title input
-                TextFormField(
-                  controller: titleController,
-                  decoration: InputDecoration(
-                    labelText: 'Titolo',
-                    hintText: 'Inserisci il titolo del viaggio',
-                    prefixIcon: Icon(Icons.title),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Per favore inserisci un titolo';
-                    }
-                    return null;
-                  },
+    return Padding(
+      padding: EdgeInsets.all(16.0), // Padding for all sides
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              // Title input
+              TextFormField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: 'Titolo',
+                  hintText: 'Inserisci il titolo del viaggio',
+                  prefixIcon: Icon(Icons.title),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Per favore inserisci un titolo';
+                  }
+                  return null;
+                },
+              ),
 
-                SizedBox(height: 16),
+              SizedBox(height: 16),
 
-                // City search input
-                TextFormField(
-                  controller: citiesController,
-                  enabled: _selectedCountries.isEmpty ? false : true,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    hintText: 'Aggiungi tappe',
-                    prefixIcon: const Icon(Icons.location_city),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
-                  ),
-                  onTap: () {
-                    _openCitiesSearch();
-                  },
+              // City search input
+              TextFormField(
+                controller: citiesController,
+                enabled: _selectedCountries.isEmpty ? false : true,
+                readOnly: true,
+                decoration: InputDecoration(
+                  hintText: 'Aggiungi tappe',
+                  prefixIcon: const Icon(Icons.location_city),
                 ),
+                onTap: () {
+                  _openCitiesSearch();
+                },
+              ),
 
-                _selectedCities.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
-                          children: _selectedCities.map((city) {
-                            return Chip(
-                              backgroundColor:
-                                  Theme.of(context).scaffoldBackgroundColor,
-                              label: Text(city['name'] ?? 'null'),
-                              onDeleted: () {
-                                setState(() {
-                                  _selectedCities.remove(city);
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                      )
-                    : const SizedBox(),
+              _selectedCities.isNotEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: _selectedCities.map((city) {
+                          return Chip(
+                            backgroundColor: Theme.of(context).cardColor,
+                            label: Text(city['name'] ?? 'null'),
+                            onDeleted: () {
+                              setState(() {
+                                _selectedCities.remove(city);
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    )
+                  : const SizedBox(),
 
-                SizedBox(height: 16),
+              SizedBox(height: 16),
 
-                //start date input
-                TextFormField(
-                  readOnly: true,
-                  controller: TextEditingController(
-                    text: _newStartDate != null
-                        ? DateFormat('dd/MM/yy').format(_newStartDate!)
-                        : '',
-                  ),
-                  decoration: InputDecoration(
-                    labelText: 'Quando partirai?',
-                    prefixIcon: Icon(Icons.date_range),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (_newStartDate == null) {
-                      return "Per favore seleziona una data di partenza precedente a quella iniziale";
-                    }
-                    return null;
-                  },
-                  onTap: () => _selectStartDate(context),
+              //start date input
+              TextFormField(
+                readOnly: true,
+                controller: TextEditingController(
+                  text: _newStartDate != null
+                      ? DateFormat('dd/MM/yy').format(_newStartDate!)
+                      : '',
                 ),
-                SizedBox(
-                  height: 16,
+                decoration: InputDecoration(
+                  labelText: 'Quando partirai?',
+                  prefixIcon: Icon(Icons.date_range),
                 ),
+                validator: (value) {
+                  if (_newStartDate == null) {
+                    return "Per favore seleziona una data di partenza precedente a quella iniziale";
+                  }
+                  return null;
+                },
+                onTap: () => _selectStartDate(context),
+              ),
+              SizedBox(
+                height: 16,
+              ),
 
-                //end date input
-                TextFormField(
-                  readOnly: true,
-                  controller: newEndDateController,
-                  decoration: InputDecoration(
-                    labelText: 'Quando tornerai?',
-                    prefixIcon: Icon(Icons.date_range),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          BorderSide(color: Theme.of(context).dividerColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor, width: 2),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (_newEndDate == null) {
-                      return "Per favore seleziona una data di fine";
-                    }
-                    return null;
-                  },
-                  onTap: () => _selectEndDate(context),
+              //end date input
+              TextFormField(
+                readOnly: true,
+                controller: newEndDateController,
+                decoration: InputDecoration(
+                  labelText: 'Quando tornerai?',
+                  prefixIcon: Icon(Icons.date_range),
                 ),
-                SizedBox(height: 32),
+                validator: (value) {
+                  if (_newEndDate == null) {
+                    return "Per favore seleziona una data di fine";
+                  }
+                  return null;
+                },
+                onTap: () => _selectEndDate(context),
+              ),
+              SizedBox(height: 32),
 
-                // Submit button
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Text('Salva modifiche'),
+              // Submit button
+              ElevatedButton(
+                onPressed: _submitForm,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
                 ),
-              ],
-            ),
+                child: Text('Salva modifiche'),
+              ),
+            ],
           ),
         ),
       ),
@@ -494,9 +444,6 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
       builder: (BuildContext context) {
         return CountryPickerWidget(
             selectedCountries: _selectedCountries,

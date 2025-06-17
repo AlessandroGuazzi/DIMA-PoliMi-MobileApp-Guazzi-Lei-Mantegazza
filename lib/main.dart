@@ -7,16 +7,35 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'screens/homePage.dart';
 
+final GlobalKey<_MyAppState> myAppKey = GlobalKey<_MyAppState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  MyApp({Key? key}) : super(key: myAppKey);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  ThemeMode _themeMode = ThemeMode.light;
+
+  void toggleTheme() {
+    setState(() {
+      _themeMode =
+      _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    });
+  }
+
+  ThemeMode get currentTheme => _themeMode;
 
 
   // This widget is the root of your application.
@@ -24,15 +43,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Simply Travel',
-      theme: MyThemeData.getTheme(isTablet: ScreenSize.isTablet(context)),
+      theme: MyThemeData.getLightTheme(isTablet: ScreenSize.isTablet(context)),
+      darkTheme: MyThemeData.getDarkTheme(isTablet: ScreenSize.isTablet(context)),
+      themeMode: _themeMode,
       home: StreamBuilder(
           stream: AuthService().authStateChanges,
           builder: (context, snapshot){
             if(snapshot.hasData){
-              print(ScreenSize.isTablet(context));
               return const MyHomePage(title: 'Simply Travel');
             }else{
-              return AuthPage();
+              return const AuthPage();
             }
           }
       ),

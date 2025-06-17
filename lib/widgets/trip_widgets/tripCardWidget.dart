@@ -134,7 +134,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
               ),
 
               const SizedBox(width: 8),
-              const Icon(Icons.arrow_forward_ios),
+              Icon(Icons.arrow_forward_ios, color: Theme.of(context).secondaryHeaderColor,),
             ],
           ),
         ),
@@ -143,11 +143,8 @@ class _TripCardWidgetState extends State<TripCardWidget> {
   }
 
   Widget _explorerCardWidget() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
+    return Card(
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -222,6 +219,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+
                       //profile image and username
                       Expanded(
                         child: GestureDetector(
@@ -230,10 +228,9 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                             children: [
                               CircleAvatar(
                                 radius: 15,
-                                child: Image.asset(
-                                  'assets/profile.png',
-                                  fit: BoxFit.cover,
-                                ),
+                                backgroundImage: widget.trip.creatorInfo?['profilePic'] != null
+                                    ? AssetImage(widget.trip.creatorInfo!['profilePic'])
+                                    : const AssetImage('assets/profile.png'),
                               ),
                               const SizedBox(width: 4),
                               Expanded(

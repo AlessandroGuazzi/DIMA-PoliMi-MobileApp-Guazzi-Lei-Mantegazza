@@ -125,6 +125,8 @@ void main() {
 
       //attempt to click a 6th country
       final usTile = find.textContaining('United States');
+      await tester.ensureVisible(usTile);
+      await tester.pump();
       await tester.tap(usTile);
       await tester.pumpAndSettle();
 

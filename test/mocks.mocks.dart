@@ -480,11 +480,10 @@ class MockAuthService extends _i1.Mock implements _i9.AuthService {
   _i8.Future<void> updateUserWithEmailAndPassword({
     required String? name,
     required String? surname,
-    required String? email,
     required String? username,
     required String? description,
     required DateTime? birthDate,
-    required String? nationality,
+    required String? profilePic,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -493,11 +492,10 @@ class MockAuthService extends _i1.Mock implements _i9.AuthService {
           {
             #name: name,
             #surname: surname,
-            #email: email,
             #username: username,
             #description: description,
             #birthDate: birthDate,
-            #nationality: nationality,
+            #profilePic: profilePic,
           },
         ),
         returnValue: _i8.Future<void>.value(),

@@ -133,7 +133,12 @@ void main() {
       await pumpTestableWidget(tester, null, false);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(ElevatedButton));
+      final submitButton = find.text('Crea il viaggio');
+
+      await tester.ensureVisible(submitButton);
+      await tester.pumpAndSettle();
+
+      await tester.tap(submitButton);
       await tester.pumpAndSettle();
 
       expect(find.text('Per favore inserisci un titolo'), findsOneWidget);
@@ -144,24 +149,25 @@ void main() {
       expect(find.text('Per favore seleziona delle date'), findsOneWidget);
     });
 
-    testWidgets('show circular indicator while loading', (tester) async {
-      //stub methods
+    testWidgets('shows circular indicator while loading', (tester) async {
+      // Stub createTrip
       when(mockDatabaseService.createTrip(any)).thenAnswer((_) async {
-        await Future.delayed(const Duration(seconds: 1)); // Simulate delay
+        await Future.delayed(const Duration(seconds: 1));
       });
 
       await pumpTestableWidget(tester, null, false);
       await tester.pumpAndSettle();
 
-      //fill form fields
       await fillInsertForm(tester);
 
-      //tap submit button
-      await tester.tap(find.byType(ElevatedButton));
+      final submitButton = find.text('Crea il viaggio');
+      await tester.ensureVisible(submitButton);
+      await tester.tap(submitButton);
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
+      // Finish up async operations
       await tester.pumpAndSettle();
     });
 
@@ -175,7 +181,12 @@ void main() {
       await fillInsertForm(tester);
 
       //tap submit button
-      await tester.tap(find.byType(ElevatedButton));
+      final submitButton = find.text('Crea il viaggio');
+
+      await tester.ensureVisible(submitButton);
+      await tester.pumpAndSettle();
+
+      await tester.tap(submitButton);
       await tester.pumpAndSettle();
 
       //verify that the trip passed to the database service is correct
@@ -275,7 +286,12 @@ void main() {
       await fillUpdateForm(tester);
 
       //tap submit button
-      await tester.tap(find.byType(ElevatedButton));
+      final submitButton = find.text('Salva modifiche');
+
+      await tester.ensureVisible(submitButton);
+      await tester.pumpAndSettle();
+
+      await tester.tap(submitButton);
       await tester.pumpAndSettle();
 
       //verify that the trip passed to the database service is correct
