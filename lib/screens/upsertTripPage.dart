@@ -417,7 +417,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                child: Text('Salva modifiche'),
+                child: const Text('Salva modifiche'),
               ),
             ],
           ),

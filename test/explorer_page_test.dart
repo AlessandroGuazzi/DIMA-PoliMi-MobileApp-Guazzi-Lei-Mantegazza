@@ -137,7 +137,7 @@ void main() {
     await tester.pumpWidget(buildTestableWidget());
     await tester.pumpAndSettle();
 
-    final sortButton = find.byIcon(Icons.sort);
+    final sortButton = find.byIcon(Icons.filter_alt_outlined);
     expect(sortButton, findsOneWidget);
 
     await tester.tap(sortButton);
@@ -160,7 +160,7 @@ void main() {
     await tester.pumpWidget(buildTestableWidget());
     await tester.pumpAndSettle();
 
-    final sortButton = find.byIcon(Icons.sort);
+    final sortButton = find.byIcon(Icons.filter_alt_outlined);
     expect(sortButton, findsOneWidget);
 
     await tester.tap(sortButton);

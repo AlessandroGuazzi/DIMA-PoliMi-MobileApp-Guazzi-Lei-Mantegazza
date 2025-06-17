@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
             if(snapshot.hasData){
               return const MyHomePage(title: 'Simply Travel');
             }else{
-              return const AuthPage();
+              return AuthPage();
             }
           }
       ),

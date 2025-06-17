@@ -1,20 +1,22 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/screenSize.dart';
 import '../widgets/countryPickerWidget.dart';
 
 class AuthPage extends StatefulWidget {
-  const AuthPage({super.key});
+  late final AuthService authService;
+
+  AuthPage({super.key, authService})
+      : authService = authService ?? AuthService();
 
   @override
   State<AuthPage> createState() => _AuthPageState();
 }
 
 class _AuthPageState extends State<AuthPage> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _name = TextEditingController();
@@ -24,76 +26,6 @@ class _AuthPageState extends State<AuthPage> {
   final TextEditingController _nationality = TextEditingController();
   bool isLogin = true;
   DateTime? selectedBirthDate;
-
-  Future<void> signIn() async {
-    try {
-      await AuthService().signInWithEmailAndPassword(
-          email: _email.text, password: _password.text);
-    } on FirebaseAuthException catch (error) {
-      String message = 'Si è verificato un errore. Riprova.';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.error, color: Colors.white),
-              const SizedBox(width: 10),
-              Text(message),
-            ],
-          ),
-          backgroundColor: Colors.red,
-          action: SnackBarAction(
-            label: 'OK',
-            onPressed: () {},
-            textColor: Colors.white,
-          ),
-        ),
-      );
-    }
-  }
-
-  final snackBar = SnackBar(
-    content: const Row(
-      children: [
-        Icon(Icons.warning, color: Colors.white),
-        SizedBox(width: 10),
-        Text('Compila tutti i campi obbligatori.'),
-      ],
-    ),
-    backgroundColor: Colors.red,
-    action: SnackBarAction(
-      label: 'OK',
-      onPressed: () {},
-      textColor: Colors.white,
-    ),
-  );
-
-  Future<void> createUser() async {
-    try {
-      await AuthService().createUserWithEmailAndPassword(
-          name: _name.text.trim(),
-          surname: _surname.text.trim(),
-          email: _email.text.trim(),
-          password: _password.text.trim(),
-          username: _username.text.trim(),
-          birthDate: selectedBirthDate,
-          nationality: _nationality.text.trim());
-    } on FirebaseAuthException catch (error) {}
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != selectedBirthDate) {
-      setState(() {
-        selectedBirthDate = picked;
-        _birthDate.text = "${picked.day}/${picked.month}/${picked.year}";
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +49,7 @@ class _AuthPageState extends State<AuthPage> {
         ),
         child: Center(
           child: ConstrainedBox(
-            constraints:  const BoxConstraints(
+            constraints: const BoxConstraints(
               maxWidth: 700,
             ),
             child: Card(
@@ -129,110 +61,150 @@ class _AuthPageState extends State<AuthPage> {
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset('assets/app_logo.png',
-                          width: 150, height: 150),
-                      if (!isLogin) ...[
-                        TextField(
-                          controller: _name,
-                          decoration: InputDecoration(
-                            labelText: 'Nome',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset('assets/app_logo.png',
+                            width: 150, height: 150),
+                        if (!isLogin) ...[
+                          TextFormField(
+                            controller: _name,
+                            decoration: InputDecoration(
+                              labelText: 'Nome',
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Per favore seleziona un nome";
+                              }
+                              return null;
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _surname,
-                          decoration: const InputDecoration(
-                            labelText: 'Cognome',
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _username,
-                          decoration: InputDecoration(
-                            labelText: 'Username',
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _birthDate,
-                          readOnly: true,
-                          onTap: () => _selectDate(context),
-                          decoration: InputDecoration(
-                            labelText: 'Data di Nascita',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            controller: _surname,
+                            decoration: const InputDecoration(
+                              labelText: 'Cognome',
                             ),
-                            suffixIcon: const Icon(Icons.calendar_today),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Per favore seleziona un cognome";
+                              }
+                              return null;
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _nationality,
-                          readOnly: true,
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            controller: _username,
+                            decoration: const InputDecoration(
+                              labelText: 'Username',
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Per favore seleziona un username";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            controller: _birthDate,
+                            readOnly: true,
+                            onTap: () => _selectDate(context),
+                            decoration: const InputDecoration(
+                              labelText: 'Data di Nascita',
+                              suffixIcon: Icon(Icons.calendar_today),
+                            ),
+                            validator: (value) {
+                              if (selectedBirthDate == null) {
+                                return "Per favore seleziona una data di nascita";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          TextFormField(
+                            controller: _nationality,
+                            readOnly: true,
+                            decoration: const InputDecoration(
+                              labelText: 'Nazionalità',
+                            ),
+                            onTap: () => {_openCountryPicker()},
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Per favore seleziona una nazionalità";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        TextFormField(
+                          controller: _email,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: const InputDecoration(
-                            labelText: 'Nazionalità',
+                            labelText: 'Email',
                           ),
-                          onTap: () => {_openCountryPicker()},
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                      TextField(
-                        controller: _email,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _password,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (isLogin) {
-                            signIn();
-                          } else {
-                            if (_validateFields()) {
-                              createUser();
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Per favore inserisci un indirizzo email";
                             }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _password,
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Per favore inserisci una password";
+                            }
+                            return null;
+                          },
                         ),
-                        child: Text(isLogin ? 'Accedi' : 'Registrati'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            isLogin = !isLogin;
-                          });
-                        },
-                        child: Text(
-                          isLogin
-                              ? 'Non hai un account? Registrati'
-                              : 'Hai un account? Accedi',
-                          style: TextStyle(
-                              color: Theme.of(context).secondaryHeaderColor),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              if (isLogin) {
+                                signIn();
+                              } else {
+                                createUser();
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: Text(isLogin ? 'Accedi' : 'Registrati'),
                         ),
-                      )
-                    ],
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _formKey.currentState?.reset();
+                              isLogin = !isLogin;
+                            });
+                          },
+                          child: Text(
+                            isLogin
+                                ? 'Non hai un account? Registrati'
+                                : 'Hai un account? Accedi',
+                            style: TextStyle(
+                                color: Theme.of(context).secondaryHeaderColor),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -243,17 +215,68 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  bool _validateFields() {
-    if (_name.text.isEmpty ||
-        _surname.text.isEmpty ||
-        _username.text.isEmpty ||
-        selectedBirthDate == null ||
-        _email.text.isEmpty ||
-        _nationality.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return false;
+  void showCredentialsError(FirebaseAuthException error) {
+    String message = 'Si è verificato un errore. Riprova.';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error, color: Colors.white),
+            const SizedBox(width: 10),
+            Expanded(
+                child: Text(
+              error.message ?? message,
+              softWrap: true,
+            )),
+          ],
+        ),
+        backgroundColor: Colors.red,
+        action: SnackBarAction(
+          label: 'OK',
+          onPressed: () {},
+          textColor: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Future<void> signIn() async {
+    try {
+      await widget.authService.signInWithEmailAndPassword(
+          email: _email.text, password: _password.text);
+    } on FirebaseAuthException catch (error) {
+      showCredentialsError(error);
     }
-    return true;
+  }
+
+  Future<void> createUser() async {
+    try {
+      await widget.authService.createUserWithEmailAndPassword(
+          name: _name.text.trim(),
+          surname: _surname.text.trim(),
+          email: _email.text.trim(),
+          password: _password.text.trim(),
+          username: _username.text.trim(),
+          birthDate: selectedBirthDate,
+          nationality: _nationality.text.trim());
+    } on FirebaseAuthException catch (error) {
+      showCredentialsError(error);
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedBirthDate) {
+      setState(() {
+        selectedBirthDate = picked;
+        _birthDate.text = "${picked.day}/${picked.month}/${picked.year}";
+      });
+    }
   }
 
   void _openCountryPicker() async {
