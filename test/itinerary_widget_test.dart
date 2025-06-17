@@ -3,6 +3,7 @@ import 'package:dima_project/models/flightModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/screens/createActivityPage.dart';
 import 'package:dima_project/services/databaseService.dart';
+import 'package:dima_project/widgets/activity_widgets/FlightForm.dart';
 import 'package:dima_project/widgets/trip_widgets/itineraryWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/attractionCardWidget.dart';
@@ -19,15 +20,17 @@ void main() {
   //late GooglePlacesService mockGooglePlacesService;
   late MockNavigatorObserver mockNavigatorObserver;
 
-  final TripModel fakeTrip = TripModel(
-    id: '123',
-    startDate: DateTime(2024, 1, 1),
-    endDate: DateTime(2025, 12, 12),
-  );
+  late TripModel fakeTrip;
 
   setUp(() {
     mockDatabaseService = MockDatabaseService();
     mockNavigatorObserver = MockNavigatorObserver();
+
+    fakeTrip = TripModel(
+      id: '123',
+      startDate: DateTime(2024, 1, 1),
+      endDate: DateTime(2025, 12, 12),
+    );
 
     when(mockDatabaseService.getTripActivities(any)).thenAnswer(
           (_) async => [
@@ -87,7 +90,6 @@ void main() {
       ItineraryWidget(
         trip: fakeTrip,
         isMyTrip: true,
-
         databaseService: mockDatabaseService,
       ),
     ));

@@ -59,7 +59,7 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                             Icon(Icons.access_time_filled_outlined, size: 20, color: Theme.of(context).primaryColor),
                             const SizedBox(width: 3),
                             Text(
-                              'Departure Time: ${widget.transport.departureDate != null ? '${widget.transport.departureDate!.hour.toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
+                              'Ore partenza: ${widget.transport.departureDate != null ? '${widget.transport.departureDate!.hour.toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
                             ),
                           ],
                         ),
@@ -69,7 +69,7 @@ class _TransportcardwidgetState extends State<Transportcardwidget> {
                               Icon(Icons.access_time_filled_outlined, size: 20, color: Theme.of(context).primaryColor),
                               const SizedBox(width: 3),
                               Text(
-                                'Arrival Time: ${widget.transport.departureDate != null ? '${(widget.transport.departureDate!.hour).toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
+                                'Ore arrivo: ${widget.transport.departureDate != null ? '${(widget.transport.departureDate!.hour).toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
                               ),
                             ],
                           ),

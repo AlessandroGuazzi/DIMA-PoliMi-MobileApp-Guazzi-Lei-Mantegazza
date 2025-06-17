@@ -8,7 +8,7 @@ import 'package:dima_project/screens/createActivityPage.dart';
 import 'package:dima_project/screens/editActivityPage.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/utils/screenSize.dart';
-import 'package:dima_project/widgets/activity_widgets/accomodationCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/accommodationCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/attractionCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/transportCardWidget.dart';
@@ -70,7 +70,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    CreateActivityPage(type: type, trip: widget.trip)))
+                    CreateActivityPage(type: type, trip: widget.trip, databaseService: widget.databaseService,)))
         .then((value) => refreshTrips());
   }
 
