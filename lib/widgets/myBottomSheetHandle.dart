@@ -5,14 +5,16 @@ class MyBottomSheetHandle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(200, 15, 200, 15),
-      child: Container(
-        height: 5,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Theme.of(context).dividerColor,
-          borderRadius: const BorderRadius.all(Radius.circular(100)), // Rounded edges
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Container(
+          height: 5,
+          width: 50,
+          decoration: const BoxDecoration(
+            color: Colors.black38,
+            borderRadius: BorderRadius.all(Radius.circular(100)),
+          ),
         ),
       ),
     );

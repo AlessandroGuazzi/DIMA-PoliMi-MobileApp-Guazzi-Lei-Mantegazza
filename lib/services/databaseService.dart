@@ -170,7 +170,7 @@ class DatabaseService {
   }
 
   //Handle logic to save/unsave a trip
-  Future<void> handleTripSave(bool isSaved, String tripId) async {
+  Future<bool> handleTripSave(bool isSaved, String tripId) async {
     if (tripId != 'null') {
       try {
         await db.runTransaction((transaction) async {
@@ -187,12 +187,13 @@ class DatabaseService {
                 isSaved ? FieldValue.increment(-1) : FieldValue.increment(1)
           });
         });
+        return true;
       } on Exception catch (e) {
         print('Error saving/unsaving trip: $e');
         rethrow;
       }
     } else {
-      return;
+      return false;
     }
   }
 

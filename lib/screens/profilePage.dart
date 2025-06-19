@@ -1,14 +1,13 @@
 import 'package:dima_project/screens/medalsPage.dart';
 import 'package:dima_project/screens/tripPage.dart';
 import 'package:dima_project/utils/screenSize.dart';
+import 'package:dima_project/widgets/myBottomSheetHandle.dart';
 import 'package:dima_project/widgets/trip_widgets/tripCardWidget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dima_project/widgets/userProfileCard.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/screens/accountSettings.dart';
-import 'package:intl/intl.dart';
 import '../main.dart';
 import '../models/tripModel.dart';
 import '../models/userModel.dart';
@@ -16,7 +15,12 @@ import '../utils/responsive.dart';
 import 'gamePage.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  late final DatabaseService databaseService;
+  late final AuthService authService;
+
+  ProfilePage({super.key, databaseService, authService})
+      : databaseService = databaseService ?? DatabaseService(),
+        authService = authService ?? AuthService();
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -27,24 +31,23 @@ class _ProfilePageState extends State<ProfilePage> {
   late Future<List<TripModel>> _futureTrips;
   late Future<List<TripModel>> _savedTrips;
 
-  Future<UserModel?> _loadCurrentUser() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      return await DatabaseService().getUserByUid(user.uid);
-    }
-    ;
-    return null;
-  }
-
   @override
   void initState() {
     super.initState();
     _currentUserFuture = _loadCurrentUser();
-    _futureTrips = DatabaseService().getHomePageTrips();
+    _futureTrips = widget.databaseService.getHomePageTrips();
+  }
+
+  Future<UserModel?> _loadCurrentUser() async {
+    final user = widget.authService.currentUser;
+    if (user != null) {
+      return await widget.databaseService.getUserByUid(user.uid);
+    }
+    return null;
   }
 
   Future<void> signOut() async {
-    await AuthService().signOut();
+    await widget.authService.signOut();
   }
 
   @override
@@ -72,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
 
         final user = snapshot.data!;
-        _savedTrips = DatabaseService().getTripsByIds(user.savedTrip);
+        _savedTrips = widget.databaseService.getTripsByIds(user.savedTrip);
 
         return builder(user);
       },
@@ -88,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
-                  expandedHeight: 320,
+                  expandedHeight: 350,
                   pinned: true,
                   floating: false,
                   backgroundColor:
@@ -110,23 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
-                    background: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 75,
-                          backgroundImage: user.profilePic != null
-                              ? AssetImage(user.profilePic!)
-                              : const AssetImage('assets/profile.png'),
-                        ),
-                        const SizedBox(height: 16),
-                        Text('${user.name} ${user.surname}',
-                            style: Theme.of(context).textTheme.headlineMedium),
-                        Text('@${user.username}',
-                            style: Theme.of(context).textTheme.bodyMedium),
-                      ],
-                    ),
+                    background: Center(child: UserProfileCard(user: user)),
                   ),
                   bottom: const TabBar(
                     tabs: [
@@ -164,40 +151,26 @@ class _ProfilePageState extends State<ProfilePage> {
                       //profile info
                       Expanded(
                         flex: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 30),
-                          child: Column(
-                            children: [
-                              CircleAvatar(
-                                radius: 100,
-                                backgroundImage: user.profilePic != null
-                                    ? AssetImage(user.profilePic!)
-                                    : const AssetImage('assets/profile.png'),
-                              ),
-                              const SizedBox(height: 16),
-                              Text('${user.name} ${user.surname}',
-                                  style:
-                                      Theme.of(context).textTheme.titleLarge),
-                              Text('@${user.username}',
-                                  style:
-                                      Theme.of(context).textTheme.bodyMedium),
-                            ],
-                          ),
+                        child: SizedBox.expand(
+                          child: UserProfileCard(user: user),
                         ),
                       ),
 
                       const Divider(),
+
                       //settings info
                       Expanded(
                         flex: 1,
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.all(16.0),
-                          child: _buildSettingsSection(user),
+                          child: _buildProfileMenuListView(
+                              ScreenSize.isTablet(context), user),
                         ),
                       ),
                     ],
                   ),
                 ),
+
                 const VerticalDivider(width: 1),
                 //right section
                 Expanded(
@@ -230,197 +203,6 @@ class _ProfilePageState extends State<ProfilePage> {
         }));
   }
 
-  //For tablet
-  Widget _buildSettingsSection(UserModel user) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Text(
-          'Impostazioni',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        ListTile(
-          leading: const Icon(Icons.person),
-          title: const Text('Modifica Profilo', style: TextStyle(fontSize: 18)),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    AccountSettings(currentUserFuture: _currentUserFuture),
-              ),
-            ).then((_) => setState(() {
-                  _currentUserFuture = _loadCurrentUser();
-                }));
-          },
-        ),
-        ListTile(
-          leading:
-              const Icon(Icons.travel_explore_outlined),
-          title: const Text('Nazioni Visitate', style: TextStyle(fontSize: 18)),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const GamePage()),
-            );
-          },
-        ),
-        ListTile(
-          leading: const Icon(Icons.monetization_on),
-          title: const Text('Medaglie', style: TextStyle(fontSize: 18)),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    MedalsPage(username: user.username!, userId: user.id!),
-              ),
-            ).then((_) => setState(() {
-                  _currentUserFuture = _loadCurrentUser();
-                }));
-          },
-        ),
-
-        ListTile(
-          title: Text(
-              myAppKey.currentState?.currentTheme ==
-                  ThemeMode.dark
-                  ? 'Tema chiaro'
-                  : 'Tema scuro',
-              style: const TextStyle(fontSize: 18)),
-          leading: Icon(
-            myAppKey.currentState?.currentTheme == ThemeMode.dark
-                ? Icons.light_mode
-                : Icons.dark_mode,
-          ),
-          onTap: () {
-            myAppKey.currentState?.toggleTheme();
-          },
-        ),
-
-        ListTile(
-          leading: const Icon(Icons.logout, color: Colors.red),
-          title: const Text('Log Out', style: TextStyle(fontSize: 18)),
-          onTap: () async {
-            await signOut();
-          },
-        ),
-      ],
-    );
-  }
-
-  //For mobile
-  void _showSettingsModal(UserModel user) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: false,
-      builder: (BuildContext context) {
-        return Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(15),
-              topRight: Radius.circular(15),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListView(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      ListTile(
-                        title: const Text('Modifica Profilo',
-                            style: TextStyle(fontSize: 18)),
-                        leading: const Icon(Icons.person),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AccountSettings(
-                                    currentUserFuture: _currentUserFuture)),
-                          ).then((value) => setState(() {
-                                _currentUserFuture = _loadCurrentUser();
-                              }));
-                        },
-                      ),
-                      ListTile(
-                        title: const Text('Nazioni Visitate',
-                            style: TextStyle(fontSize: 18)),
-                        leading: const Icon(
-                          Icons.travel_explore_outlined,
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const GamePage()),
-                          );
-                        },
-                      ),
-                      ListTile(
-                        title: const Text('Medaglie',
-                            style: TextStyle(fontSize: 18)),
-                        leading: const Icon(
-                          Icons.monetization_on,
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MedalsPage(
-                                    username: user.username!,
-                                    userId: user.id!)),
-                          ).then((value) => setState(() {
-                                _currentUserFuture = _loadCurrentUser();
-                              }));
-                        },
-                      ),
-
-                      ListTile(
-                        title: Text(
-                            myAppKey.currentState?.currentTheme ==
-                                    ThemeMode.dark
-                                ? 'Tema chiaro'
-                                : 'Tema scuro',
-                            style: const TextStyle(fontSize: 18)),
-                        leading: Icon(
-                          myAppKey.currentState?.currentTheme == ThemeMode.dark
-                              ? Icons.light_mode
-                              : Icons.dark_mode,
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          myAppKey.currentState?.toggleTheme();
-                        },
-                      ),
-                      ListTile(
-                        title: const Text('Log Out',
-                            style: TextStyle(fontSize: 18)),
-                        leading: const Icon(Icons.logout, color: Colors.red),
-                        onTap: () async {
-                          await signOut();
-                          Navigator.of(context).pop(); // Chiudi la sheet
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildTripList(Future<List<TripModel>> future,
       {required bool isMyTrip}) {
     return FutureBuilder<List<TripModel>>(
@@ -447,7 +229,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => TripPage(trip: trip, isMyTrip: isMyTrip),
+                    builder: (_) => TripPage(trip: trip, isMyTrip: isMyTrip, databaseService: widget.databaseService),
                   ),
                 );
               },
@@ -456,6 +238,113 @@ class _ProfilePageState extends State<ProfilePage> {
           },
         );
       },
+    );
+  }
+
+  //For mobile
+  void _showSettingsModal(UserModel user) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: false,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(15),
+              topRight: Radius.circular(15),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const MyBottomSheetHandle(),
+                  _buildProfileMenuListView(ScreenSize.isTablet(context), user)
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProfileMenuListView(bool isTablet, UserModel user) {
+    return Column(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.person),
+          title: Text('Modifica Profilo',
+              style: Theme.of(context).textTheme.bodyMedium),
+          onTap: () {
+            if (!isTablet) Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    AccountSettings(currentUserFuture: _currentUserFuture, authService: widget.authService,),
+              ),
+            ).then((_) => setState(() {
+                  _currentUserFuture = _loadCurrentUser();
+                }));
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.travel_explore_outlined),
+          title: Text('Nazioni Visitate',
+              style: Theme.of(context).textTheme.bodyMedium),
+          onTap: () {
+            if (!isTablet) Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const GamePage()),
+            );
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.monetization_on),
+          title:
+              Text('Medaglie', style: Theme.of(context).textTheme.bodyMedium),
+          onTap: () {
+            if (!isTablet) Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    MedalsPage(username: user.username!, userId: user.id!),
+              ),
+            ).then((_) => setState(() {
+                  _currentUserFuture = _loadCurrentUser();
+                }));
+          },
+        ),
+        ListTile(
+          title: Text(
+              myAppKey.currentState?.currentTheme == ThemeMode.dark
+                  ? 'Tema chiaro'
+                  : 'Tema scuro',
+              style: Theme.of(context).textTheme.bodyMedium),
+          leading: Icon(
+            myAppKey.currentState?.currentTheme == ThemeMode.dark
+                ? Icons.light_mode
+                : Icons.dark_mode,
+          ),
+          onTap: () {
+            if (!isTablet) Navigator.pop(context);
+            myAppKey.currentState?.toggleTheme();
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.logout, color: Colors.red),
+          title: Text('Log Out', style: Theme.of(context).textTheme.bodyMedium),
+          onTap: () async {
+            await signOut();
+            if (!isTablet) Navigator.of(context).pop();
+          },
+        ),
+      ],
     );
   }
 }

@@ -207,18 +207,21 @@ class _ExplorerPageState extends State<ExplorerPage> {
 
   void _handleTripSave(bool isSaved, String tripId) async {
     try {
-      await widget.databaseService.handleTripSave(isSaved, tripId);
-      setState(() {
-        TripModel trip = _filteredTrips.firstWhere((trip) => trip.id == tripId);
-        if (isSaved) {
-          _savedTrips.remove(tripId);
-          //update the counter locally
-          trip.saveCounter = (trip.saveCounter ?? 0) - 1;
-        } else {
-          _savedTrips.add(tripId);
-          trip.saveCounter = (trip.saveCounter ?? 0) + 1;
-        }
-      });
+      final isOk = await widget.databaseService.handleTripSave(isSaved, tripId);
+
+      if (isOk) {
+        setState(() {
+          TripModel trip = _filteredTrips.firstWhere((trip) => trip.id == tripId);
+          if (isSaved) {
+            _savedTrips.remove(tripId);
+            //update the counter locally
+            trip.saveCounter = (trip.saveCounter ?? 0) - 1;
+          } else {
+            _savedTrips.add(tripId);
+            trip.saveCounter = (trip.saveCounter ?? 0) + 1;
+          }
+        });
+      }
     } on Exception catch (e) {
       SnackBar(content: Text('Errore $e'));
     }
