@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
           stream: AuthService().authStateChanges,
           builder: (context, snapshot){
             if(snapshot.hasData){
-              return const MyHomePage(title: 'Simply Travel');
+              return MyHomePage(title: 'Simply Travel');
             }else{
               return AuthPage();
             }

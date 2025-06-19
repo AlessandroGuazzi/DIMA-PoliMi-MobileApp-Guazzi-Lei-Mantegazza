@@ -187,6 +187,9 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
   }
 
   Widget _tabletLayout(Map<String, double> dataMap) {
+    // Calcola la somma dei valori nella dataMap
+    double sumDataMapValues = dataMap.values.fold(0.0, (sum, value) => sum + value);
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -206,7 +209,7 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
           legendOptions: const LegendOptions(showLegends: false),
           chartValuesOptions: const ChartValuesOptions(showChartValues: false),
         ),
-        const SizedBox(width: 25), // <-- fixed spacing
+        const SizedBox(width: 25),
         SizedBox(
           width: 350,
           child: Column(
@@ -217,9 +220,16 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
               final label = entry.key;
               final value = entry.value;
 
+              // Calcola la percentuale - forza totalCost a double
+              double totalCostDouble = totalCost.toDouble();
+              double percentage = totalCostDouble > 0 ? (value / totalCostDouble) * 100 : 0;
+
+              // Test della formula originale nel Text widget
+              double originalFormula = (totalCost > 0 ? (value / totalCost) * 100 : 0);
+
               return Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
+                const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -239,7 +249,7 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                       ),
                     ),
                     Text(
-                      '${value.toStringAsFixed(0)} $_selectedCurrency (${(totalCost > 0 ? (value / totalCost) * 100 : 0).toStringAsFixed(0)}%)',
+                      '${value.toStringAsFixed(0)} $_selectedCurrency (${percentage.toStringAsFixed(0)}%)',
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w600),
                     ),
@@ -254,6 +264,9 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
   }
 
   Widget _mobileLayout(Map<String, double> dataMap) {
+    // Calcola la somma dei valori nella dataMap
+    double sumDataMapValues = dataMap.values.fold(0.0, (sum, value) => sum + value);
+
     return Column(
       children: [
         PieChart(
@@ -279,9 +292,16 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
             final label = entry.key;
             final value = entry.value;
 
+
+            // Debug della formula originale problematica
+            var originalFormula = (totalCost > 0 ? ((value / totalCost).toInt()) * 100 : 0);
+            // Formula corretta
+            double totalCostDouble = totalCost.toDouble();
+            double percentage = totalCostDouble > 0 ? (value / totalCostDouble) * 100 : 0;
+
             return Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
+              const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
               child: Row(
                 children: [
                   Container(
@@ -300,7 +320,7 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                     ),
                   ),
                   Text(
-                    '${value.toStringAsFixed(0)} $_selectedCurrency (${(totalCost > 0 ? ((value / totalCost).toInt()) * 100 : 0).toStringAsFixed(0)}%)',
+                    '${value.toStringAsFixed(0)} $_selectedCurrency (${percentage.toStringAsFixed(0)}%)',
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w600),
                   ),
