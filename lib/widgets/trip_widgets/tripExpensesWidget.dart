@@ -3,27 +3,39 @@ import 'package:dima_project/services/CurrencyService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/utils/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart';
 import '../../utils/CountryToCurrency.dart';
+import '../../utils/screenSize.dart';
 
 class TripExpensesWidget extends StatefulWidget {
   final DatabaseService databaseService;
+  final CurrencyService currencyService;
   final String tripId;
 
-  TripExpensesWidget({super.key, required this.tripId, databaseService})
-      : databaseService = databaseService ?? DatabaseService();
+  TripExpensesWidget({super.key, required this.tripId, databaseService, currencyService})
+      : databaseService = databaseService ?? DatabaseService(),
+        currencyService = currencyService ?? CurrencyService();
 
   @override
   State<TripExpensesWidget> createState() => _TripExpensesWidgetState();
 }
 
 class _TripExpensesWidgetState extends State<TripExpensesWidget> {
-  late Future<TripModel> _futureTrip;
-  late int totalCost;
+  late Future<TripModel?> _futureTrip;
+
+  //original value
+  late double _originalFlightExpense;
+  late double _originalAccommodationExpense;
+  late double _originalAttractionExpense;
+  late double _originalTransportExpense;
+
+  late double totalCost;
   late double flightExpense;
   late double accommodationExpense;
   late double attractionExpense;
   late double transportExpense;
+
   String _selectedCurrency = 'EUR';
   late List<String> _currencies;
 
@@ -43,12 +55,6 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
     _futureTrip = widget.databaseService.loadTrip(widget.tripId);
   }
 
-  /*
-  This method run each time the widget is updated (rebuild),
-  if the rebuild has new trip data,
-  it triggers an update on the future to fetch the new activities.
-  Overcoming the "limitations" of initState
-   */
   @override
   void didUpdateWidget(covariant TripExpensesWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -72,8 +78,11 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (!snapshot.hasData || snapshot.data == null) {
+        if (!snapshot.hasData) {
           return const Center(child: Text('Viaggio non trovato'));
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Errore: ${snapshot.error}'));
         }
 
         final tripData = snapshot.data!;
@@ -83,18 +92,25 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
 
         //assign only if it's the first time or if widget is updated
         if (!_expensesInitialized || _widgetUpdated) {
-          flightExpense = (tripData.expenses?['flight'])?.toDouble() ?? 0.0;
-          accommodationExpense =
+          // Store original values
+          _originalFlightExpense =
+              (tripData.expenses?['flight'])?.toDouble() ?? 0.0;
+          _originalAccommodationExpense =
               (tripData.expenses?['accommodation'])?.toDouble() ?? 0.0;
-          attractionExpense =
+          _originalAttractionExpense =
               (tripData.expenses?['attraction'])?.toDouble() ?? 0.0;
-          transportExpense =
+          _originalTransportExpense =
               (tripData.expenses?['transport'])?.toDouble() ?? 0.0;
-          totalCost = (flightExpense +
-                  attractionExpense +
-                  accommodationExpense +
-                  transportExpense)
-              .round();
+
+          flightExpense = _originalFlightExpense;
+          accommodationExpense = _originalAccommodationExpense;
+          attractionExpense = _originalAttractionExpense;
+          transportExpense = _originalTransportExpense;
+
+          totalCost = flightExpense +
+              attractionExpense +
+              accommodationExpense +
+              transportExpense; // Removed .round()
 
           _expensesInitialized = true;
           _widgetUpdated = false;
@@ -157,8 +173,7 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                                     }).toList(),
                                     onChanged: (value) {
                                       if (value != null) {
-                                        _updatePieChart(
-                                            _selectedCurrency, value);
+                                        _updatePieChart(value);
                                       }
                                     },
                                   ),
@@ -185,9 +200,6 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
   }
 
   Widget _tabletLayout(Map<String, double> dataMap) {
-    // Calcola la somma dei valori nella dataMap
-    double sumDataMapValues = dataMap.values.fold(0.0, (sum, value) => sum + value);
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -195,12 +207,11 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
         PieChart(
           dataMap: dataMap,
           chartRadius: 200,
-          centerText: "$totalCost $_selectedCurrency",
-          centerTextStyle: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+          centerWidget: Text(
+            "${formatCompact(totalCost)} $_selectedCurrency",
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
+          // Added two decimals
           chartType: ChartType.ring,
           colorList: colorList,
           ringStrokeWidth: 35,
@@ -218,26 +229,17 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
               final label = entry.key;
               final value = entry.value;
 
-              // Calcola la percentuale - forza totalCost a double
-              double totalCostDouble = totalCost.toDouble();
-              double percentage = totalCostDouble > 0 ? (value / totalCostDouble) * 100 : 0;
-
-              // Test della formula originale nel Text widget
-              double originalFormula = (totalCost > 0 ? (value / totalCost) * 100 : 0);
+              int percentage =
+                  (totalCost > 0 ? (value / totalCost) * 100 : 0).round();
 
               return Padding(
                 padding:
-                const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
+                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 16,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                      ),
+                    Icon(
+                      _getIconForLabel(label),
+                      color: color,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -247,7 +249,7 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                       ),
                     ),
                     Text(
-                      '${value.toStringAsFixed(0)} $_selectedCurrency (${percentage.toStringAsFixed(0)}%)',
+                      '${formatCompact(value)} $_selectedCurrency ($percentage%)',
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w600),
                     ),
@@ -262,20 +264,13 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
   }
 
   Widget _mobileLayout(Map<String, double> dataMap) {
-    // Calcola la somma dei valori nella dataMap
-    double sumDataMapValues = dataMap.values.fold(0.0, (sum, value) => sum + value);
-
     return Column(
       children: [
         PieChart(
           dataMap: dataMap,
           chartRadius: 200,
-          centerText: "$totalCost $_selectedCurrency",
-          centerTextStyle: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          centerText: "${totalCost.toStringAsFixed(2)} $_selectedCurrency",
+          centerTextStyle: Theme.of(context).textTheme.headlineMedium,
           chartType: ChartType.ring,
           colorList: colorList,
           ringStrokeWidth: 35,
@@ -290,25 +285,17 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
             final label = entry.key;
             final value = entry.value;
 
-
-            // Debug della formula originale problematica
-            var originalFormula = (totalCost > 0 ? ((value / totalCost).toInt()) * 100 : 0);
-            // Formula corretta
-            double totalCostDouble = totalCost.toDouble();
-            double percentage = totalCostDouble > 0 ? (value / totalCostDouble) * 100 : 0;
+            int percentage =
+                (totalCost > 0 ? (value / totalCost) * 100 : 0).round();
 
             return Padding(
               padding:
-              const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
+                  const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
               child: Row(
                 children: [
-                  Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                    ),
+                  Icon(
+                    _getIconForLabel(label),
+                    color: color,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -318,7 +305,7 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                     ),
                   ),
                   Text(
-                    '${value.toStringAsFixed(0)} $_selectedCurrency (${percentage.toStringAsFixed(0)}%)',
+                    '${formatCompact(value)} $_selectedCurrency ($percentage%)',
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w600),
                   ),
@@ -331,19 +318,57 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
     );
   }
 
-  Future<void> _updatePieChart(String base, String target) async {
-    num rate = await CurrencyService().getExchangeRate(base, target);
-    setState(() {
-      flightExpense = flightExpense * rate;
-      accommodationExpense = accommodationExpense * rate;
-      attractionExpense = attractionExpense * rate;
-      transportExpense = transportExpense * rate;
-      totalCost = (flightExpense +
-              attractionExpense +
-              accommodationExpense +
-              transportExpense)
-          .round();
-      _selectedCurrency = target;
-    });
+  Future<void> _updatePieChart(String targetCurrency) async {
+    String baseCurrency = 'EUR';
+
+    if (targetCurrency == baseCurrency) {
+      setState(() {
+        flightExpense = _originalFlightExpense;
+        accommodationExpense = _originalAccommodationExpense;
+        attractionExpense = _originalAttractionExpense;
+        transportExpense = _originalTransportExpense;
+        totalCost = flightExpense +
+            attractionExpense +
+            accommodationExpense +
+            transportExpense;
+        _selectedCurrency = targetCurrency;
+      });
+    } else {
+      num rate =
+          await widget.currencyService.getExchangeRate(baseCurrency, targetCurrency);
+      setState(() {
+        flightExpense = _originalFlightExpense * rate;
+        accommodationExpense = _originalAccommodationExpense * rate;
+        attractionExpense = _originalAttractionExpense * rate;
+        transportExpense = _originalTransportExpense * rate;
+        totalCost = flightExpense +
+            attractionExpense +
+            accommodationExpense +
+            transportExpense;
+        _selectedCurrency = targetCurrency;
+      });
+    }
+  }
+
+  IconData _getIconForLabel(String label) {
+    switch (label) {
+      case 'Voli':
+        return Icons.flight;
+      case 'Attrazioni':
+        return Icons.attractions;
+      case 'Trasporti':
+        return Icons.directions_bus;
+      case 'Alloggio':
+        return Icons.hotel;
+      default:
+        return Icons.euro;
+    }
+  }
+
+  String formatCompact(double value, {int decimals = 2, String locale = 'it'}) {
+
+    final fmt = NumberFormat.compact(locale: locale);
+
+    return fmt.format(value);
   }
 }

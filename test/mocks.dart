@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:dima_project/services/CurrencyService.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/services/googlePlacesService.dart';
@@ -17,6 +18,7 @@ class MockNavigatorObserver extends Mock implements NavigatorObserver {}
   DocumentSnapshot,
   GooglePlacesService,
   CountryService,
+  CurrencyService,
 ])
 
 void main() {}

@@ -3,6 +3,7 @@ import 'package:dima_project/models/activityModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/userModel.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'authService.dart';
 
 class DatabaseService {
@@ -273,12 +274,19 @@ class DatabaseService {
     }
   }
 
-  Future<TripModel> loadTrip(String tripId) async {
-    final docSnapshot = await tripCollection.doc(tripId).get();
-    if (!docSnapshot.exists || docSnapshot.data() == null) {
-      throw Exception('Trip not found');
+  Future<TripModel?> loadTrip(String tripId) async {
+    try {
+      final docSnapshot = await tripCollection.doc(tripId).get();
+
+      final TripModel? trip = docSnapshot.data();
+
+      return trip;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error loading trip with ID $tripId: $e');
+      }
+      return null;
     }
-    return docSnapshot.data()!;
   }
 
   Future<void> updateActivity(String id, ActivityModel activity, num cost, bool isAdd) async {

@@ -1,3 +1,4 @@
+import 'package:dima_project/utils/screenSize.dart';
 import 'package:flutter/cupertino.dart';
 
 class ResponsiveLayout extends StatelessWidget {
@@ -10,7 +11,7 @@ class ResponsiveLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 700) {
+        if (ScreenSize.screenWidth(context) < 700) {
           return mobileLayout;
         } else {
           return tabletLayout;
