@@ -184,7 +184,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                 icon: const Icon(Icons.calendar_today),
                 onPressed: () => _selectDate(context),
               ),
-              hintText: DateFormat('dd/MM/yyyy').format(user.birthDate!),
+              hintText: DateFormat('dd/MM/yyyy').format(user.birthDate ?? DateTime.now()),
             ),
           ),
           const SizedBox(height: 10),

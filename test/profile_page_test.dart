@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/userModel.dart';
 import 'package:dima_project/screens/accountSettings.dart';
-import 'package:dima_project/screens/gamePage.dart';
+import 'package:dima_project/screens/travelStatsPage.dart';
 import 'package:dima_project/screens/medalsPage.dart';
 import 'package:dima_project/screens/profilePage.dart';
 import 'package:dima_project/screens/tripPage.dart';
@@ -361,8 +361,6 @@ void main() {
       });
     });
 
-    //TODO: uncomment this test when rest is implemented
-    /*
     group('Settings Menu', () {
       testWidgets('settings menu displays all options', (tester) async {
 
@@ -397,10 +395,14 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
+        //stub travel stats page
+        when(mockDatabaseService.getCompletedTrips(any))
+            .thenAnswer((_) async => []);
+
         await tester.tap(find.text('Nazioni Visitate'));
         await tester.pumpAndSettle();
 
-        expect(find.byType(GamePage), findsOneWidget);
+        expect(find.byType(TravelStatsPage), findsOneWidget);
       });
 
       testWidgets('navigates to MedalsPage when Medaglie is tapped',
@@ -408,13 +410,18 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
+        //stub
+        when(mockDatabaseService.getUserByUid(any))
+            .thenAnswer((_) async => testUser);
+        when(mockDatabaseService.getCompletedTrips(any))
+            .thenAnswer((_) async => []);
+
         await tester.tap(find.text('Medaglie'));
         await tester.pumpAndSettle();
 
         expect(find.byType(MedalsPage), findsOneWidget);
       });
     });
-     */
 
     group('Edge Cases', () {
 

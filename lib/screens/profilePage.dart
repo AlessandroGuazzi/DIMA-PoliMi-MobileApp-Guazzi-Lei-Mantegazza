@@ -12,7 +12,7 @@ import '../main.dart';
 import '../models/tripModel.dart';
 import '../models/userModel.dart';
 import '../utils/responsive.dart';
-import 'gamePage.dart';
+import 'travelStatsPage.dart';
 
 class ProfilePage extends StatefulWidget {
   late final DatabaseService databaseService;
@@ -299,7 +299,7 @@ class _ProfilePageState extends State<ProfilePage> {
             if (!isTablet) Navigator.pop(context);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const GamePage()),
+              MaterialPageRoute(builder: (context) => TravelStatsPage(databaseService: widget.databaseService,)),
             );
           },
         ),
@@ -313,7 +313,7 @@ class _ProfilePageState extends State<ProfilePage> {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    MedalsPage(username: user.username!, userId: user.id!),
+                    MedalsPage(username: user.username!, userId: user.id!, databaseService: widget.databaseService),
               ),
             ).then((_) => setState(() {
                   _currentUserFuture = _loadCurrentUser();

@@ -332,13 +332,12 @@ void main() {
       expect(find.text('Utente non trovato'), findsOneWidget);
     });
 
-    testWidgets('should display medals page with user data', (tester) async {
-      // Arrange
+    testWidgets('should display correct level and countries visited', (tester) async {
+
       final mockUser = UserModel(
         id: 'testId',
         username: 'TestUser',
         birthCountry: 'IT',
-        // Add other required fields
       );
 
       final mockTrips = [
@@ -356,8 +355,6 @@ void main() {
       await pumpTestableWidget(tester, mockUser.username!, mockUser.id!);
       await tester.pumpAndSettle();
 
-      // Assert
-      expect(find.textContaining('TestUser'), findsOneWidget);
       expect(find.text('2'), findsOneWidget); // countries visited
       expect(find.text('Esploratore Novizio'), findsOneWidget); // level
       expect(find.text('Mondo'), findsOneWidget);

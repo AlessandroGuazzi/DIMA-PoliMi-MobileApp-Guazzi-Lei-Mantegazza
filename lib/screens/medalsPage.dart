@@ -7,6 +7,7 @@ import 'package:dima_project/services/databaseService.dart';
 
 import '../utils/responsive.dart';
 
+//TODO: if we keep it like this fetching the current user from db is not necessary
 class MedalsPage extends StatefulWidget {
   late final DatabaseService databaseService;
 
@@ -424,53 +425,75 @@ class _MedalsPageState extends State<MedalsPage> {
             body: CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  expandedHeight: ScreenSize.isTablet(context)
-                  ? 400
-                  : 350,
+                  expandedHeight: 250,
                   pinned: true,
                   flexibleSpace: FlexibleSpaceBar(
-                    background: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.asset(
-                          coverImagePath,
-                          fit: BoxFit.cover,
+                    background: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Theme.of(context).primaryColor,
+                            Theme.of(context).secondaryHeaderColor,
+                          ],
+                          begin: AlignmentDirectional(1, 1),
+                          end: AlignmentDirectional(-1, -1),
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.black.withOpacity(0.4),
-                                Colors.transparent,
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
+                      ),
+                      child: SafeArea(
+                        child: SizedBox.expand(
                           child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: MediaQuery.of(context).size.width *
-                                    0.9, // 90% of screen width
-                                maxHeight: MediaQuery.of(context).size.height *
-                                    0.55, // 40% of screen height
-                              ),
-                              child: buildProfileCard(
-                                context: context,
-                                playerName: playerName,
-                                country: country,
-                                countriesVisited: countriesVisited,
-                                level: level,
-                                user: user,
-                              ),
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Title
+                                Text(
+                                  'Statistiche di Viaggio',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+
+                                // Subtitle
+                                Text(
+                                  'Ecco un riepilogo dei tuoi progressi',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+
+                                // Stat Row
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    _buildStat(
+                                      'Paesi',
+                                      '$countriesVisited',
+                                      Icons.flag,
+                                      Colors.white,
+                                      context,
+                                    ),
+                                    _buildStat(
+                                      'Livello',
+                                      level,
+                                      Icons.emoji_events,
+                                      Colors.white,
+                                      context,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -479,26 +502,6 @@ class _MedalsPageState extends State<MedalsPage> {
                     mobileLayout: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 30),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _buildStat(
-                              'Paesi',
-                              '$countriesVisited',
-                              Icons.flag,
-                              Theme.of(context).primaryColor,
-                              context,
-                            ),
-                            _buildStat(
-                              'Livello',
-                              level,
-                              Icons.emoji_events,
-                              Theme.of(context).secondaryHeaderColor,
-                              context,
-                            ),
-                          ],
-                        ),
                         const SizedBox(height: 30),
                         ...continents.map((continent) => _buildMedalsSection(
                               continent,
@@ -644,65 +647,6 @@ class _MedalsPageState extends State<MedalsPage> {
     );
   }
 
-  Widget buildProfileCard({
-    required String playerName,
-    required String country,
-    required int countriesVisited,
-    required String level,
-    required BuildContext context,
-    required UserModel user,
-  }) {
-    final userCard = UserProfileCard(user: user);
-
-    final statsPart = Wrap(
-      alignment: WrapAlignment.center,
-      spacing: 24,
-      runSpacing: 16,
-      children: [
-        _buildStat(
-          'Paesi',
-          '$countriesVisited',
-          Icons.flag,
-          Theme.of(context).primaryColor,
-          context,
-        ),
-        _buildStat(
-          'Livello',
-          level,
-          Icons.emoji_events,
-          Theme.of(context).secondaryHeaderColor,
-          context,
-        ),
-      ],
-    );
-
-    return ResponsiveLayout(
-      mobileLayout: userCard,
-      tabletLayout: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(child: Center(child: userCard)),
-              const SizedBox(width: 24),
-              const VerticalDivider(),
-              const SizedBox(width: 24),
-              Expanded(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [statsPart])),
-              const SizedBox(width: 24),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildStat(String label, String value, IconData icon, Color color,
       BuildContext context) {
     return Column(
@@ -723,15 +667,13 @@ class _MedalsPageState extends State<MedalsPage> {
           value,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: color,
-                fontWeight: FontWeight.bold,
               ),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: color,
               ),
         ),
       ],

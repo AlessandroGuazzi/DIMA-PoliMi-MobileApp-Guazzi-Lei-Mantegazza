@@ -52,8 +52,6 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
   @override
   void didUpdateWidget(covariant TripExpensesWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print('Expenses page update');
-    print('${oldWidget.tripId}  ${widget.tripId}');
     if (oldWidget.tripId != widget.tripId) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {

@@ -6,15 +6,17 @@ import 'package:dima_project/screens/profilePage.dart';
 import 'package:dima_project/screens/explorerPage.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({super.key, required this.title, DatabaseService? databaseService, authService})
-      : databaseService = databaseService ?? DatabaseService(),
+  MyHomePage({
+    super.key,
+    required this.title,
+    databaseService,
+    authService,
+  })  : databaseService = databaseService ?? DatabaseService(),
         authService = authService ?? AuthService();
 
-
-  late final DatabaseService databaseService;
-  late final AuthService authService;
   final String title;
-  late List<Widget> _pages;
+  final DatabaseService databaseService;
+  final AuthService authService;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -23,20 +25,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-
-
-  @override
-  void initState() {
-    super.initState();
-    widget._pages = [
-      ExplorerPage(databaseService: widget.databaseService, authService: widget.authService,),
-      MyTripsPage(databaseService: widget.databaseService),
-      ProfilePage(databaseService: widget.databaseService, authService: widget.authService),
-    ];
-  }
+  List<Widget> get _pages => [
+        ExplorerPage(
+            databaseService: widget.databaseService, authService: widget.authService),
+        MyTripsPage(databaseService: widget.databaseService),
+        ProfilePage(
+            databaseService: widget.databaseService, authService: widget.authService),
+      ];
 
   Future<void> signOut() async {
-    await AuthService().signOut();
+    await widget.authService.signOut();
   }
 
   @override
@@ -46,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: widget._pages[_selectedIndex],
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
