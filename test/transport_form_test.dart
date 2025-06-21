@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:intl/intl.dart';
-
-// Importa il file dei mock generato
-import 'mocks.mocks.dart'; // Questo file sarà generato da build_runner
+import 'mocks.mocks.dart';
 
 void main() {
   group('TransportForm Widget', () {

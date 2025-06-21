@@ -93,10 +93,9 @@ void main() {
       expect(find.text('Hotel Test'), findsOneWidget);
       expect(find.text('Via Roma 1, Milano'), findsOneWidget);
       expect(find.text('120.00'), findsOneWidget);
-      //expect(find.text('Camera con vista'), findsOneWidget);
     });
 
-    testWidgets('should validate cost field with negative values', (WidgetTester tester) async {
+    testWidgets('should not validate cost field with negative values', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
       await tester.pumpAndSettle();
 
@@ -130,6 +129,74 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(mockDatabaseService.updateActivity(any, any, any, any)).called(1);
+    });
+
+    testWidgets('Selecting date field open DateRangePickerDialog',
+            (tester) async {
+          await pumpTestableWidget(tester);
+
+          // Tap to trigger _selectDateRange
+          await tester.tap(find.widgetWithText(TextFormField, 'Seleziona le date'));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(DateRangePickerDialog), findsOneWidget);
+        });
+
+
+    testWidgets('tapping on check-in and check-out time field opens time picker and selects time', (WidgetTester tester) async {
+      await pumpTestableWidget(tester);
+
+      // Trova il campo dell’orario di partenza
+      final checkInTimeField = find.widgetWithText(TextFormField, 'Check-in');
+      expect(checkInTimeField, findsOneWidget);
+
+      // Tap per aprire il TimePicker
+      await tester.tap(checkInTimeField);
+      await tester.pumpAndSettle();
+
+      // Verifica che il TimePicker sia visibile
+      // Il testo dipende dal locale, ma 'OK' è spesso presente
+      expect(find.text('OK'), findsOneWidget);
+
+      // Facoltativo: seleziona un orario. Il TimePicker nativo è difficile da manipolare nei test widget.
+      // In genere si salta questo passaggio e si conferma direttamente.
+
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      final checkOutTimeField = find.widgetWithText(TextFormField, 'Check-in');
+      expect(checkOutTimeField, findsOneWidget);
+
+      // Tap per aprire il TimePicker
+      await tester.tap(checkOutTimeField);
+      await tester.pumpAndSettle();
+
+      // Verifica che il TimePicker sia visibile
+      // Il testo dipende dal locale, ma 'OK' è spesso presente
+      expect(find.text('OK'), findsOneWidget);
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+    });
+
+
+    testWidgets('should update currency dropdown and enter cost', (WidgetTester tester) async {
+      await pumpTestableWidget(tester); // funzione helper già esistente nel test
+
+      await tester.pumpAndSettle();
+
+      final costField = find.widgetWithText(TextFormField, 'Costo');
+      expect(costField, findsOneWidget);
+
+      // Scrive nel campo costo
+      await tester.enterText(costField, '200');
+      expect(find.text('200'), findsOneWidget);
+
+      // Trova e interagisce con il DropdownButton della valuta
+      final currencyDropdown = find.byType(DropdownButton<String>);
+      expect(currencyDropdown, findsOneWidget);
+
+      await tester.tap(currencyDropdown);
+      await tester.pumpAndSettle();
     });
   });
 }

@@ -6,8 +6,9 @@ import 'package:flutter/services.dart' show rootBundle;
 
 class AirportSearchWidget extends StatefulWidget {
   final Function(Airport) onAirportSelected; // callback quando selezioni un aeroporto
+  final AssetBundle? assetBundle;
 
-  const AirportSearchWidget({super.key, required this.onAirportSelected});
+  const AirportSearchWidget({super.key, required this.onAirportSelected, this.assetBundle, });
 
   @override
   State<AirportSearchWidget> createState() => _AirportSearchWidgetState();
@@ -25,7 +26,8 @@ class _AirportSearchWidgetState extends State<AirportSearchWidget> {
   }
 
   Future<void> _loadAirports() async {
-    final String response = await rootBundle.loadString('assets/airports.json');
+    final bundle = widget.assetBundle ?? DefaultAssetBundle.of(context);
+    final String response = await bundle.loadString('assets/airports.json');
     //print('JSON Loaded: $response');  // Stampa il contenuto del JSON
 
     final List<dynamic> data = json.decode(response);
@@ -58,7 +60,7 @@ class _AirportSearchWidgetState extends State<AirportSearchWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min, // <-- importante!
+      mainAxisSize: MainAxisSize.min,
       children: [
         TextField(
           controller: _controller,

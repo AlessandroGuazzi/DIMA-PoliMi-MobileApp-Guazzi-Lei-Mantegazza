@@ -3,6 +3,7 @@ import 'package:dima_project/widgets/activity_widgets/flightForm.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 import 'package:mockito/mockito.dart';
 import 'mocks.mocks.dart';
 import 'mocks.dart';
@@ -182,6 +183,125 @@ void main() {
 
       // Verifica che createActivity NON sia stato chiamato
       verifyNever(mockDatabaseService.createActivity(any));
+    });
+
+
+    testWidgets('should validate cost field with negative values', (WidgetTester tester) async {
+      await pumpTestableWidget(tester);
+      await tester.pumpAndSettle();
+
+      // Inserisci un valore negativo nel campo costo
+      final costField = find.widgetWithText(TextFormField, 'Costo');
+      await tester.enterText(costField, '-10');
+
+      // Compila il campo obbligatorio per triggare la validazione
+      //final locationField = find.widgetWithText(TextFormField, 'Dove?');
+      //await tester.tap(locationField);
+      await tester.pumpAndSettle();
+
+      final buttonFinder = find.widgetWithText(ElevatedButton, 'Save Flight');
+
+      // Ottieni il widget e simula il tap direttamente
+      final button = tester.widget<ElevatedButton>(buttonFinder);
+      button.onPressed?.call();
+      await tester.pumpAndSettle();
+
+      // Verifica che appaia l'errore di validazione per il costo
+      expect(find.text('Per favore inserisci un costo valido'), findsOneWidget);
+    });
+
+    testWidgets('should update currency dropdown and enter cost', (WidgetTester tester) async {
+      await pumpTestableWidget(tester); // funzione helper già esistente nel test
+
+      await tester.pumpAndSettle();
+
+      final costField = find.widgetWithText(TextFormField, 'Costo');
+      expect(costField, findsOneWidget);
+
+      // Scrive nel campo costo
+      await tester.enterText(costField, '200');
+      expect(find.text('200'), findsOneWidget);
+
+      // Trova e interagisce con il DropdownButton della valuta
+      final currencyDropdown = find.byType(DropdownButton<String>);
+      expect(currencyDropdown, findsOneWidget);
+
+      await tester.tap(currencyDropdown);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('should prefill fields when editing existing flight', (WidgetTester tester) async {
+      await pumpTestableWidget(tester, flight: flight);
+      await tester.pumpAndSettle();
+
+      // Controlla che i campi pre-popolati siano visibili
+      expect(find.text('Rome Fiumicino (FCO)'), findsOneWidget);
+      expect(find.text('John F. Kennedy Intl (JFK)'), findsOneWidget);
+
+      final dateText = DateFormat('dd/MM/yy').format(flight.departureDate!);
+      expect(find.text(dateText), findsOneWidget);
+
+      final timeText = DateFormat('HH:mm').format(flight.departureDate!);
+      //expect(find.text('10:00'), findsOneWidget);
+
+      expect(find.text('500.00'), findsOneWidget);
+      // Se il campo valuta è presente e predefinito (es. 'EUR')
+      //expect(find.text('€'), findsOneWidget);
+
+      // Se il campo durata è pre-popolato come '9h 0m'
+      expect(find.text('9.0'), findsOneWidget);
+    });
+
+    testWidgets('tapping on start date field opens date picker and selects date', (WidgetTester tester) async {
+      await pumpTestableWidget(tester);
+
+      // Trova il campo "Departure Date"
+      final startDateField = find.widgetWithText(TextFormField, 'Departure Date');
+      expect(startDateField, findsOneWidget);
+
+      // Tap per aprire il DatePicker
+      await tester.tap(startDateField);
+      await tester.pumpAndSettle();
+
+      // Verifica che si apra il DatePicker
+      expect(find.text('Select date'), findsOneWidget);
+      expect(find.text('20'), findsWidgets); // attenzione: più '20' potrebbero esistere
+
+      // Tap sul giorno 20 (l'ultimo tra quelli trovati)
+      await tester.tap(find.text('20').last);
+      await tester.pumpAndSettle();
+
+      // Tap sul pulsante "OK"
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      // Verifica che il campo ora contenga la data selezionata
+      // Supponendo che venga formattata ad esempio come '2025-12-20'
+      expect(find.textContaining('20/12/25'), findsOneWidget);
+       // potrebbe essere '2025-12-20'
+    });
+
+    testWidgets('tapping on departure time field opens time picker and selects time', (WidgetTester tester) async {
+      await pumpTestableWidget(tester);
+
+      // Trova il campo dell’orario di partenza
+      final departureTimeField = find.widgetWithText(TextFormField, 'Departure Time');
+      expect(departureTimeField, findsOneWidget);
+
+      // Tap per aprire il TimePicker
+      await tester.tap(departureTimeField);
+      await tester.pumpAndSettle();
+
+      // Verifica che il TimePicker sia visibile
+      // Il testo dipende dal locale, ma 'OK' è spesso presente
+      expect(find.text('OK'), findsOneWidget);
+
+      // Facoltativo: seleziona un orario. Il TimePicker nativo è difficile da manipolare nei test widget.
+      // In genere si salta questo passaggio e si conferma direttamente.
+
+      // Conferma l’orario
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
     });
   });
 }
