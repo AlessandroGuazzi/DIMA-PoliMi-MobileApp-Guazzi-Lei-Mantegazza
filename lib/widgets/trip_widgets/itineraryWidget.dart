@@ -12,6 +12,7 @@ import 'package:dima_project/widgets/activity_widgets/accommodationCardWidget.da
 import 'package:dima_project/widgets/activity_widgets/attractionCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/transportCardWidget.dart';
+import 'package:dima_project/widgets/myBottomSheetHandle.dart';
 import 'package:dima_project/widgets/trip_widgets/tripProgressBar.dart';
 import 'package:flutter/material.dart';
 
@@ -96,6 +97,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
           const SizedBox(width: 15),
           isTripActive
               ? FloatingActionButton(
+            key: const Key('newActivityButton'),
             heroTag: 'newActivityButton',
             mini: true,
             onPressed: _showNewActivityOption,
@@ -388,20 +390,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              //handle
-              Padding(
-                padding: const EdgeInsets.fromLTRB(200, 15, 200, 15),
-                child: Container(
-                  height: 5,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).dividerColor,
-                    borderRadius:
-                        BorderRadius.all(Radius.circular(100)), // Rounded edges
-                  ),
-                ),
-              ),
-
+              const MyBottomSheetHandle(),
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: Text(

@@ -37,9 +37,6 @@ void main() {
     });
     when(mockCurrentUser.uid).thenReturn('123');
     when(mockAuthService.currentUser).thenReturn(mockCurrentUser);
-    when(mockGooglePlacesService.getCountryImageRef(any)).thenAnswer((_) async {
-      return 'testing_ref';
-    });
     when(mockGooglePlacesService.getCoordinates(any)).thenAnswer((_) async {
       return {'lat': 123, 'lng': 456};
     });

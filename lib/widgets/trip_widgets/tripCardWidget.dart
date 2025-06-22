@@ -19,12 +19,9 @@ class TripCardWidget extends StatefulWidget {
 }
 
 class _TripCardWidgetState extends State<TripCardWidget> {
-  late Future<String> _futureImageUrl;
-
   @override
   void initState() {
     super.initState();
-    _futureImageUrl = GooglePlacesService().getImageUrl(widget.trip);
   }
 
   @override
@@ -134,7 +131,10 @@ class _TripCardWidgetState extends State<TripCardWidget> {
               ),
 
               const SizedBox(width: 8),
-              Icon(Icons.arrow_forward_ios, color: Theme.of(context).secondaryHeaderColor,),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
             ],
           ),
         ),
@@ -219,7 +219,6 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-
                       //profile image and username
                       Expanded(
                         child: GestureDetector(
@@ -228,8 +227,11 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                             children: [
                               CircleAvatar(
                                 radius: 15,
-                                backgroundImage: widget.trip.creatorInfo?['profilePic'] != null
-                                    ? AssetImage(widget.trip.creatorInfo!['profilePic'])
+                                backgroundImage: widget
+                                            .trip.creatorInfo?['profilePic'] !=
+                                        null
+                                    ? AssetImage(
+                                        widget.trip.creatorInfo!['profilePic'])
                                     : const AssetImage('assets/profile.png'),
                               ),
                               const SizedBox(width: 4),
@@ -324,6 +326,13 @@ class _TripCardWidgetState extends State<TripCardWidget> {
   }
 
   Widget _loadTripImage(double? height, double? width) {
+    return Image.asset(
+      'assets/placeholder_landscape.jpg',
+      height: height,
+      width: width,
+      fit: BoxFit.cover,
+    );
+    /*
     return FutureBuilder<String>(
       future: _futureImageUrl,
       builder: (context, snapshot) {
@@ -349,6 +358,8 @@ class _TripCardWidgetState extends State<TripCardWidget> {
         } else {
           imageWidget = Image.asset(
             'assets/placeholder_landscape.jpg',
+            height: height,
+            width: width,
             fit: BoxFit.cover,
           );
         }
@@ -356,5 +367,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
         return imageWidget;
       },
     );
+
+     */
   }
 }

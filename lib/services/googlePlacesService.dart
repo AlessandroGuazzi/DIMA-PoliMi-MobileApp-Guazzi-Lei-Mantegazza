@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'package:dima_project/services/databaseService.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/tripModel.dart';
 
 class GooglePlacesService {
-  final String apiKey = 'AIzaSyDKIlpTjMwBYqqmw-8lNs5PId8zWzPg5cY';
+  final String apiKey = '';
 
   Future<List<Map<String, String>>> searchAutocomplete(
       String query, List<String> countryCodes, String searchType) async {
@@ -54,6 +52,7 @@ class GooglePlacesService {
             '&key=$apiKey');
 
     final response = await http.get(url);
+    print('API CALL');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       if (data['status'] == 'OK') {
@@ -70,6 +69,7 @@ class GooglePlacesService {
     }
   }
 
+  /*
   Future<String> getCountryImageRef(String? country) async {
     if (country == null) {
       return '';
@@ -139,4 +139,6 @@ class GooglePlacesService {
     }
     return url;
   }
+
+   */
 }

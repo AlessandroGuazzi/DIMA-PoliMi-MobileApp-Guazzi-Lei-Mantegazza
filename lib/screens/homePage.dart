@@ -50,14 +50,17 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: (index) => setState(() => _selectedIndex = index),
         items: const [
           BottomNavigationBarItem(
+            key: Key('searchButton'),
             icon: Icon(Icons.search),
             label: 'Esplora',
           ),
           BottomNavigationBarItem(
+            key: Key('homeButton'),
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
+            key: Key('profileButton'),
             icon: Icon(Icons.account_box),
             label: 'Profilo',
           ),

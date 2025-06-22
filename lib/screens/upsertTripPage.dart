@@ -172,6 +172,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
               SizedBox(height: 16),
               // Title input
               TextFormField(
+                key: const Key('titleField'),
                 controller: titleController,
                 decoration: InputDecoration(
                   labelText: 'Titolo',
@@ -189,6 +190,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
 
               // Countries picker input
               TextFormField(
+                key: const Key('countriesField'),
                 controller: countriesController,
                 readOnly: true,
                 decoration: InputDecoration(
@@ -231,6 +233,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
 
               // City search input
               TextFormField(
+                key: const Key('citiesField'),
                 controller: citiesController,
                 enabled: _selectedCountries.isEmpty ? false : true,
                 readOnly: true,
@@ -274,6 +277,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
 
               // dates input
               TextFormField(
+                key: const Key('datesField'),
                 readOnly: true,
                 controller: datesController,
                 decoration: InputDecoration(
@@ -292,6 +296,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
 
               // Submit button
               ElevatedButton(
+                key: const Key('submitButton'),
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
@@ -590,10 +595,6 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
         List<Map<String, dynamic>> citiesMap =
             await reformatCitiesWithCoordinates();
 
-        //retrieve image Reference from google
-        String imageRef = await widget.googlePlacesService
-            .getCountryImageRef(countriesMap.first['name']);
-
         final trip = TripModel(
           title: titleController.text,
           creatorInfo: creatorInfo,
@@ -602,7 +603,6 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
           startDate: _startDate,
           endDate: _endDate,
           timestamp: Timestamp.now(),
-          imageRef: imageRef,
         );
         widget.databaseService
             .createTrip(trip)

@@ -116,17 +116,21 @@ class _FlightFormState extends State<FlightForm> {
           children: [
 
             TextFormField(
+              key: const Key('departureAirportField'),
+              readOnly: true,
               controller: departureAirportController,
               decoration: const InputDecoration(labelText: "Departure Airport"),
               validator: (value) => value!.isEmpty ? "Required" : null,
               onTap: () {
-                FocusScope.of(context).requestFocus(FocusNode()); // Nasconde la tastiera
-                _showAirportSearchDialog(departureAirportController, true); // Mostra il dialogo per la scelta aeroporto
+                FocusScope.of(context).requestFocus(FocusNode());
+                _showAirportSearchDialog(departureAirportController, true);
               },
             ),
             const SizedBox(height: 16),
 
             TextFormField(
+              key: const Key('arrivalAirportField'),
+              readOnly: true,
               controller: arrivalAirportController,
               decoration: const InputDecoration(labelText: "Arrival Airport"),
               validator: (value) => value!.isEmpty ? "Required" : null,
@@ -145,6 +149,7 @@ class _FlightFormState extends State<FlightForm> {
 
             // Departure Date
             TextFormField(
+              key: const Key('departureDateField'),
               readOnly: true,
               controller: TextEditingController(
                 text: _departureDate != null
@@ -163,6 +168,7 @@ class _FlightFormState extends State<FlightForm> {
 
             // Departure Time
             TextFormField(
+              key: const Key('departureTimeField'),
               readOnly: true,
               controller: TextEditingController(
                 text: _departureTime != null ? _departureTime!.format(context) : '',
@@ -178,6 +184,7 @@ class _FlightFormState extends State<FlightForm> {
             const SizedBox(height: 16),
 
             TextFormField(
+              key: const Key('durationField'),
               controller: durationController,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               decoration: const InputDecoration(labelText: "Duration (in hours)"),
@@ -192,6 +199,7 @@ class _FlightFormState extends State<FlightForm> {
 
             // Costo (opzionale)
             TextFormField(
+              key: const Key('costField'),
               controller: expensesController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(

@@ -39,7 +39,8 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _trip = widget.trip;
-    _futureImageUrl = GooglePlacesService().getImageUrl(_trip);
+    //TODO
+    _futureImageUrl = Future.error('e');
   }
 
   @override
@@ -48,7 +49,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
     if (oldWidget.trip != widget.trip) {
       setState(() {
         _trip = widget.trip;
-        _futureImageUrl = GooglePlacesService().getImageUrl(_trip);
+        _futureImageUrl = Future.error('e');
       });
     }
   }
