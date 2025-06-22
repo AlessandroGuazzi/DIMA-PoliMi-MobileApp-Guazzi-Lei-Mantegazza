@@ -70,6 +70,7 @@ class _AuthPageState extends State<AuthPage> {
                             width: 150, height: 150),
                         if (!isLogin) ...[
                           TextFormField(
+                            key: const Key('nameField'),
                             controller: _name,
                             decoration: InputDecoration(
                               labelText: 'Nome',
@@ -83,6 +84,7 @@ class _AuthPageState extends State<AuthPage> {
                           ),
                           const SizedBox(height: 12),
                           TextFormField(
+                            key: const Key('surnameField'),
                             controller: _surname,
                             decoration: const InputDecoration(
                               labelText: 'Cognome',
@@ -96,6 +98,7 @@ class _AuthPageState extends State<AuthPage> {
                           ),
                           const SizedBox(height: 12),
                           TextFormField(
+                            key: const Key('usernameField'),
                             controller: _username,
                             decoration: const InputDecoration(
                               labelText: 'Username',
@@ -109,6 +112,7 @@ class _AuthPageState extends State<AuthPage> {
                           ),
                           const SizedBox(height: 12),
                           TextFormField(
+                            key: const Key('birthDateField'),
                             controller: _birthDate,
                             readOnly: true,
                             onTap: () => _selectDate(context),
@@ -125,6 +129,7 @@ class _AuthPageState extends State<AuthPage> {
                           ),
                           const SizedBox(height: 12),
                           TextFormField(
+                            key: const Key('nationalityField'),
                             controller: _nationality,
                             readOnly: true,
                             decoration: const InputDecoration(
@@ -141,6 +146,7 @@ class _AuthPageState extends State<AuthPage> {
                           const SizedBox(height: 12),
                         ],
                         TextFormField(
+                          key: const Key('emailField'),
                           controller: _email,
                           keyboardType: TextInputType.emailAddress,
                           decoration: const InputDecoration(
@@ -155,6 +161,7 @@ class _AuthPageState extends State<AuthPage> {
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
+                          key: const Key('passwordField'),
                           controller: _password,
                           obscureText: true,
                           decoration: const InputDecoration(
@@ -169,6 +176,7 @@ class _AuthPageState extends State<AuthPage> {
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(
+                          key: const Key('submitButton'),
                           onPressed: () {
                             if (_formKey.currentState?.validate() ?? false) {
                               if (isLogin) {
@@ -189,9 +197,12 @@ class _AuthPageState extends State<AuthPage> {
                           child: Text(isLogin ? 'Accedi' : 'Registrati'),
                         ),
                         TextButton(
+                          key: const Key('toggleAuthMode'),
                           onPressed: () {
                             setState(() {
                               _formKey.currentState?.reset();
+                              _email.clear();
+                              _password.clear();
                               isLogin = !isLogin;
                             });
                           },

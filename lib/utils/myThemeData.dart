@@ -33,7 +33,7 @@ class MyThemeData {
         showSelectedLabels: true,
         type: BottomNavigationBarType.fixed,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -83,7 +83,7 @@ class MyThemeData {
         labelStyle: TextStyle(color: Colors.grey[700]),
         prefixIconColor: Colors.grey[700],
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         indicatorColor: primaryColor,
         labelColor:Colors.black,
         unselectedLabelColor: Colors.grey,
@@ -170,7 +170,7 @@ class MyThemeData {
         showSelectedLabels: true,
         type: BottomNavigationBarType.fixed,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: black,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),

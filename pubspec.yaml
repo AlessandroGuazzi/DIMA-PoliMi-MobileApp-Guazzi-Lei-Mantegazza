@@ -54,8 +54,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_launcher_icons: ^0.14.3
-  intl: ^0.20.2
   percent_indicator: ^4.2.4
   countries_world_map: ^1.2.3
 
