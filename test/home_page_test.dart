@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/userModel.dart';
+import 'package:dima_project/screens/explorerPage.dart';
 import 'package:dima_project/screens/homePage.dart';
+import 'package:dima_project/screens/myTripsPage.dart';
+import 'package:dima_project/screens/profilePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -17,7 +20,7 @@ void main() {
     name: 'Alice',
     surname: 'Rossi',
     username: 'alice_rossi',
-    profilePic: 'https://example.com/profile.png',
+    profilePic: 'assets/profile.png',
     birthDate: DateTime(1995, 6, 15),
     mail: 'alice@example.com',
     birthCountry: 'Italy',
@@ -69,7 +72,7 @@ void main() {
     );
   });
 
-  testWidgets('MyHomePage shows AppBar and BottomNavigationBar', (
+  testWidgets('MyHomePage shows AppBar and NavigationBar', (
       WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -81,61 +84,60 @@ void main() {
       ),
     );
 
-    // Verifica che l'AppBar sia presente con il titolo corretto
     expect(find.byType(AppBar), findsOneWidget);
     expect(find.text('Titolo HomePage'), findsOneWidget);
 
-    // Verifica che la BottomNavigationBar sia presente
-    expect(find.byType(BottomNavigationBar), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
 
-    // Verifica le etichette delle tre voci di navigazione
     expect(find.text('Esplora'), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Profilo'), findsOneWidget);
 
-    // Verifica le icone
     expect(find.byIcon(Icons.search), findsOneWidget);
-    expect(find.byIcon(Icons.home), findsOneWidget);
-    expect(find.byIcon(Icons.account_box), findsOneWidget);
+    expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.account_box_outlined), findsOneWidget);
   });
 
 
-  testWidgets('BottomNavigationBar switches between pages',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(
-          MaterialApp(
-            home: MyHomePage(
-              title: 'Titolo HomePage',
-              databaseService: mockDatabaseService,
-              authService: mockAuthService,
-            ),
-          ),
-        );
+  testWidgets('NavigationBar switches between pages correctly', (WidgetTester tester) async {
 
-        await tester.pumpAndSettle(); // aspetta il caricamento
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MyHomePage(
+          title: 'Test HomePage',
+          databaseService: mockDatabaseService,
+          authService: mockAuthService,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    when(mockDatabaseService.getTripsByIds(any)).thenAnswer((_) async => []);
 
-        // Controlla che la pagina iniziale sia Esplora
-        expect(find.text('Esplora'), findsWidgets);
+    //initial state
+    expect(find.byType(ExplorerPage), findsOneWidget);
+    expect(find.byType(MyTripsPage), findsNothing);
+    expect(find.byType(ProfilePage), findsNothing);
 
-        // Clicca sulla tab "Home"
-        await tester.tap(find.byIcon(Icons.home));
-        await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('homeButton')));
+    await tester.pumpAndSettle();
 
-        // Controlla che sia visibile la pagina Home
-        expect(find.text('Home'), findsWidgets);
+    expect(find.byType(ExplorerPage), findsNothing);
+    expect(find.byType(MyTripsPage), findsOneWidget);
+    expect(find.byType(ProfilePage), findsNothing);
 
-        // Clicca sulla tab "Profilo"
-        //await tester.tap(find.byIcon(Icons.account_box));
-        await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('profileButton')));
+    await tester.pumpAndSettle();
 
-        // Controlla che sia visibile la pagina Profilo
-        //expect(find.text('Profilo'), findsWidgets);
+    expect(find.byType(ExplorerPage), findsNothing);
+    expect(find.byType(MyTripsPage), findsNothing);
+    expect(find.byType(ProfilePage), findsOneWidget);
 
-        // Torna a Esplora
-        await tester.tap(find.byIcon(Icons.search));
-        await tester.pumpAndSettle();
+    //back to Explorer page
+    await tester.tap(find.byKey(const Key('searchButton')));
+    await tester.pumpAndSettle();
 
-        // Controlla che sia visibile di nuovo Esplora
-        expect(find.text('Esplora'), findsWidgets);
-      });
+    expect(find.byType(ExplorerPage), findsOneWidget);
+    expect(find.byType(MyTripsPage), findsNothing);
+    expect(find.byType(ProfilePage), findsNothing);
+  });
 }

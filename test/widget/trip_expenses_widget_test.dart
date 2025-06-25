@@ -78,13 +78,11 @@ void main() {
       await pumpTestableWidget(tester, tripId: 'test-trip-id');
       await tester.pumpAndSettle();
 
-
-
       expect(find.text('Le tue spese'), findsOneWidget);
       expect(find.text('Panoramica delle spese'), findsOneWidget);
       expect(find.byType(PieChart), findsOneWidget);
 
-      expect(find.textContaining('1050 EUR'), findsOneWidget);
+      expect(find.textContaining('1.050 EUR'), findsOneWidget);
 
       expect(find.textContaining('500 EUR'), findsOneWidget);
       expect(find.textContaining('300 EUR'), findsOneWidget);
@@ -151,21 +149,56 @@ void main() {
       await pumpTestableWidget(tester, tripId: 'test-trip-id');
       await tester.pumpAndSettle();
 
-      final format = NumberFormat.compact(locale: 'it');
+      final decimalFormat = NumberFormat.decimalPattern('it')
+        ..maximumFractionDigits = 0;
 
-      expect(find.textContaining('${format.format(999999.99)} EUR'), findsOneWidget);
-      expect(find.textContaining('${format.format(888888.88)} EUR'), findsOneWidget);
-      expect(find.textContaining('${format.format(777777.77)} EUR'), findsOneWidget);
-      expect(find.textContaining('${format.format(666666.66)} EUR'), findsOneWidget);
+      expect(find.textContaining('${decimalFormat.format(999999.99)} EUR'), findsOneWidget);
+      expect(find.textContaining('${decimalFormat.format(888888.88)} EUR'), findsOneWidget);
+      expect(find.textContaining('${decimalFormat.format(777777.77)} EUR'), findsOneWidget);
+      expect(find.textContaining('${decimalFormat.format(666666.66)} EUR'), findsOneWidget);
 
+      //total > 1M use compact format
+      final compactFormat = NumberFormat.compact(locale: 'it');
       const total = 999999.99 + 888888.88 + 777777.77 + 666666.66;
-      expect(find.textContaining('${format.format(total)} EUR'), findsOneWidget);
+      expect(find.textContaining('${compactFormat.format(total)} EUR'), findsOneWidget);
     });
 
+    testWidgets('renders expenses >= 1M with compact format', (tester) async {
+      final massiveTrip = TripModel(
+        id: 'test-trip-id',
+        nations: [{'name': 'Italy', 'code': 'IT'}],
+        expenses: {
+          'flight': 1500000.0,
+          'accommodation': 2000000.0,
+          'attraction': 500000.0,
+          'transport': 3000000.0,
+        },
+      );
+
+      when(mockDatabaseService.loadTrip('test-trip-id'))
+          .thenAnswer((_) async => massiveTrip);
+
+      await pumpTestableWidget(tester, tripId: 'test-trip-id');
+      await tester.pumpAndSettle();
+
+      final compactFormat = NumberFormat.compact(locale: 'it');
+      final decimalFormat = NumberFormat.decimalPattern('it')
+        ..maximumFractionDigits = 0;
+
+      // >= 1M values use compact format
+      expect(find.textContaining('${compactFormat.format(1500000.0)} EUR'), findsOneWidget);
+      expect(find.textContaining('${compactFormat.format(2000000.0)} EUR'), findsOneWidget);
+      expect(find.textContaining('${compactFormat.format(3000000.0)} EUR'), findsOneWidget);
+
+      // < 1M values use decimal format
+      expect(find.textContaining('${decimalFormat.format(500000.0)} EUR'), findsOneWidget);
+
+      const total = 1500000.0 + 2000000.0 + 500000.0 + 3000000.0;
+      expect(find.textContaining('${compactFormat.format(total)} EUR'), findsOneWidget);
+    });
 
     group('Currency Conversion Tests', () {
-      testWidgets('converts to USD using compact format', (tester) async {
-        // 500*2 → 1 000 → “1 mila USD”
+      testWidgets('converts to USD with proper formatting', (tester) async {
         when(mockCurrencyService.getExchangeRate('EUR', 'USD'))
             .thenAnswer((_) async => 2);
 
@@ -178,10 +211,14 @@ void main() {
         await tester.tap(find.text('\$'));
         await tester.pumpAndSettle();
 
-        expect(find.textContaining('1000 USD'), findsOneWidget);
-        expect(find.textContaining('600 USD'), findsOneWidget); // 300*2
-        expect(find.textContaining('300 USD'), findsOneWidget); // 150*2
-        expect(find.textContaining('200 USD'), findsOneWidget); // 100*2
+        // All converted values are < 1M, so they use decimal format with no fractions
+        expect(find.textContaining('1.000 USD'), findsOneWidget);
+        expect(find.textContaining('600 USD'), findsOneWidget);
+        expect(find.textContaining('300 USD'), findsOneWidget);
+        expect(find.textContaining('200 USD'), findsOneWidget);
+
+        // Total: 2100
+        expect(find.textContaining('2.100 USD'), findsOneWidget);
       });
 
       testWidgets('toggles back and forth between EUR and USD', (tester) async {
@@ -192,21 +229,23 @@ void main() {
         await tester.pumpAndSettle();
 
         // initially EUR
-        expect(find.textContaining('1050 EUR'), findsOneWidget);
+        expect(find.textContaining('1.050 EUR'), findsOneWidget);
 
         // switch to USD
         await tester.tap(find.byType(DropdownButton<String>));
         await tester.pumpAndSettle();
         await tester.tap(find.text('\$'));
         await tester.pumpAndSettle();
-        expect(find.textContaining('1050 EUR'), findsNothing);
+        expect(find.textContaining('1.050 EUR'), findsNothing);
+        expect(find.textContaining('2.100 USD'), findsOneWidget);
 
         // switch back to EUR
         await tester.tap(find.byType(DropdownButton<String>));
         await tester.pumpAndSettle();
         await tester.tap(find.text('€'));
         await tester.pumpAndSettle();
-        expect(find.textContaining('1050 EUR'), findsOneWidget);
+        expect(find.textContaining('1.050 EUR'), findsOneWidget);
+        expect(find.textContaining('2.100 USD'), findsNothing);
       });
     });
   });

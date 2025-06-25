@@ -45,27 +45,29 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        items: const [
-          BottomNavigationBarItem(
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+        destinations: const [
+          NavigationDestination(
             key: Key('searchButton'),
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.search, size: 25),
             label: 'Esplora',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             key: Key('homeButton'),
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined, size: 25),
+            selectedIcon: Icon(Icons.home, size: 25),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             key: Key('profileButton'),
-            icon: Icon(Icons.account_box),
+            icon: Icon(Icons.account_box_outlined, size: 25),
+            selectedIcon: Icon(Icons.account_box, size: 25),
             label: 'Profilo',
           ),
         ],
-      ),
+      )
     );
   }
 }

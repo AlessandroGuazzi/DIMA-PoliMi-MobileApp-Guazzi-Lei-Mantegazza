@@ -326,48 +326,24 @@ class _TripCardWidgetState extends State<TripCardWidget> {
   }
 
   Widget _loadTripImage(double? height, double? width) {
-    return Image.asset(
-      'assets/placeholder_landscape.jpg',
-      height: height,
-      width: width,
-      fit: BoxFit.cover,
-    );
-    /*
-    return FutureBuilder<String>(
-      future: _futureImageUrl,
-      builder: (context, snapshot) {
-        Widget imageWidget;
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          imageWidget = SizedBox(
-            height: height,
-            width: width,
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        } else if (snapshot.hasData &&
-            snapshot.data != null &&
-            snapshot.data != '') {
-          imageWidget = Image.network(
-            snapshot.data!,
-            fit: BoxFit.cover,
-            height: height,
-            width: width,
-          );
-        } else {
-          imageWidget = Image.asset(
-            'assets/placeholder_landscape.jpg',
-            height: height,
-            width: width,
-            fit: BoxFit.cover,
-          );
-        }
-
-        return imageWidget;
-      },
-    );
-
-     */
+    final imageUrl = widget.trip.imageRef;
+    Widget image;
+    if (imageUrl != null && imageUrl != '') {
+      image = Image.network(
+        widget.trip.imageRef!,
+        height: height,
+        width: width,
+        fit: BoxFit.cover,
+        errorBuilder:
+            (BuildContext context, Object error, StackTrace? stackTrace) {
+          return Image.asset('assets/placeholder_landscape.jpg',
+              height: height, width: width, fit: BoxFit.cover);
+        },
+      );
+    } else {
+      image = Image.asset('assets/placeholder_landscape.jpg',
+          height: height, width: width, fit: BoxFit.cover);
+    }
+    return image;
   }
 }

@@ -3,10 +3,9 @@ import 'package:http/http.dart' as http;
 
 
 class GooglePlacesService {
-  final String apiKey = '';
+  final String apiKey = 'AIzaSyDtmTOAl3g3pR8nK4SDYdGJhDBDzpIya-k';
 
-  Future<List<Map<String, String>>> searchAutocomplete(
-      String query, List<String> countryCodes, String searchType) async {
+  Future<List<Map<String, String>>> searchAutocomplete(String query, List<String> countryCodes, String searchType) async {
     // Put all country code in 'or' to build the query
     String components = countryCodes.map((code) => "country:$code").join("|");
 
@@ -68,77 +67,4 @@ class GooglePlacesService {
           'Error fetching coordinates: error ${response.statusCode}');
     }
   }
-
-  /*
-  Future<String> getCountryImageRef(String? country) async {
-    if (country == null) {
-      return '';
-    }
-
-    final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/findplacefromtext/json'
-      '?input=$country'
-      '&inputtype=textquery'
-      '&fields=photos'
-      '&key=$apiKey',
-    );
-
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data['status'] == 'OK') {
-        if (data['candidates'] != null && data['candidates'].isNotEmpty) {
-          final photoRef =
-              data['candidates'][0]['photos'][0]['photo_reference'];
-          return photoRef;
-        } else {
-          throw Exception('No photos found for the country: $country');
-        }
-      } else {
-        throw Exception('Error fetching data: ${data["status"]}');
-      }
-    } else {
-      throw Exception('Error fetching coordinates: ${response.statusCode}');
-    }
-  }
-
-  Future<String> getImageUrl(TripModel trip) async {
-    String url = '';
-    if (trip.imageRef != null) {
-      url = 'https://maps.googleapis.com/maps/api/place/photo'
-          '?maxheight=500'
-          '&maxwidth=500'
-          '&photo_reference=${trip.imageRef}'
-          '&key=$apiKey';
-
-      //check if url is still valid
-      try {
-        final response = await http.head(Uri.parse(url));
-        if (response.statusCode != 200) {
-          print('UPDATE for imageREf needed');
-          //update imageRef
-          final country = (trip.nations?.isNotEmpty ?? false)
-              ? trip.nations!.first['name'] ?? 'Italy'
-              : 'Italy';
-          final newImageRef = await getCountryImageRef(country);
-          //store new image ref
-          //TODO: verify correct update
-          trip.imageRef = newImageRef;
-          await DatabaseService().updateTrip(trip);
-          //update url with new image ref
-          url = 'https://maps.googleapis.com/maps/api/place/photo'
-              '?maxheight=500'
-              '&maxwidth=500'
-              '&photo_reference=$newImageRef'
-              '&key=$apiKey';
-        }
-      } catch (e) {
-        return '';
-      }
-    }
-    return url;
-  }
-
-   */
 }

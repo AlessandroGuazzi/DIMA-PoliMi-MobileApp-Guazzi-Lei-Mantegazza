@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../models/tripModel.dart';
 
+//TODO: fix map
 class MapPage extends StatefulWidget {
   final TripModel trip;
 

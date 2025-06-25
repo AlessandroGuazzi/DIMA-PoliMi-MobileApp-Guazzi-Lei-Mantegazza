@@ -8,7 +8,6 @@ import 'package:dima_project/widgets/trip_widgets/tripInfoWidget.dart';
 import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
-import '../services/googlePlacesService.dart';
 
 class TripPage extends StatefulWidget {
   final DatabaseService databaseService;
@@ -32,15 +31,12 @@ class TripPage extends StatefulWidget {
 class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
   late TabController _tabController;
   late TripModel _trip;
-  late Future<String> _futureImageUrl;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _trip = widget.trip;
-    //TODO
-    _futureImageUrl = Future.error('e');
   }
 
   @override
@@ -49,7 +45,6 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
     if (oldWidget.trip != widget.trip) {
       setState(() {
         _trip = widget.trip;
-        _futureImageUrl = Future.error('e');
       });
     }
   }
@@ -66,53 +61,12 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverAppBar(
-            expandedHeight: 250,
+            expandedHeight: 280,
             pinned: true,
             floating: false,
+            forceElevated: innerBoxIsScrolled,
             flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              background: FutureBuilder<String>(
-                future: _futureImageUrl,
-                builder: (context, snapshot) {
-                  Widget imageWidget;
-
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    imageWidget = const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasData && snapshot.data != null && snapshot.data != '') {
-                    imageWidget = Image.network(
-                      snapshot.data!,
-                      fit: BoxFit.cover,
-                    );
-                  } else {
-                    imageWidget = Image.asset(
-                      'assets/placeholder_landscape.jpg',
-                      fit: BoxFit.cover,
-                    );
-                  }
-
-                  return Stack(
-                    alignment: Alignment.center,
-                    fit: StackFit.expand,
-                    children: [
-                      //image fetched from google
-                      imageWidget,
-
-                      Container(
-                        color: Colors.black.withOpacity(0.2),
-                        alignment: Alignment.center,
-                        child: Text(
-                          _trip.title ?? 'No title',
-                          style: Theme.of(context)
-                              .textTheme
-                              .displayLarge
-                              ?.copyWith(color: Colors.white),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+              background: _buildAppBarBackground(context),
             ),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(48),
@@ -160,6 +114,45 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  Widget _buildAppBarBackground(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _loadTripImage(),
+        Container(
+          color: Colors.black.withValues(alpha: 0.2),
+          alignment: Alignment.center,
+          child: Text(
+            _trip.title ?? 'No title',
+            style: Theme.of(context)
+                .textTheme
+                .displayLarge
+                ?.copyWith(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _loadTripImage() {
+    final imageUrl = widget.trip.imageRef;
+    Widget image;
+    if ( imageUrl != null && imageUrl != '') {
+      image = Image.network(
+        widget.trip.imageRef!,
+        fit: BoxFit.cover,
+        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+          print('Error builder fired ');
+          return Image.asset('assets/placeholder_landscape.jpg', fit: BoxFit.cover);
+        },
+      );
+    } else {
+      image = Image.asset('assets/placeholder_landscape.jpg', fit: BoxFit.cover);
+    }
+    return image;
   }
 
   void _showActions(BuildContext context) {

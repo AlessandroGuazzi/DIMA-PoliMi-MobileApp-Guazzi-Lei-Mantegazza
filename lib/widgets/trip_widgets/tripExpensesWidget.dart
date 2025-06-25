@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pie_chart/pie_chart.dart';
 import '../../utils/CountryToCurrency.dart';
-import '../../utils/screenSize.dart';
 
 class TripExpensesWidget extends StatefulWidget {
   final DatabaseService databaseService;
@@ -208,10 +207,9 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
           dataMap: dataMap,
           chartRadius: 200,
           centerWidget: Text(
-            "${formatCompact(totalCost)} $_selectedCurrency",
+            "${formatNumber(totalCost)} $_selectedCurrency",
             style: Theme.of(context).textTheme.headlineMedium,
           ),
-          // Added two decimals
           chartType: ChartType.ring,
           colorList: colorList,
           ringStrokeWidth: 35,
@@ -243,15 +241,23 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                     ),
                     const SizedBox(width: 8),
                     Expanded(
+                      flex: 1,
                       child: Text(
                         label,
                         style: const TextStyle(fontSize: 16),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Text(
-                      '${formatCompact(value)} $_selectedCurrency ($percentage%)',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                    Expanded(
+                      flex: 2,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          '${formatNumber(value)} $_selectedCurrency ($percentage%)',
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -269,8 +275,10 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
         PieChart(
           dataMap: dataMap,
           chartRadius: 200,
-          centerText: "${totalCost.toStringAsFixed(2)} $_selectedCurrency",
-          centerTextStyle: Theme.of(context).textTheme.headlineMedium,
+          centerWidget: Text(
+            "${formatNumber(totalCost)} $_selectedCurrency",
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
           chartType: ChartType.ring,
           colorList: colorList,
           ringStrokeWidth: 35,
@@ -305,7 +313,7 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
                     ),
                   ),
                   Text(
-                    '${formatCompact(value)} $_selectedCurrency ($percentage%)',
+                    '${formatNumber(value)} $_selectedCurrency ($percentage%)',
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w600),
                   ),
@@ -365,10 +373,14 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
     }
   }
 
-  String formatCompact(double value, {int decimals = 2, String locale = 'it'}) {
-
-    final fmt = NumberFormat.compact(locale: locale);
-
-    return fmt.format(value);
+  String formatNumber(double value, {int decimals = 2, String locale = 'it'}) {
+    if (value >= 1000000) {
+      final fmt = NumberFormat.compact(locale: locale);
+      return fmt.format(value);
+    } else {
+      final fmt = NumberFormat.decimalPattern(locale)
+        ..maximumFractionDigits = 0;
+      return fmt.format(value);
+    }
   }
 }

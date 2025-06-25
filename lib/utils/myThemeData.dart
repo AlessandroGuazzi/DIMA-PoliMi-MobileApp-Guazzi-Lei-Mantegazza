@@ -5,15 +5,16 @@ import 'package:flutter/material.dart';
   In this class we define all theme-related properties of widgets
  */
 class MyThemeData {
-  static Color primaryColor = CupertinoColors.activeGreen;
-  static Color secondaryColor = CupertinoColors.activeBlue;
-  static Color backgroundColor = CupertinoColors.extraLightBackgroundGray;
-  static Color dividerColor = CupertinoColors.extraLightBackgroundGray;
+  static Color primaryColor = const Color(0xFF2C58A8);
+  static Color secondaryColor = const Color(0xFF4AACC8);
+  static Color backgroundColor = const Color(0xFFF5F5F5);
+  static Color dividerColor = const Color(0xFFE0E0E0);
   static Color white = CupertinoColors.white;
   static Color black = CupertinoColors.black;
 
   static ThemeData getLightTheme({required bool isTablet}) {
     return ThemeData(
+      useMaterial3: true,
       brightness: Brightness.light,
       primaryColor: primaryColor,
       secondaryHeaderColor: secondaryColor,
@@ -23,16 +24,29 @@ class MyThemeData {
       appBarTheme: AppBarTheme(
         backgroundColor: primaryColor,
         foregroundColor: white,
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: white,
+        ),
+        iconTheme: IconThemeData(
+          color: white,
+          size: isTablet ? 24 : 20,
+        ),
       ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: white,
-        selectedItemColor: primaryColor,
-        unselectedItemColor: dividerColor,
-        selectedIconTheme: IconThemeData(size: isTablet ? 30 : 28),
-        unselectedIconTheme: IconThemeData(size: isTablet ? 26 : 24),
-        showSelectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-      ),
+      navigationBarTheme: NavigationBarThemeData(
+          height: 70,
+          backgroundColor: white,
+          indicatorColor: primaryColor.withAlpha(10),
+          labelTextStyle: WidgetStateProperty.all(
+            TextStyle(
+              color: black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+          iconTheme:
+              WidgetStateProperty.all(IconThemeData(color: primaryColor))),
       cardTheme: CardThemeData(
         color: white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -85,10 +99,9 @@ class MyThemeData {
       ),
       tabBarTheme: TabBarThemeData(
         indicatorColor: primaryColor,
-        labelColor:Colors.black,
+        labelColor: Colors.black,
         unselectedLabelColor: Colors.grey,
       ),
-
       textTheme: TextTheme(
         displayLarge: TextStyle(
           fontSize: isTablet ? 36 : 32,
@@ -134,13 +147,14 @@ class MyThemeData {
       ),
       searchBarTheme: SearchBarThemeData(
         backgroundColor: WidgetStateProperty.all(white),
-        elevation: WidgetStateProperty.all(2.0),
+        elevation: WidgetStateProperty.all(0),
         shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(50.0),
           ),
         ),
-        overlayColor: WidgetStateProperty.all(dividerColor),
+        side: WidgetStateProperty.all(BorderSide(
+            color: primaryColor, style: BorderStyle.solid, width: 0.9)),
       ),
     );
   }
@@ -160,7 +174,6 @@ class MyThemeData {
         backgroundColor: primaryColor,
         foregroundColor: white,
       ),
-
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: CupertinoColors.darkBackgroundGray,
         selectedItemColor: primaryColor,

@@ -3,6 +3,7 @@ import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/services/googlePlacesService.dart';
+import 'package:dima_project/services/unsplashService.dart';
 import 'package:dima_project/utils/PlacesType.dart';
 import 'package:dima_project/utils/responsive.dart';
 import 'package:dima_project/widgets/placesSearchWidget.dart';
@@ -20,6 +21,7 @@ class UpsertTripPage extends StatefulWidget {
   final DatabaseService databaseService;
   final AuthService authService;
   final GooglePlacesService googlePlacesService;
+  final UnsplashService unsplashService;
 
   UpsertTripPage(
       {super.key,
@@ -27,10 +29,12 @@ class UpsertTripPage extends StatefulWidget {
       this.isUpdate,
       databaseService,
       authService,
-      googlePlacesService})
+      googlePlacesService,
+      unsplashService})
       : databaseService = databaseService ?? DatabaseService(),
         authService = authService ?? AuthService(),
-        googlePlacesService = googlePlacesService ?? GooglePlacesService();
+        googlePlacesService = googlePlacesService ?? GooglePlacesService(),
+        unsplashService = unsplashService ?? UnsplashService();
 
   @override
   State<UpsertTripPage> createState() => _UpsertTripPageState();
@@ -167,7 +171,8 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
           child: Column(
             children: [
               !ScreenSize.isTablet(context)
-                  ? Image.asset('assets/trip_illustration.png', height: 150, width: 150)
+                  ? Image.asset('assets/trip_illustration.png',
+                      height: 150, width: 150)
                   : const SizedBox(width: 0, height: 0),
               SizedBox(height: 16),
               // Title input
@@ -241,12 +246,6 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
                   hintText: 'Che città visiterai?',
                   prefixIcon: Icon(Icons.location_city),
                 ),
-                validator: (value) {
-                  if (_selectedCities.isEmpty) {
-                    return 'Per favore inserisci almeno una città';
-                  }
-                  return null;
-                },
                 onTap: () {
                   _openCitiesSearch();
                 },
@@ -595,6 +594,16 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
         List<Map<String, dynamic>> citiesMap =
             await reformatCitiesWithCoordinates();
 
+        String? photoUrl = '';
+        try {
+          //fetch image from unsplash
+          photoUrl =
+          await widget.unsplashService.getPhotoUrl(countriesMap.first['name']);
+        } catch(e) {
+          print(e);
+        }
+        //fetch image from unsplash
+
         final trip = TripModel(
           title: titleController.text,
           creatorInfo: creatorInfo,
@@ -602,6 +611,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
           cities: citiesMap,
           startDate: _startDate,
           endDate: _endDate,
+          imageRef: photoUrl,
           timestamp: Timestamp.now(),
         );
         widget.databaseService

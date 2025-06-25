@@ -223,7 +223,7 @@ void main() {
       await pumpTestableWidget(tester);
       await tester.pumpAndSettle();
 
-      // Default tab is future → only Rome is shown
+      // Default tab is future trips, only Rome is shown
       expect(find.byType(TripCardWidget), findsOneWidget);
       expect(find.text('Rome'), findsOneWidget);
       expect(find.text('Paris'), findsNothing);
