@@ -129,6 +129,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
         children: [
           Expanded(
             child: SearchBar(
+              key: Key('searchBar'),
               elevation: WidgetStateProperty.all(1),
               hintText: "Cerca una destinazione...",
               onChanged: (query) {

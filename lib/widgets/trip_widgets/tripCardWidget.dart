@@ -144,6 +144,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
 
   Widget _explorerCardWidget() {
     return Card(
+      key: Key('tripCard_${widget.trip.id}'),
       elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -251,14 +252,18 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('${widget.trip.saveCounter ?? 'na'}'),
+                          Text(
+                            '${widget.trip.saveCounter ?? 'na'}',
+                            key: Key('saveCounter_${widget.trip.id}'),
+                          ),
                           IconButton(
+                            key: Key('saveButton_${widget.trip.id}'),
                             onPressed: _handleSaveButton,
                             icon: widget.isSaved
                                 ? Icon(
-                                    Icons.bookmark_added_rounded,
-                                    color: Theme.of(context).primaryColor,
-                                  )
+                              Icons.bookmark_added_rounded,
+                              color: Theme.of(context).primaryColor,
+                            )
                                 : const Icon(Icons.bookmark_add_outlined),
                           ),
                         ],
