@@ -101,6 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   centerTitle: true,
                   actions: [
                     IconButton(
+                      key: Key('Settings'),
                       icon: Icon(
                         Icons.settings,
                         color: myAppKey.currentState?.currentTheme ==
@@ -275,6 +276,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Column(
       children: [
         ListTile(
+          key: Key('Modifica Profilo'),
           leading: const Icon(Icons.person),
           title: Text('Modifica Profilo',
               style: Theme.of(context).textTheme.bodyMedium),
@@ -292,6 +294,7 @@ class _ProfilePageState extends State<ProfilePage> {
           },
         ),
         ListTile(
+          key: Key('Nazioni Visitate'),
           leading: const Icon(Icons.travel_explore_outlined),
           title: Text('Nazioni Visitate',
               style: Theme.of(context).textTheme.bodyMedium),
@@ -321,6 +324,7 @@ class _ProfilePageState extends State<ProfilePage> {
           },
         ),
         ListTile(
+          key: Key('Theme Settings'),
           title: Text(
               myAppKey.currentState?.currentTheme == ThemeMode.dark
                   ? 'Tema chiaro'
@@ -337,6 +341,7 @@ class _ProfilePageState extends State<ProfilePage> {
           },
         ),
         ListTile(
+          key: Key('Logout'),
           leading: const Icon(Icons.logout, color: Colors.red),
           title: Text('Log Out', style: Theme.of(context).textTheme.bodyMedium),
           onTap: () async {

@@ -167,15 +167,23 @@ class _AccountSettingsState extends State<AccountSettings> {
           ),
           const SizedBox(height: 30),
           _buildTextField(
-              label: 'Nome', controller: _name, initialValue: '${user.name}'),
+            key: const Key('nameField'),
+            label: 'Nome',
+            controller: _name,
+            initialValue: '${user.name}',
+          ),
           _buildTextField(
-              label: 'Cognome',
-              controller: _surname,
-              initialValue: '${user.surname}'),
+            key: const Key('surnameField'),
+            label: 'Cognome',
+            controller: _surname,
+            initialValue: '${user.surname}',
+          ),
           _buildTextField(
-              label: 'Username',
-              controller: _username,
-              initialValue: '${user.username}'),
+            key: const Key('usernameField'),
+            label: 'Username',
+            controller: _username,
+            initialValue: '${user.username}',
+          ),
           TextField(
             controller: _dateController,
             decoration: InputDecoration(
@@ -202,6 +210,7 @@ class _AccountSettingsState extends State<AccountSettings> {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
+            key: Key('saveButton'),
             onPressed: () {
               showDialog(
                   context: context,
@@ -309,13 +318,16 @@ class _AccountSettingsState extends State<AccountSettings> {
     );
   }
 
-  Widget _buildTextField(
-      {required String label,
-      required TextEditingController controller,
-      String? initialValue}) {
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    String? initialValue,
+    Key? key, // aggiunto parametro opzionale
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: TextField(
+        key: key, // assegnata la key
         decoration: InputDecoration(
           labelText: label,
           hintText: initialValue,
