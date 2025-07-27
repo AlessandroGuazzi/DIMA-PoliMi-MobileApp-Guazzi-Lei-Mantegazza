@@ -79,7 +79,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                     Tab(
                       text: 'Generale',
                     ),
-                    Tab(text: "Spese"),
+                    Tab(key: Key('expensesTab'), text: "Spese"),
                   ],
                 ),
               ),
@@ -87,6 +87,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
             actions: widget.isMyTrip
                 ? [
                     IconButton(
+                      key: const Key('editButton'),
                       icon: const Icon(Icons.more_vert),
                       onPressed: () => _showActions(context),
                     ),
@@ -140,17 +141,20 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
   Widget _loadTripImage() {
     final imageUrl = widget.trip.imageRef;
     Widget image;
-    if ( imageUrl != null && imageUrl != '') {
+    if (imageUrl != null && imageUrl != '') {
       image = Image.network(
         widget.trip.imageRef!,
         fit: BoxFit.cover,
-        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+        errorBuilder:
+            (BuildContext context, Object error, StackTrace? stackTrace) {
           print('Error builder fired ');
-          return Image.asset('assets/placeholder_landscape.jpg', fit: BoxFit.cover);
+          return Image.asset('assets/placeholder_landscape.jpg',
+              fit: BoxFit.cover);
         },
       );
     } else {
-      image = Image.asset('assets/placeholder_landscape.jpg', fit: BoxFit.cover);
+      image =
+          Image.asset('assets/placeholder_landscape.jpg', fit: BoxFit.cover);
     }
     return image;
   }

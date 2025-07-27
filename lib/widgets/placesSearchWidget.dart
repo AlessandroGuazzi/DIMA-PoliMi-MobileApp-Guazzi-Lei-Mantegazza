@@ -60,6 +60,7 @@ class PlacesSearchWidgetState extends State<PlacesSearchWidget> {
                     //to modify textfield
                     builder: (context, controller, focusNode) {
                       return SearchBar(
+                        key: const Key('placesSearchBar'),
                         controller: controller,
                         focusNode: focusNode,
                         hintText: 'Cerca...',

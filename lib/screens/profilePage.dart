@@ -103,6 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     IconButton(
                       key: Key('Settings'),
                       icon: Icon(
+                        key: const Key('settingsButton'),
                         Icons.settings,
                         color: myAppKey.currentState?.currentTheme ==
                                 ThemeMode.dark

@@ -60,7 +60,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.byType(Flightcardwidget), findsOneWidget);
+    expect(find.byType(FlightCardWidget), findsOneWidget);
     expect(find.byType(Attractioncardwidget), findsOneWidget);
   });
 

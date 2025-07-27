@@ -22,7 +22,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: Flightcardwidget(flight),
+          body: FlightCardWidget(flight),
         ),
       ),
     );

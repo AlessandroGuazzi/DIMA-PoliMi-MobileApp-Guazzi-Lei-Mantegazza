@@ -63,6 +63,7 @@ class _AirportSearchWidgetState extends State<AirportSearchWidget> {
       mainAxisSize: MainAxisSize.min,
       children: [
         TextField(
+          key: const Key('airportSearchField'),
           controller: _controller,
           onChanged: _onSearchChanged,
           decoration: const InputDecoration(

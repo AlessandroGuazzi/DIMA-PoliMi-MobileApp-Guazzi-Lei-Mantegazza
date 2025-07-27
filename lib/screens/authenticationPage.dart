@@ -30,12 +30,6 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Welcome'),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

@@ -313,6 +313,7 @@ class _AttractionFormState extends State<AttractionForm> {
 
   Future<void> _selectTime(BuildContext context,
       {required bool isStartTime}) async {
+    DateTime now = DateTime.now();
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -322,6 +323,18 @@ class _AttractionFormState extends State<AttractionForm> {
       setState(() {
         if (isStartTime) {
           _startTime = pickedTime;
+          if(_endTime == null) {
+            //initialize endTime to start + 1 hour as default
+            final startDateTime = DateTime(
+              now.year,
+              now.month,
+              now.day,
+              _startTime!.hour,
+              _startTime!.minute,
+            );
+            final endDateTime = startDateTime.add(const Duration(hours: 1));
+            _endTime = TimeOfDay(hour: endDateTime.hour, minute: endDateTime.minute);
+          }
         } else {
           _endTime = pickedTime;
         }

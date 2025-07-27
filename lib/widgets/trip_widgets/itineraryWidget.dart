@@ -176,7 +176,6 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
                   thickness: 2.5,
                 ),
 
-                // Lista principale scrollabile verticale
                 Expanded(
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
@@ -233,6 +232,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
                                       right: ScreenSize.screenWidth(context) *
                                           0.003,
                                       child: PopupMenuButton<int>(
+                                        key: const Key('activityMenu'),
                                         icon: const Icon(Icons.more_horiz),
                                         onSelected: (value) async {
                                           if (value == 1) {
@@ -299,7 +299,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
   Widget _buildActivityCard(ActivityModel activity) {
     switch (activity.type) {
       case 'flight':
-        return Flightcardwidget(activity as FlightModel);
+        return FlightCardWidget(activity as FlightModel);
       case 'accommodation':
         return AccommodationCardWidget(activity as AccommodationModel);
       case 'transport':

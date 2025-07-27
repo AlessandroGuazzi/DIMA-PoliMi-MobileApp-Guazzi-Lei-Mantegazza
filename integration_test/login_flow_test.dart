@@ -113,7 +113,7 @@ void main() {
     await tester.tap(loginButton);
     await tester.pumpAndSettle();
 
-    await tester.pump(const Duration(seconds: 2));
+    await tester.pump(const Duration(seconds: 3));
 
     expect(find.byType(MyHomePage), findsOneWidget);
     expect(find.byType(ExplorerPage), findsOneWidget);

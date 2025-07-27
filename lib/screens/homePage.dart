@@ -1,3 +1,4 @@
+import 'package:dima_project/models/userModel.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  late Future<UserModel?> _userFuture;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final currentUser = widget.authService.currentUser;
+    if (currentUser != null) {
+      _userFuture = widget.databaseService.getUserByUid(currentUser.uid);
+    } else {
+      _userFuture = Future.error('Utente non autenticato');
+    }
+  }
+
 
   List<Widget> get _pages => [
         ExplorerPage(
@@ -39,35 +54,58 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-        destinations: const [
-          NavigationDestination(
-            key: Key('searchButton'),
-            icon: Icon(Icons.search, size: 25),
-            label: 'Esplora',
+    //TODO: improvement, pass directly currentUserData instead of fetching again from db
+    return FutureBuilder(
+      future: _userFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(child: Text('Errore: ${snapshot.error}')),
+          );
+        } else if (!snapshot.hasData || snapshot.data == null) {
+          return const Scaffold(
+            body: Center(child: Text('Nessun dato utente trovato.')),
+          );
+        }
+
+        final user = snapshot.data;
+
+        return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppBar(
+            title: Text('Benvenuto ${user!.name ?? ''}'),
+            centerTitle: true,
           ),
-          NavigationDestination(
-            key: Key('homeButton'),
-            icon: Icon(Icons.home_outlined, size: 25),
-            selectedIcon: Icon(Icons.home, size: 25),
-            label: 'Home',
+          body: _pages[_selectedIndex],
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+            destinations: const [
+              NavigationDestination(
+                key: Key('searchButton'),
+                icon: Icon(Icons.search, size: 25),
+                label: 'Esplora',
+              ),
+              NavigationDestination(
+                key: Key('homeButton'),
+                icon: Icon(Icons.home_outlined, size: 25),
+                selectedIcon: Icon(Icons.home, size: 25),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                key: Key('profileButton'),
+                icon: Icon(Icons.account_box_outlined, size: 25),
+                selectedIcon: Icon(Icons.account_box, size: 25),
+                label: 'Profilo',
+              ),
+            ],
           ),
-          NavigationDestination(
-            key: Key('profileButton'),
-            icon: Icon(Icons.account_box_outlined, size: 25),
-            selectedIcon: Icon(Icons.account_box, size: 25),
-            label: 'Profilo',
-          ),
-        ],
-      )
+        );
+      },
     );
   }
 }

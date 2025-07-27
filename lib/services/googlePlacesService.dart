@@ -18,7 +18,7 @@ class GooglePlacesService {
             '&key=$apiKey');
 
     final response = await http.get(url);
-    print('API CALL');
+    print('GOOGLE AUTOCOMPLETE API CALL');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -51,7 +51,7 @@ class GooglePlacesService {
             '&key=$apiKey');
 
     final response = await http.get(url);
-    print('API CALL');
+    print('GOOGLE API CALL');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       if (data['status'] == 'OK') {

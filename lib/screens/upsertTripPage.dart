@@ -320,6 +320,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
             children: [
               // Title input
               TextFormField(
+                key: const Key('titleField'),
                 controller: titleController,
                 decoration: InputDecoration(
                   labelText: 'Titolo',
@@ -338,6 +339,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
 
               // City search input
               TextFormField(
+                key: const Key('citiesField'),
                 controller: citiesController,
                 enabled: _selectedCountries.isEmpty ? false : true,
                 readOnly: true,
@@ -375,6 +377,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
 
               //start date input
               TextFormField(
+                key: const Key('startDateField'),
                 readOnly: true,
                 controller: TextEditingController(
                   text: _newStartDate != null
@@ -399,6 +402,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
 
               //end date input
               TextFormField(
+                key: const Key('endDateField'),
                 readOnly: true,
                 controller: newEndDateController,
                 decoration: InputDecoration(
@@ -417,6 +421,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
 
               // Submit button
               ElevatedButton(
+                key: const Key('submitButton'),
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),

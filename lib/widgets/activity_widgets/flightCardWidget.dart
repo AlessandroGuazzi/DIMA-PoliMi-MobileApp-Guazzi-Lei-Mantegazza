@@ -3,16 +3,16 @@ import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart
 import 'package:flutter/material.dart';
 import 'package:dima_project/utils/screenSize.dart';
 
-class Flightcardwidget extends StatefulWidget {
-  const Flightcardwidget(this.flight, {super.key});
+class FlightCardWidget extends StatefulWidget {
+  const FlightCardWidget(this.flight, {super.key});
 
   final FlightModel flight;
 
   @override
-  State<Flightcardwidget> createState() => _FlightcardwidgetState();
+  State<FlightCardWidget> createState() => _FlightCardWidgetState();
 }
 
-class _FlightcardwidgetState extends State<Flightcardwidget> {
+class _FlightCardWidgetState extends State<FlightCardWidget> {
   bool isExpanded = false;
 
   @override
@@ -67,7 +67,7 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
                               color: Theme.of(context).primaryColor,
                             ),
                             const SizedBox(width: 5),
-                            Expanded( // <-- aggiunto qui
+                            Expanded(
                               child: Text(
                                 'Departure Time: ${widget.flight.departureDate != null ? '${widget.flight.departureDate!.hour.toString().padLeft(2, '0')}:${widget.flight.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
                                 overflow: TextOverflow.ellipsis, // opzionale
@@ -169,6 +169,7 @@ class _FlightcardwidgetState extends State<Flightcardwidget> {
           bottom: ScreenSize.screenHeight(context) * 0.00001,
           right: ScreenSize.screenWidth(context) * 0.003,
           child: IconButton(
+            key: const Key('expandButton'),
             icon: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
             onPressed: () {
               setState(() {

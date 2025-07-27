@@ -240,6 +240,7 @@ class _FlightFormState extends State<FlightForm> {
             const SizedBox(height: 20),
 
             ElevatedButton(
+              key: const Key('submitButton'),
               onPressed: _submitForm,
               child: const Text("Save Flight"),
             ),
