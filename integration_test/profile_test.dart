@@ -6,7 +6,7 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Dopo il login si accede alla ProfilePage', (WidgetTester tester) async {
+  testWidgets('Modifica i dati del proprio profilo', (WidgetTester tester) async {
     app.main();
 
     await tester.pumpAndSettle();
@@ -15,6 +15,7 @@ void main() {
     // ✅ Login
     final emailFieldFinder = find.byKey(const Key('emailField'));
     await tester.pumpAndSettle();
+    await Future.delayed(const Duration(milliseconds: 1000));
     await tester.ensureVisible(emailFieldFinder);
     await tester.enterText(emailFieldFinder, 'leo@mail.com');
     await tester.pumpAndSettle();
@@ -50,13 +51,11 @@ void main() {
     // Apri il bottom sheet delle impostazioni
     await tester.tap(find.byIcon(Icons.settings));
     await tester.pumpAndSettle();
-
     // Tocca “Modifica Profilo”
     final editProfileTile = find.byKey(const Key('Modifica Profilo'));
     await tester.ensureVisible(editProfileTile);
     await tester.tap(editProfileTile);
     await tester.pumpAndSettle();
-
 
 
     // Cambia nome
@@ -93,7 +92,6 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 2000));
     await tester.pumpAndSettle();
 
-    // (Opzionale) Verifica che il nome aggiornato sia visibile nella ProfilePage
     expect(find.text('Leonardo Modificato'), findsWidgets);
     // ATTENZIONE:
     // NOTA CHE QUESTO TEST PASSA SOLO SE NOME E COGNOME SONO INIZIALMENTE LEO LEI
@@ -124,5 +122,75 @@ void main() {
   });
 
 
+  testWidgets('Cambia tema da chiaro a scuro e viceversa', (WidgetTester tester) async {
+    app.main();
+
+    await tester.pumpAndSettle();
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    // ✅ Login
+    final emailFieldFinder = find.byKey(const Key('emailField'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(emailFieldFinder);
+    await tester.enterText(emailFieldFinder, 'leo@mail.com');
+    await tester.pumpAndSettle();
+
+    final passwordFieldFinder = find.byKey(const Key('passwordField'));
+    await tester.ensureVisible(passwordFieldFinder);
+    await tester.enterText(passwordFieldFinder, '123456');
+    await tester.pumpAndSettle();
+
+    final submitButtonFinder = find.byKey(const Key('submitButton'));
+    await tester.ensureVisible(submitButtonFinder);
+    await tester.tap(submitButtonFinder);
+    await tester.pumpAndSettle();
+
+    await Future.delayed(const Duration(milliseconds: 2500));
+
+    // Invece di brightness, verifica il themeMode
+    var materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(materialApp.themeMode, ThemeMode.light);
+
+    // ✅ Navigazione verso la ProfilePage
+    await tester.pumpAndSettle();
+    final profileButton = find.byKey(const Key('profileButton'));
+    await tester.ensureVisible(profileButton);
+    await tester.tap(profileButton);
+    await tester.pumpAndSettle();
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    // Apri il bottom sheet delle impostazioni
+    await tester.tap(find.byIcon(Icons.settings));
+    await tester.pumpAndSettle();
+
+    // ✅ Tocca il pulsante per cambiare tema
+    final themeToggleFinder = find.byKey(const Key('Theme Settings'));
+    await tester.ensureVisible(themeToggleFinder);
+    await tester.tap(themeToggleFinder);
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    print('Widget theme: ${materialApp.themeMode}');
+    await Future.delayed(const Duration(milliseconds: 2000));
+
+
+    // ✅ Verifica che il tema sia cambiato a scuro
+    materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(materialApp.themeMode, ThemeMode.dark);
+    await tester.pumpAndSettle();
+    print('Widget theme: ${materialApp.themeMode}');
+
+    // Apri il bottom sheet delle impostazioni e ricambia il tema a chiaro nuovamente
+    await tester.tap(find.byIcon(Icons.settings));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(themeToggleFinder);
+    await tester.tap(themeToggleFinder);
+    await tester.pumpAndSettle();
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(materialApp.themeMode, ThemeMode.light);
+    await tester.pumpAndSettle();
+  });
 
 }

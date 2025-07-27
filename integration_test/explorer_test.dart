@@ -121,7 +121,7 @@ void main() {
             await tester.tap(filterIconFinder);
             await tester.pumpAndSettle(); // Attende che il bottom sheet di ordinamento si apra
 
-            await Future.delayed(const Duration(milliseconds: 2000)); //TODO
+            await Future.delayed(const Duration(milliseconds: 1500));
 
             // ✅ Verifica che il bottom sheet sia visibile e trovi l'opzione "Più popolari"
             expect(find.text('Ordina Per'), findsOneWidget); // Verifica che il titolo del modal sia presente
@@ -134,8 +134,6 @@ void main() {
             await tester.tap(sortByPopularFinder);
             await tester.pumpAndSettle(); // Attende che il modal si chiuda e la lista si riordini
 
-            //await Future.delayed(const Duration(milliseconds: 5000)); //TODO
-
             // ✅ Verifica che il bottom sheet sia stato chiuso
             expect(find.text('Ordina Per'), findsNothing); // Il titolo del modal non dovrebbe più essere visibile
 
@@ -143,7 +141,7 @@ void main() {
             expect(find.byKey(const Key('tripList')), findsOneWidget);
             await tester.pumpAndSettle();
 
-            await Future.delayed(const Duration(milliseconds: 2000)); //TODO
+            await Future.delayed(const Duration(milliseconds: 2000));
             // Fine DEBUGGING
 
             // ✨ Verifica l'ordine degli elementi dopo il sorting per popolarità
@@ -154,7 +152,7 @@ void main() {
 
             await tester.pumpAndSettle();
 
-            await Future.delayed(const Duration(milliseconds: 1000)); //TODO
+            await Future.delayed(const Duration(milliseconds: 1000));
 
             // Assicurati che ci siano almeno due trip card per poter confrontare
             expect(allTripCardsFinder, findsAtLeastNWidgets(2));
