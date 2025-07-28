@@ -1,4 +1,5 @@
 import 'package:dima_project/models/attractionModel.dart';
+import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/attractionCardWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +29,9 @@ void main() {
       expect(find.text('Colosseo'), findsOneWidget);
       expect(find.textContaining('10:00 - 12:30'), findsOneWidget);
       expect(find.byIcon(Icons.attractions), findsOneWidget);
+
+      // ✅ Verifica presenza del widget custom activityDivider
+      expect(find.byType(activityDivider), findsOneWidget);
 
       // Dettagli extra non visibili all'inizio
       expect(find.textContaining('Dettagli Extra:'), findsNothing);

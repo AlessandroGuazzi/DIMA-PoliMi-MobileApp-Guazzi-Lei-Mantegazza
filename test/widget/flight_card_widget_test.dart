@@ -1,8 +1,9 @@
+import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dima_project/models/flightModel.dart';
-import 'package:dima_project/widgets/activity_widgets/flightcardwidget.dart';
+//import 'package:dima_project/widgets/activity_widgets/flightcardwidget.dart' hide FlightCardWidget;
 
 void main() {
   testWidgets('Flightcardwidget shows basic and expanded flight info', (WidgetTester tester) async {
@@ -32,6 +33,9 @@ void main() {
     expect(find.text('MXP → LHR'), findsOneWidget);
     expect(find.textContaining('Departure Time: 08:30'), findsOneWidget);
     expect(find.textContaining('Arrival Time: 10:45'), findsOneWidget);
+
+    expect(find.byType(activityDivider), findsOneWidget);
+    expect(find.byIcon(Icons.flight), findsOneWidget);
 
     //Dettagli extra NON visibili prima dell'espansione
     expect(find.textContaining('Partenza: Malpensa'), findsNothing);

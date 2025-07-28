@@ -1,5 +1,6 @@
 import 'package:dima_project/models/accommodationModel.dart';
 import 'package:dima_project/widgets/activity_widgets/accommodationCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -29,6 +30,11 @@ void main() {
     expect(find.text('Hotel Roma'), findsOneWidget);
     expect(find.textContaining('CheckIn: 14:30'), findsOneWidget);
     expect(find.textContaining('CheckOut: 10:00'), findsOneWidget);
+
+    expect(find.byIcon(Icons.hotel), findsOneWidget);
+    expect(find.byType(activityDivider), findsOneWidget);
+
+
 
     // I dettagli non dovrebbero essere visibili inizialmente
     expect(find.text('Dettagli Extra:'), findsNothing);

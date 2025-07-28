@@ -141,6 +141,15 @@ void main() {
       expect(find.text('Cinema'), findsOneWidget);
       expect(find.text('Attrazione turistica'), findsNWidgets(2));
 
+      expect(find.byIcon(Icons.museum), findsOneWidget);        // museo
+      expect(find.byIcon(Icons.restaurant), findsOneWidget);    // ristorante
+      expect(find.byIcon(Icons.stadium), findsOneWidget);       // stadio
+      expect(find.byIcon(Icons.park), findsOneWidget);          // parco naturale
+      expect(find.byIcon(Icons.pets), findsOneWidget);          // zoo
+      expect(find.byIcon(Icons.church), findsOneWidget);        // chiesa
+      expect(find.byIcon(Icons.movie), findsOneWidget);         // cinema
+
+
       // Seleziona 'Museo'
       await tester.tap(find.text('Museo'));
       await tester.pumpAndSettle();

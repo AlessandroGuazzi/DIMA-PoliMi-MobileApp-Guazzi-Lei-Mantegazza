@@ -306,7 +306,37 @@ void main() {
       verifyNever(mockDatabaseService.createActivity(any));
     });
 
+    testWidgets('dovrebbe mostrare i vari tipi di trasporto quando clicchi su tipo', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: TransportForm(
+              trip: testTrip,
+              databaseService: mockDatabaseService,
+            ),
+          ),
+        ),
+      );
 
+      final transportTypeDropdown = find.widgetWithText(DropdownButtonFormField<String>, 'Transport Type');
+      expect(transportTypeDropdown, findsOneWidget);
+
+      await tester.tap(transportTypeDropdown);
+      await tester.pumpAndSettle(); // aspetta che il dropdown si apra
+
+
+      // Verifica che tutti i tipi siano presenti come testo
+      expect(find.text('Bus'), findsWidgets);
+      expect(find.text('Train'), findsWidgets);
+      expect(find.text('Car'), findsWidgets);
+      expect(find.text('Ferry'), findsWidgets);
+
+      // Verifica che tutte le icone siano visibili nel menu
+      expect(find.byIcon(Icons.directions_bus), findsWidgets);
+      expect(find.byIcon(Icons.train), findsWidgets);
+      expect(find.byIcon(Icons.directions_car), findsWidgets);
+      expect(find.byIcon(Icons.directions_boat), findsWidgets);
+    });
 
 
 

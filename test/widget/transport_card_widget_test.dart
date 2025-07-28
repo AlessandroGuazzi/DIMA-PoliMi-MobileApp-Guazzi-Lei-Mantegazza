@@ -1,4 +1,5 @@
 import 'package:dima_project/models/transportModel.dart';
+import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/transportCardWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,6 +26,9 @@ void main() {
     // Controlla contenuti base visibili
     expect(find.text('Rome → Florence'), findsOneWidget);
     expect(find.text('Ore partenza: 09:15'), findsOneWidget);
+
+    expect(find.byType(activityDivider), findsOneWidget);
+    expect(find.byIcon(Icons.train), findsOneWidget);
 
     // Dettagli extra non visibili inizialmente
     expect(find.textContaining('Durata'), findsNothing);
