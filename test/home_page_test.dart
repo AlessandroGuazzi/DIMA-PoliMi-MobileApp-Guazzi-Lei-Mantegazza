@@ -83,9 +83,10 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.byType(AppBar), findsOneWidget);
-    expect(find.text('Titolo HomePage'), findsOneWidget);
+    expect(find.text('Benvenuto ${testCurrentUserModel.name}'), findsOneWidget);
 
     expect(find.byType(NavigationBar), findsOneWidget);
 
@@ -93,9 +94,9 @@ void main() {
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Profilo'), findsOneWidget);
 
-    expect(find.byIcon(Icons.search), findsOneWidget);
-    expect(find.byIcon(Icons.home_outlined), findsOneWidget);
-    expect(find.byIcon(Icons.account_box_outlined), findsOneWidget);
+    expect(find.widgetWithIcon(NavigationBar, Icons.search), findsOneWidget);
+    expect(find.widgetWithIcon(NavigationBar, Icons.home_outlined), findsOneWidget);
+    expect(find.widgetWithIcon(NavigationBar, Icons.account_box_outlined), findsOneWidget);
   });
 
 

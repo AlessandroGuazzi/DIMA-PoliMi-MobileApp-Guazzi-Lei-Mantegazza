@@ -277,14 +277,14 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
 
   @override
   _i8.Future<bool> handleTripSave(
-    bool? isSaved,
+    bool? isCurrentlySaved,
     String? tripId,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #handleTripSave,
           [
-            isSaved,
+            isCurrentlySaved,
             tripId,
           ],
         ),

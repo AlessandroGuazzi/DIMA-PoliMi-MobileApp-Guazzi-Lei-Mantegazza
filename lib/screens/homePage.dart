@@ -45,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
             databaseService: widget.databaseService, authService: widget.authService),
         MyTripsPage(databaseService: widget.databaseService),
         ProfilePage(
+            userId: widget.authService.currentUser?.uid,
             databaseService: widget.databaseService, authService: widget.authService),
       ];
 

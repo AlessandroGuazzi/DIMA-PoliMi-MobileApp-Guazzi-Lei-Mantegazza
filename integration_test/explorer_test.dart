@@ -4,27 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:dima_project/main.dart' as app;
 import 'package:integration_test/integration_test.dart';
 
+import 'integration_test_helper.dart';
+
 void main() {
       IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
       testWidgets('ExplorerPage visualizza e interagisce con i viaggi pubblici', (WidgetTester tester) async {
-            app.main();
-
-            // ✅ Login
-            await tester.pumpAndSettle(); // Attende che l'app si avvii e si stabilizzi
-            final emailFieldFinder = find.byKey(const Key('emailField'));
-            await tester.pumpAndSettle();
-            await tester.ensureVisible(emailFieldFinder);
-            await tester.pumpAndSettle(); // Attende che il campo sia completamente visibile e stabile
-
-            await tester.enterText(emailFieldFinder, 'leo@mail.com');
-            await tester.pumpAndSettle();
-            await tester.enterText(find.byKey(const Key('passwordField')), '123456');
-            await tester.pumpAndSettle();
-            await tester.tap(find.byKey(const Key('submitButton')));
-            await tester.pumpAndSettle();
-            await Future.delayed(const Duration(milliseconds: 1000));
-
+            await IntegrationTestHelper().performLogin(tester);
 
             // ✅ Ricerca di un viaggio, esempio : "Andora"
             final searchBar = find.byKey(const Key('searchBar'));
@@ -81,26 +67,14 @@ void main() {
 
             await tester.enterText(searchBar, ''); // Inserisci una stringa vuota
             await tester.pumpAndSettle();
+
+            await IntegrationTestHelper().performLogout(tester);
       });
             
 
       //-----------ORDINARE I VIAGGI-----------------
-      testWidgets('ExplorerPage ordina i viaggi per popolarità', (WidgetTester tester) async {
-            app.main();
-            // ✅ Login
-            await tester.pumpAndSettle(); // Attende che l'app si avvii e si stabilizzi
-            final emailFieldFinder = find.byKey(const Key('emailField'));
-            await tester.pumpAndSettle();
-            await tester.ensureVisible(emailFieldFinder);
-            await tester.pumpAndSettle(); // Attende che il campo sia completamente visibile e stabile
-
-            await tester.enterText(emailFieldFinder, 'leo@mail.com');
-            await tester.pumpAndSettle();
-            await tester.enterText(find.byKey(const Key('passwordField')), '123456');
-            await tester.pumpAndSettle();
-            await tester.tap(find.byKey(const Key('submitButton')));
-            await tester.pumpAndSettle();
-            await Future.delayed(const Duration(milliseconds: 1000));
+      testWidgets('ExplorerPage ordina i viaggi per popolarita', (WidgetTester tester) async {
+            await IntegrationTestHelper().performLogin(tester);
 
             // ✅ Trova la SearchBar e l'icona del filtro
             final searchBar = find.byKey(const Key('searchBar'));
@@ -170,6 +144,8 @@ void main() {
 
             // Per ora, ci assicuriamo che la lista sia ancora presente e visibile.
             expect(find.byKey(const Key('tripList')), findsOneWidget);
+
+            await IntegrationTestHelper().performLogout(tester);
       });
 }
 

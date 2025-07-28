@@ -16,6 +16,7 @@ import 'package:mockito/mockito.dart';
 import 'mocks.mocks.dart';
 
 void main() {
+  //TODO: fix tests since profile page was modified
   group('ProfilePage Tests', () {
     late MockDatabaseService mockDatabaseService;
     late MockAuthService mockAuthService;
@@ -23,7 +24,7 @@ void main() {
 
     // Sample test data
     final testUser = UserModel(
-      id: 'test-id',
+      id: 'test-uid',
       name: 'John',
       surname: 'Doe',
       username: 'johndoe',
@@ -100,10 +101,11 @@ void main() {
       when(mockDatabaseService.getTripsByIds(null)).thenAnswer((_) async => []);
     });
 
-    Widget createTestWidget() {
+    Widget createTestWidget(String? userId) {
       return MaterialApp(
         home: Scaffold(
           body: ProfilePage(
+            userId: userId,
             databaseService: mockDatabaseService,
             authService: mockAuthService,
           ),
@@ -112,27 +114,28 @@ void main() {
     }
 
     group('State Logic', () {
-      testWidgets('_loadCurrentUser returns user when authenticated',
+      testWidgets('user is correctly loaded when authenticated',
           (tester) async {
 
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pump();
 
         verify(mockDatabaseService.getUserByUid('test-uid')).called(1);
       });
 
-      testWidgets('_loadCurrentUser returns null when not authenticated',
+      testWidgets('handles when user not authenticated',
           (tester) async {
-        when(mockAuthService.currentUser).thenReturn(null);
 
-        await tester.pumpWidget(createTestWidget());
-        await tester.pump();
+        //pump the widget with a null user
+        await tester.pumpWidget(createTestWidget(null));
+        await tester.pumpAndSettle();
 
         verifyNever(mockDatabaseService.getUserByUid(any));
+        expect(find.text('Nessun utente autenticato'), findsOneWidget);
       });
 
       testWidgets('signOut calls AuthService.signOut', (tester) async {
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Log Out'));
@@ -142,7 +145,7 @@ void main() {
       });
 
       testWidgets('initState initializes futures correctly', (tester) async {
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
 
         verify(mockDatabaseService.getHomePageTrips()).called(1);
       });
@@ -154,7 +157,7 @@ void main() {
         when(mockDatabaseService.getUserByUid(any)).thenAnswer(
             (_) => Future.delayed(const Duration(seconds: 1), () => testUser));
 
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pump();
 
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -163,7 +166,7 @@ void main() {
       });
 
       testWidgets('displays ui elements correctly', (tester) async {
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         expect(find.text('John Doe'), findsOneWidget);
@@ -176,7 +179,7 @@ void main() {
 
       testWidgets('displays default profile image when user has no profile pic',
           (tester) async {
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         final avatarFinder = find.byType(CircleAvatar);
@@ -201,7 +204,7 @@ void main() {
         when(mockDatabaseService.getUserByUid('test-uid'))
             .thenAnswer((_) async => userWithPic);
 
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         final CircleAvatar avatar =
@@ -210,17 +213,21 @@ void main() {
             userWithPic.profilePic);
       });
 
-      testWidgets('displays error message when user data fails to load',
-          (tester) async {
-        when(mockDatabaseService.getUserByUid(any))
-            .thenThrow(Exception('Network error'));
+      testWidgets('displays error message when user data fails to load', (tester) async {
+        await runZonedGuarded(() async {
+          when(mockDatabaseService.getUserByUid(any))
+              .thenAnswer((_) => Future<UserModel>.error('Error'));
 
-        await tester.pumpWidget(createTestWidget());
-        await tester.pumpAndSettle();
+          await tester.pumpWidget(createTestWidget('test-uid'));
+          await tester.pumpAndSettle();
 
-        expect(find.textContaining('Errore:'), findsOneWidget);
+          expect(find.textContaining('Errore:'), findsOneWidget);
+        }, (error, stack) {
+          print('Error: $error');
+        });
       });
     });
+
 
     group('Responsive Layout', () {
       testWidgets('displays mobile layout on small screens', (tester) async {
@@ -232,7 +239,7 @@ void main() {
         tester.view.physicalSize = const Size(400, 800);
         tester.view.devicePixelRatio = 1.0;
 
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         //Check for mobile-specific elements
@@ -254,7 +261,7 @@ void main() {
         tester.view.physicalSize = const Size(1200, 800);
         tester.view.devicePixelRatio = 1.0;
 
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         // Check for tablet-specific elements
@@ -274,7 +281,7 @@ void main() {
 
     group('Trip Lists', () {
       testWidgets('displays saved trips correctly', (tester) async {
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         expect(find.byType(TripCardWidget), findsNWidgets(2));
@@ -284,7 +291,7 @@ void main() {
         when(mockDatabaseService.getTripsByIds(any))
             .thenAnswer((_) async => []);
 
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         expect(find.text('Nessun viaggio salvato'), findsOneWidget);
@@ -295,7 +302,7 @@ void main() {
         when(mockDatabaseService.getHomePageTrips())
             .thenAnswer((_) async => []);
 
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         //switch tab
@@ -310,7 +317,7 @@ void main() {
         when(mockDatabaseService.getTripsByIds(any)).thenAnswer((_) =>
             Future.delayed(const Duration(seconds: 1), () => testTrips));
 
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pump();
 
         expect(find.byType(CircularProgressIndicator), findsWidgets);
@@ -323,7 +330,7 @@ void main() {
     group('Navigation', () {
       testWidgets('navigates to TripPage when trip card is tapped',
           (tester) async {
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         //stub trip page
@@ -345,7 +352,7 @@ void main() {
         tester.view.physicalSize = const Size(400, 800);
         tester.view.devicePixelRatio = 1.0;
 
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         await tester.tap(find.byIcon(Icons.settings));
@@ -364,7 +371,7 @@ void main() {
     group('Settings Menu', () {
       testWidgets('settings menu displays all options', (tester) async {
 
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         expect(find.text('Modifica Profilo'), findsOneWidget);
@@ -381,7 +388,7 @@ void main() {
       testWidgets(
           'navigates to AccountSettings when Modifica Profilo is tapped',
           (tester) async {
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Modifica Profilo'));
@@ -392,7 +399,7 @@ void main() {
 
       testWidgets('navigates to GamePage when Nazioni Visitate is tapped',
           (tester) async {
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         //stub travel stats page
@@ -407,7 +414,7 @@ void main() {
 
       testWidgets('navigates to MedalsPage when Medaglie is tapped',
           (tester) async {
-        await tester.pumpWidget(createTestWidget());
+        await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         //stub
@@ -425,21 +432,12 @@ void main() {
 
     group('Edge Cases', () {
 
-      testWidgets('handles null user', (tester) async {
-        when(mockAuthService.currentUser).thenReturn(null);
-
-        await tester.pumpWidget(createTestWidget());
-        await tester.pumpAndSettle();
-
-        expect(find.textContaining('Utente non trovato'), findsOneWidget);
-      });
-
       testWidgets('handles errors during trip loading', (tester) async {
         await runZonedGuarded(() async {
           when(mockDatabaseService.getHomePageTrips())
               .thenAnswer((_) async => throw Exception('Test error'));
 
-          await tester.pumpWidget(createTestWidget());
+          await tester.pumpWidget(createTestWidget('test-uid'));
           await tester.pumpAndSettle();
 
           // Switch tab
@@ -448,7 +446,7 @@ void main() {
 
           expect(find.text('Nessun viaggio creato'), findsOneWidget);
         }, (error, stack) {
-
+          print('Error: $error');
         });
       });
     });

@@ -28,7 +28,7 @@ class ExplorerPage extends StatefulWidget {
 class _ExplorerPageState extends State<ExplorerPage> {
   late Future<List<TripModel>> _futureTrips;
   late Future<UserModel?> _futureCurrentUser;
-  List<String> _savedTrips = [];
+  List<String> _savedTripsId = [];
   List<TripModel> _allTrips = [];
   List<TripModel> _filteredTrips = [];
   TripModel? _selectedTrip;
@@ -62,8 +62,9 @@ class _ExplorerPageState extends State<ExplorerPage> {
             return const Center(child: Text('Utente non trovato'));
           }
 
-          if (_savedTrips.isEmpty) {
-            _savedTrips = List<String>.from(userSnapshot.data!.savedTrip ?? []);
+          //ensure that this executes only the first time the widget is built
+          if (_savedTripsId.isEmpty && _allTrips.isEmpty) {
+            _savedTripsId = List<String>.from(userSnapshot.data!.savedTrip ?? []);
           }
 
           //second future builder wait for trips to be loaded
@@ -78,7 +79,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
                 return const Center(child: Text('Nessun viaggio pubblico'));
               }
 
-              //id statement ensures that this initialization is done only
+              //this statement ensures that this initialization is done only
               //the first time the widget is built
               if (_allTrips.isEmpty && _filteredTrips.isEmpty) {
                 _allTrips = snapshot.data!;
@@ -104,7 +105,7 @@ class _ExplorerPageState extends State<ExplorerPage> {
               itemCount: _filteredTrips.length,
               itemBuilder: (context, index) {
                 final trip = _filteredTrips[index];
-                bool isSaved = _savedTrips.contains(trip.id);
+                bool isSaved = _savedTripsId.contains(trip.id);
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -206,23 +207,27 @@ class _ExplorerPageState extends State<ExplorerPage> {
     );
   }
 
-  void _handleTripSave(bool isSaved, String tripId) async {
+  void _handleTripSave(bool isCurrentlySaved, String tripId) async {
     try {
-      final isOk = await widget.databaseService.handleTripSave(isSaved, tripId);
-
-      if (isOk) {
+      await widget.databaseService.handleTripSave(isCurrentlySaved, tripId);
+        //update the local state
         setState(() {
-          TripModel trip = _filteredTrips.firstWhere((trip) => trip.id == tripId);
-          if (isSaved) {
-            _savedTrips.remove(tripId);
+          TripModel tripToUpdate = _filteredTrips.firstWhere((trip) => trip.id == tripId);
+          if (isCurrentlySaved) {
+            _savedTripsId.remove(tripId);
             //update the counter locally
-            trip.saveCounter = (trip.saveCounter ?? 0) - 1;
+            if (tripToUpdate.saveCounter != null && tripToUpdate.saveCounter! > 0) {
+              tripToUpdate.saveCounter = (tripToUpdate.saveCounter ?? 0) - 1;
+            } else {
+              //unexpected case, mimic database behavior
+              tripToUpdate.saveCounter = 0;
+            }
           } else {
-            _savedTrips.add(tripId);
-            trip.saveCounter = (trip.saveCounter ?? 0) + 1;
+            _savedTripsId.add(tripId);
+            tripToUpdate.saveCounter = (tripToUpdate.saveCounter ?? 0) + 1;
           }
         });
-      }
+
     } on Exception catch (e) {
       SnackBar(content: Text('Errore $e'));
     }

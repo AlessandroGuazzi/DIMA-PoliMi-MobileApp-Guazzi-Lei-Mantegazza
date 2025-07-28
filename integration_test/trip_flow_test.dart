@@ -10,6 +10,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:dima_project/main.dart' as app;
 import 'package:flutter/material.dart';
 
+import 'integration_test_helper.dart';
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -20,13 +22,13 @@ void main() {
       app.main();
       await tester.pumpAndSettle();
       if(find.byType(AuthPage).evaluate().isEmpty) {
-        await performLogout(tester);
+        await IntegrationTestHelper().performLogout(tester);
       };
       await tester.pumpAndSettle();
     });
 
     testWidgets('User creates a trip', (WidgetTester tester) async {
-      await performLogin(tester);
+      await IntegrationTestHelper().performLogin(tester);
       //navigate to home page
       final homeButton = find.byKey(const Key('homeButton'));
       await tester.ensureVisible(homeButton);
@@ -107,11 +109,11 @@ void main() {
       expect(find.byType(MyTripsPage), findsOneWidget);
       expect(find.text('Test Trip'), findsOneWidget);
 
-      await performLogout(tester);
+      await IntegrationTestHelper().performLogout(tester);
     });
 
     testWidgets('User adds an activity to a trip', (WidgetTester tester) async {
-      await performLogin(tester);
+      await IntegrationTestHelper().performLogin(tester);
       //navigate to home page
       final homeButton = find.byKey(const Key('homeButton'));
       await tester.ensureVisible(homeButton);
@@ -198,11 +200,11 @@ void main() {
       expect(find.textContaining('Partenza'), findsOneWidget);
       expect(find.textContaining('Arrivo'), findsOneWidget);
 
-      await performLogout(tester);
+      await IntegrationTestHelper().performLogout(tester);
     });
 
     testWidgets('User edits activity details', (WidgetTester tester) async {
-      await performLogin(tester);
+      await IntegrationTestHelper().performLogin(tester);
 
       //navigate to home page
       final homeButton = find.byKey(const Key('homeButton'));
@@ -261,11 +263,11 @@ void main() {
       });
       expect(newFlightCardFinder, findsOneWidget);
 
-      await performLogout(tester);
+      await IntegrationTestHelper().performLogout(tester);
     });
 
     testWidgets('User modifies trip details', (WidgetTester tester) async {
-      await performLogin(tester);
+      await IntegrationTestHelper().performLogin(tester);
 
       //navigate to home page
       final homeButton = find.byKey(const Key('homeButton'));
@@ -302,11 +304,11 @@ void main() {
       //assert new title
       expect(find.text('New Test Trip'), findsOneWidget);
 
-      await performLogout(tester);
+      await IntegrationTestHelper().performLogout(tester);
     });
 
     testWidgets('User removes an activity from a trip', (WidgetTester tester) async {
-      await performLogin(tester);
+      await IntegrationTestHelper().performLogin(tester);
 
       //navigate to home page
       final homeButton = find.byKey(const Key('homeButton'));
@@ -352,14 +354,15 @@ void main() {
       //Confirm activity is gone
       expect(flightCardFinder, findsNothing);
 
-      await performLogout(tester);
+      await IntegrationTestHelper().performLogout(tester);
     });
 
     testWidgets('User opens map of a trip', (WidgetTester tester) async {
-      await performLogin(tester);
+      await IntegrationTestHelper().performLogin(tester);
 
       //navigate to home page
       final homeButton = find.byKey(const Key('homeButton'));
+      await tester.pumpAndSettle();
       await tester.ensureVisible(homeButton);
       await tester.tap(homeButton);
       await tester.pumpAndSettle();
@@ -383,7 +386,7 @@ void main() {
 
       expect(find.byType(MapPage), findsOneWidget);
 
-      await performLogout(tester);
+      await IntegrationTestHelper().performLogout(tester);
     });
 
     /*
@@ -398,7 +401,7 @@ void main() {
      */
 
     testWidgets('User checks expenses and changes currency', (WidgetTester tester) async {
-      await performLogin(tester);
+      await IntegrationTestHelper().performLogin(tester);
 
       //navigate to home page
       final homeButton = find.byKey(const Key('homeButton'));
@@ -442,11 +445,11 @@ void main() {
       expect(find.textContaining('\$'), findsWidgets);
       expect(find.textContaining('€'), findsNothing);
 
-      await performLogout(tester);
+      await IntegrationTestHelper().performLogout(tester);
     });
 
     testWidgets('User deletes a trip', (WidgetTester tester) async {
-      await performLogin(tester);
+      await IntegrationTestHelper().performLogin(tester);
 
       // Navigate to home page to ensure we are on the list of trips
       final homeButton = find.byKey(const Key('homeButton'));
@@ -492,66 +495,10 @@ void main() {
       expect(find.byType(MyTripsPage), findsOneWidget);
       expect(find.text('New Test Trip'), findsNothing);
 
-      await performLogout(tester);
+      await IntegrationTestHelper().performLogout(tester);
     });
 
   });
-}
-
-Future<void> performLogin(WidgetTester tester) async {
-  app.main();
-  await tester.pumpAndSettle();
-  expect(find.byType(AuthPage), findsOneWidget);
-  await tester.pumpAndSettle();
-
-  final emailField = find.byKey(const Key('emailField'));
-  final passwordField = find.byKey(const Key('passwordField'));
-  final submitButton = find.byKey(const Key('submitButton'));
-
-  await tester.enterText(emailField, 'test@example.com');
-  await tester.enterText(passwordField, 'password');
-  await tester.pumpAndSettle();
-
-  await tester.ensureVisible(submitButton);
-  await tester.tap(submitButton);
-  await tester.pumpAndSettle();
-  await tester.pump(const Duration(seconds: 3));
-}
-
-Future<void> performLogout(WidgetTester tester) async {
-
-  final bottomBar = find.byType(NavigationBar);
-  await tester.pumpAndSettle();
-  //if bottom bar is not present
-  while (!tester.any(bottomBar)) {
-    //navigate back
-    final backButton = find.byType(BackButtonIcon);
-    await tester.ensureVisible(backButton);
-    await tester.tap(backButton);
-    await tester.pumpAndSettle();
-    await tester.pump(const Duration(milliseconds: 500));
-  }
-  expect(find.byType(NavigationBar), findsOneWidget);
-
-
-  //tap on profile button
-  final profileButton = find.byKey(const Key('profileButton'));
-  await tester.ensureVisible(profileButton);
-  await tester.tap(profileButton);
-  await tester.pumpAndSettle();
-  //tap on settings button
-  final settingsButton = find.byKey(const Key('settingsButton'));
-  await tester.ensureVisible(settingsButton);
-  await tester.tap(settingsButton);
-  await tester.pumpAndSettle();
-
-  //tap on logout
-  final logoutButton = find.text('Log Out');
-  await tester.ensureVisible(logoutButton);
-  await tester.tap(logoutButton);
-  await tester.pumpAndSettle();
-
-
 }
 
 Future<void> insertCity(WidgetTester tester, String cityName) async {

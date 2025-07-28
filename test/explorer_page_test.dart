@@ -77,9 +77,6 @@ void main() {
     );
   }
 
-  group('Future builder tests', () {
-
-  });
 
   testWidgets('displays loading indicator while fetching user',
       (WidgetTester tester) async {

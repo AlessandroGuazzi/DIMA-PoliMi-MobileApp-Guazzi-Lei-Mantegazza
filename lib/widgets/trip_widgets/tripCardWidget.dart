@@ -1,3 +1,4 @@
+import 'package:dima_project/screens/profilePage.dart';
 import 'package:dima_project/services/googlePlacesService.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -166,22 +167,6 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                     },
                     blendMode: BlendMode.dstIn,
                     child: _loadTripImage(null, null),
-                    /*
-                    child: widget.trip.imageRef == null
-                    //TODO: fix image ref
-
-                        ? Image.network(
-                            GooglePlacesService()
-                                .getImageUrl(widget.trip.imageRef ?? ''),
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.asset(
-                            'assets/placeholder_landscape.jpg',
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                    */
                   ),
                 )),
             Padding(
@@ -288,9 +273,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => MedalsPage(
-              username: widget.trip.creatorInfo!["username"],
-              userId: widget.trip.creatorInfo!["id"])),
+          builder: (context) => ProfilePage(userId: widget.trip.creatorInfo!['username'])),
     );
   }
 

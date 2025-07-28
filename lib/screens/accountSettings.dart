@@ -9,7 +9,7 @@ import 'avatarSelectionPage.dart';
 
 
 class AccountSettings extends StatefulWidget {
-  final Future<UserModel?> currentUserFuture;
+  final Future<UserModel?>? currentUserFuture;
   final AuthService authService;
 
   AccountSettings({super.key, required this.currentUserFuture, authService})
@@ -20,7 +20,7 @@ class AccountSettings extends StatefulWidget {
 }
 
 class _AccountSettingsState extends State<AccountSettings> {
-  late Future<UserModel?> _currentUserFuture;
+  late Future<UserModel?>? _currentUserFuture;
   late Function onRefresh;
   late TextEditingController _dateController;
   final _name = TextEditingController();

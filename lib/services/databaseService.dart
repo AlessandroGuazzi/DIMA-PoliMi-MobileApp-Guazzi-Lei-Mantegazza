@@ -170,33 +170,62 @@ class DatabaseService {
     }
   }
 
-  //Handle logic to save/unsave a trip
-  Future<bool> handleTripSave(bool isSaved, String tripId) async {
-    if (tripId != 'null') {
+  Future<void> handleTripSave(bool isCurrentlySaved, String tripId) async {
+
+    if (currentUserId == null) {
+      throw Exception('User not logged in');
+    }
+
+    if (tripId.isNotEmpty) {
+      final userDocRef = userCollection.doc(currentUserId);
+      final tripDocRef = tripCollection.doc(tripId);
+
       try {
         await db.runTransaction((transaction) async {
-          //insert/remove trip into savedTrip for current user
-          transaction.update(userCollection.doc(currentUserId), {
-            'savedTrip': isSaved
+          // Get the current trip document to check its saveCounter
+          DocumentSnapshot tripSnapshot = await transaction.get(tripDocRef);
+
+          if (!tripSnapshot.exists) {
+            throw Exception("Trip with ID $tripId not found.");
+          }
+
+          final currentSaveCounter = (tripSnapshot.data() as Map<String, dynamic>?)?['saveCounter'] as num? ?? 0;
+
+          //Increment/decrement counter
+          if (isCurrentlySaved) {
+            //Trying to unsave
+            if (currentSaveCounter > 0) {
+              transaction.update(tripDocRef, {
+                'saveCounter': FieldValue.increment(-1)
+              });
+            } else {
+             //unexpected case -> set it back to 0
+              transaction.update(tripDocRef, {'saveCounter': 0});
+            }
+          } else {
+            //Trying to save
+            transaction.update(tripDocRef, {
+              'saveCounter': FieldValue.increment(1)
+            });
+          }
+          //2nd transaction
+          //Update user saved trips list
+          transaction.update(userDocRef, {
+            'savedTrip': isCurrentlySaved
                 ? FieldValue.arrayRemove([tripId])
                 : FieldValue.arrayUnion([tripId])
           });
-
-          //increment/decrement saveCounter for trip with tripId
-          transaction.update(tripCollection.doc(tripId), {
-            'saveCounter':
-                isSaved ? FieldValue.increment(-1) : FieldValue.increment(1)
-          });
         });
-        return true;
+      } on FirebaseException catch (e) {
+        rethrow;
       } on Exception catch (e) {
-        print('Error saving/unsaving trip: $e');
         rethrow;
       }
     } else {
-      return false;
+      throw Exception("Invalid tripId");
     }
   }
+
 
   Future<void> createActivity(ActivityModel activity) async {
     try {

@@ -17,8 +17,9 @@ import 'travelStatsPage.dart';
 class ProfilePage extends StatefulWidget {
   late final DatabaseService databaseService;
   late final AuthService authService;
+  final String? userId;
 
-  ProfilePage({super.key, databaseService, authService})
+  ProfilePage({super.key,required this.userId, databaseService, authService})
       : databaseService = databaseService ?? DatabaseService(),
         authService = authService ?? AuthService();
 
@@ -27,23 +28,17 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late Future<UserModel?> _currentUserFuture;
+  Future<UserModel?>? _currentUserFuture;
   late Future<List<TripModel>> _futureTrips;
   late Future<List<TripModel>> _savedTrips;
 
   @override
   void initState() {
     super.initState();
-    _currentUserFuture = _loadCurrentUser();
-    _futureTrips = widget.databaseService.getHomePageTrips();
-  }
-
-  Future<UserModel?> _loadCurrentUser() async {
-    final user = widget.authService.currentUser;
-    if (user != null) {
-      return await widget.databaseService.getUserByUid(user.uid);
+    if (widget.userId != null) {
+      _currentUserFuture = widget.databaseService.getUserByUid(widget.userId!);
     }
-    return null;
+    _futureTrips = widget.databaseService.getHomePageTrips();
   }
 
   Future<void> signOut() async {
@@ -59,19 +54,29 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _futureUserBuilder(Widget Function(UserModel user) builder) {
+    if (_currentUserFuture == null) {
+      return const Scaffold(
+        body: Center(child: Text('Nessun utente autenticato')),
+      );
+    }
+
     return FutureBuilder<UserModel?>(
       future: _currentUserFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-              body: Center(child: CircularProgressIndicator()));
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
 
         if (snapshot.hasError || !snapshot.hasData) {
           return Scaffold(
-              body: Center(
-                  child: Text(
-                      'Errore: ${snapshot.error ?? 'Utente non trovato'}')));
+            body: Center(
+              child: Text(
+                'Errore: ${snapshot.error ?? 'Utente non trovato'}',
+              ),
+            ),
+          );
         }
 
         final user = snapshot.data!;
@@ -290,7 +295,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     AccountSettings(currentUserFuture: _currentUserFuture, authService: widget.authService,),
               ),
             ).then((_) => setState(() {
-                  _currentUserFuture = _loadCurrentUser();
+              if(widget.userId != null) {
+                _currentUserFuture = widget.databaseService.getUserByUid(widget.userId!);
+              }
                 }));
           },
         ),
@@ -320,7 +327,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     MedalsPage(username: user.username!, userId: user.id!, databaseService: widget.databaseService),
               ),
             ).then((_) => setState(() {
-                  _currentUserFuture = _loadCurrentUser();
+              if(widget.userId != null) {
+                _currentUserFuture = widget.databaseService.getUserByUid(widget.userId!);
+              }
                 }));
           },
         ),
