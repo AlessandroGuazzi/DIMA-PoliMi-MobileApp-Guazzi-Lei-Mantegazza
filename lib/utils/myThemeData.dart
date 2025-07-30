@@ -113,7 +113,7 @@ class MyThemeData {
           fontWeight: FontWeight.w700,
         ),
         headlineMedium: TextStyle(
-          fontSize: isTablet ? 24 : 20,
+          fontSize: isTablet ? 24 : 21,
           fontWeight: FontWeight.w600,
         ),
         titleLarge: TextStyle(

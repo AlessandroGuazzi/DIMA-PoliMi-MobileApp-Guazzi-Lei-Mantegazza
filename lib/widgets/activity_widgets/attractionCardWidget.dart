@@ -16,7 +16,7 @@ class _AttractioncardwidgetState extends State<Attractioncardwidget> {
   bool isExpanded = false;
 
   @override
-  Widget build(BuildContext context) {
+  /*Widget build(BuildContext context) {
     return Stack(
       children: [
         Padding(
@@ -203,7 +203,166 @@ class _AttractioncardwidgetState extends State<Attractioncardwidget> {
         ),
       ],
     );
+  }*/
+
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.primaryColor;
+    final secondaryColor = theme.colorScheme.secondary;
+
+    return Card(
+      elevation: 6,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [primaryColor.withOpacity(0.2), primaryColor.withOpacity(0.05)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(14),
+                  child: Icon(
+                    iconSelector(widget.attraction.attractionType ?? 'default'),
+                    size: 48,
+                    color: primaryColor,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.attraction.name ?? 'N/A',
+                        style: theme.textTheme.headlineMedium,
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(Icons.access_time_filled_outlined, size: 20, color: primaryColor),
+                          const SizedBox(width: 6),
+                          Text(
+                            widget.attraction.startDate != null && widget.attraction.endDate != null
+                                ? '${widget.attraction.startDate!.hour.toString().padLeft(2, '0')}:${widget.attraction.startDate!.minute.toString().padLeft(2, '0')} - '
+                                '${widget.attraction.endDate!.hour.toString().padLeft(2, '0')}:${widget.attraction.endDate!.minute.toString().padLeft(2, '0')}'
+                                : 'Orario non disponibile',
+                            style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(isExpanded ? Icons.expand_less : Icons.expand_more, color: primaryColor),
+                  onPressed: () => setState(() => isExpanded = !isExpanded),
+                ),
+              ],
+            ),
+
+            AnimatedCrossFade(
+              firstChild: const SizedBox.shrink(),
+              secondChild: Padding(
+                padding: const EdgeInsets.only(top: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Divider(color: primaryColor.withOpacity(0.3), thickness: 1.2),
+                    const SizedBox(height: 10),
+                    if (widget.attraction.address != null && widget.attraction.address!.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, size: 20, color: primaryColor),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              widget.attraction.address!,
+                              style: theme.textTheme.bodyLarge,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    if (widget.attraction.attractionType != null && widget.attraction.attractionType!.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.category, size: 20, color: primaryColor),
+                          const SizedBox(width: 6),
+                          Text(
+                            "Tipo: ${widget.attraction.attractionType == 'tourist_attraction' ? 'Attrazione Turistica' : widget.attraction.attractionType}",
+                            style: theme.textTheme.bodyLarge,
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (widget.attraction.expenses != null) ...[
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.attach_money, size: 20, color: primaryColor),
+                          const SizedBox(width: 6),
+                          Text(
+                            "Costo: €${widget.attraction.expenses!.toStringAsFixed(2)}",
+                            style: theme.textTheme.bodyLarge,
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (widget.attraction.description != null && widget.attraction.description!.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Descrizione:",
+                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              widget.attraction.description!,
+                              style: theme.textTheme.bodyMedium,
+                              maxLines: 5,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              crossFadeState:
+              isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
+            ),
+          ],
+        ),
+      ),
+    );
+
   }
+
+
+
+
 
   // Scelta icona
   IconData iconSelector(String activityType) {
