@@ -78,6 +78,7 @@ class _AccountSettingsState extends State<AccountSettings> {
 
   @override
   Widget build(BuildContext context) {
+    //
     return FutureBuilder(
         future: _currentUserFuture,
         builder: (context, snapshot) {
