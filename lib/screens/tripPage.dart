@@ -166,94 +166,96 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (bottomSheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            //handle
-            const MyBottomSheetHandle(),
-
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Modifica'),
-              onTap: () async {
-                Navigator.pop(context); // close the bottom sheet
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UpsertTripPage(
-                      trip: _trip,
-                      isUpdate: true,
-                    ),
-                  ),
-                );
-                //update ui trip
-                if (result != null) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) {
-                      setState(() {
-                        _trip = result;
-                      });
-                    }
-                  });
-                }
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Elimina'),
-              onTap: () => _handleDeleteTrip(context, bottomSheetContext),
-            ),
-
-            ListTile(
-              leading: const Icon(Icons.map_outlined),
-              title: const Text('Apri mappa'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MapPage(trip: _trip),
-                  ),
-                );
-              },
-            ),
-
-            ListTile(
-              leading: _trip.isPrivate ?? true
-                  ? const Icon(Icons.share)
-                  : const Icon(Icons.lock_outline),
-              title: _trip.isPrivate ?? true
-                  ? const Text('Pubblica')
-                  : const Text('Rendi privato'),
-              onTap: () async {
-                bool newPrivacy = !(_trip.isPrivate ?? true);
-                try {
-                  //update db
-                  await widget.databaseService
-                      .updateTripPrivacy(_trip.id!, newPrivacy);
-                  //update locally
-                  setState(() {
-                    _trip.isPrivate = newPrivacy;
-                  });
-                  Navigator.pop(bottomSheetContext);
-                } on Exception catch (e) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Errore'),
-                      content: const Text('Impossibile aggiornare'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('OK'),
-                        ),
-                      ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              //handle
+              const MyBottomSheetHandle(),
+          
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Modifica'),
+                onTap: () async {
+                  Navigator.pop(context); // close the bottom sheet
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UpsertTripPage(
+                        trip: _trip,
+                        isUpdate: true,
+                      ),
                     ),
                   );
-                }
-              },
-            ),
-          ],
+                  //update ui trip
+                  if (result != null) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() {
+                          _trip = result;
+                        });
+                      }
+                    });
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Elimina'),
+                onTap: () => _handleDeleteTrip(context, bottomSheetContext),
+              ),
+          
+              ListTile(
+                leading: const Icon(Icons.map_outlined),
+                title: const Text('Apri mappa'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MapPage(trip: _trip),
+                    ),
+                  );
+                },
+              ),
+          
+              ListTile(
+                leading: _trip.isPrivate ?? true
+                    ? const Icon(Icons.share)
+                    : const Icon(Icons.lock_outline),
+                title: _trip.isPrivate ?? true
+                    ? const Text('Pubblica')
+                    : const Text('Rendi privato'),
+                onTap: () async {
+                  bool newPrivacy = !(_trip.isPrivate ?? true);
+                  try {
+                    //update db
+                    await widget.databaseService
+                        .updateTripPrivacy(_trip.id!, newPrivacy);
+                    //update locally
+                    setState(() {
+                      _trip.isPrivate = newPrivacy;
+                    });
+                    Navigator.pop(bottomSheetContext);
+                  } on Exception catch (e) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Errore'),
+                        content: const Text('Impossibile aggiornare'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
