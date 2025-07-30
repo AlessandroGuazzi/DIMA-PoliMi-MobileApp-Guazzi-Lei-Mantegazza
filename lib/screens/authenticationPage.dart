@@ -3,7 +3,7 @@ import 'package:dima_project/services/authService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/countryPickerWidget.dart';
+import '../widgets/search_bottom_sheets/countryPickerWidget.dart';
 
 class AuthPage extends StatefulWidget {
   late final AuthService authService;

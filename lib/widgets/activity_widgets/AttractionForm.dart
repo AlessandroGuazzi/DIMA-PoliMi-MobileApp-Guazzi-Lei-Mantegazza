@@ -9,7 +9,7 @@ import 'package:dima_project/models/attractionModel.dart';
 import 'package:dima_project/services/databaseService.dart';
 
 import '../../services/CurrencyService.dart';
-import '../placesSearchWidget.dart';
+import '../search_bottom_sheets/placesSearchWidget.dart';
 
 
 //TODO: gestire valuta in modifica

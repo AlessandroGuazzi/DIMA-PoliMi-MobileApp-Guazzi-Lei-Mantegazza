@@ -1,10 +1,10 @@
 import 'package:dima_project/utils/PlacesType.dart';
 import 'package:flutter/material.dart';
-import '../services/googlePlacesService.dart';
+import '../../services/googlePlacesService.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
-import '../utils/screenSize.dart';
+import '../../utils/screenSize.dart';
 
 class PlacesSearchWidget extends StatefulWidget {
   final List<String> selectedCountryCodes;

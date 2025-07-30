@@ -12,7 +12,7 @@ import 'package:dima_project/widgets/activity_widgets/accommodationCardWidget.da
 import 'package:dima_project/widgets/activity_widgets/attractionCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/transportCardWidget.dart';
-import 'package:dima_project/widgets/myBottomSheetHandle.dart';
+import 'package:dima_project/widgets/components/myBottomSheetHandle.dart';
 import 'package:dima_project/widgets/trip_widgets/tripProgressBar.dart';
 import 'package:flutter/material.dart';
 

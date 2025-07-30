@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TripModel {
   String? id;
+  //creatorInfo is a map of {'id': String, 'username': String, 'profilePic': String}
   final Map<String, dynamic>? creatorInfo;
   final String? title;
 

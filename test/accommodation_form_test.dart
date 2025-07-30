@@ -1,7 +1,7 @@
 import 'package:dima_project/models/accommodationModel.dart';
 import 'package:dima_project/widgets/activity_widgets/accommodationForm.dart';
 import 'package:dima_project/models/tripModel.dart';
-import 'package:dima_project/widgets/placesSearchWidget.dart';
+import 'package:dima_project/widgets/search_bottom_sheets/placesSearchWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

@@ -1,5 +1,5 @@
 import 'package:country_picker/country_picker.dart';
-import 'package:dima_project/widgets/countryPickerWidget.dart';
+import 'package:dima_project/widgets/search_bottom_sheets/countryPickerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

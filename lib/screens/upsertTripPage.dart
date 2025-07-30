@@ -6,8 +6,8 @@ import 'package:dima_project/services/googlePlacesService.dart';
 import 'package:dima_project/services/unsplashService.dart';
 import 'package:dima_project/utils/PlacesType.dart';
 import 'package:dima_project/utils/responsive.dart';
-import 'package:dima_project/widgets/placesSearchWidget.dart';
-import 'package:dima_project/widgets/countryPickerWidget.dart';
+import 'package:dima_project/widgets/search_bottom_sheets/placesSearchWidget.dart';
+import 'package:dima_project/widgets/search_bottom_sheets/countryPickerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:intl/intl.dart';
@@ -603,7 +603,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
         try {
           //fetch image from unsplash
           photoUrl =
-          await widget.unsplashService.getPhotoUrl(countriesMap.first['name']);
+          await widget.unsplashService.getPhotoUrl(citiesMap.first['name']);
         } catch(e) {
           print(e);
         }

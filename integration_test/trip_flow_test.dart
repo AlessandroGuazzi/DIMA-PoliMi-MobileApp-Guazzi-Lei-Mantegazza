@@ -2,16 +2,18 @@ import 'package:dima_project/screens/authenticationPage.dart';
 import 'package:dima_project/screens/editActivityPage.dart';
 import 'package:dima_project/screens/mapPage.dart';
 import 'package:dima_project/screens/myTripsPage.dart';
+import 'package:dima_project/screens/tripPage.dart';
 import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:dima_project/widgets/activity_widgets/AccommodationForm.dart';
 import 'package:dima_project/widgets/activity_widgets/accommodationCardWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
-import 'package:dima_project/widgets/placesSearchWidget.dart';
+import 'package:dima_project/widgets/search_bottom_sheets/placesSearchWidget.dart';
 import 'package:dima_project/widgets/trip_widgets/tripExpensesWidget.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:dima_project/main.dart' as app;
 import 'package:flutter/material.dart';
+import 'package:mockito/mockito.dart';
 
 import 'integration_test_helper.dart';
 
@@ -524,6 +526,39 @@ void main() {
       expect(dropdown.value, 'USD');
       expect(find.textContaining('\$'), findsWidgets);
       expect(find.textContaining('€'), findsNothing);
+
+      await IntegrationTestHelper().performLogout(tester);
+    });
+
+    testWidgets('User changes trip privacy settings (private -> public)', (WidgetTester tester) async {
+      await IntegrationTestHelper().performLogin(tester);
+      //navigate to home page
+      final homeButton = find.byKey(const Key('homeButton'));
+      await tester.ensureVisible(homeButton);
+      await tester.tap(homeButton);
+      await tester.pumpAndSettle();
+      //click on previously created trip
+      final testTrip = find.text('New Test Trip');
+      await tester.ensureVisible(testTrip);
+      await tester.tap(testTrip);
+      await tester.pumpAndSettle();
+      //navigate to update page
+      final editButton = find.byKey(const Key('editButton'));
+      await tester.ensureVisible(editButton);
+      await tester.pumpAndSettle();
+      await tester.tap(editButton);
+      await tester.pumpAndSettle();
+      expect(find.text('Pubblica'), findsOneWidget);
+      expect(find.text('Rendi privato'), findsNothing);
+      //change privacy
+      await tester.tap(find.text('Pubblica'));
+      await tester.pumpAndSettle();
+      expect(find.byType(TripPage), findsOneWidget);
+      //click again on edit button
+      await tester.tap(editButton);
+      await tester.pumpAndSettle();
+      expect(find.text('Pubblica'), findsNothing);
+      expect(find.text('Rendi privato'), findsOneWidget);
 
       await IntegrationTestHelper().performLogout(tester);
     });

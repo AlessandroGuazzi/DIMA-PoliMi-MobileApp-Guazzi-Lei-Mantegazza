@@ -1,7 +1,7 @@
 import 'package:dima_project/screens/profilePage.dart';
+import 'package:dima_project/screens/travelStatsPage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:dima_project/main.dart' as app;
 import 'package:integration_test/integration_test.dart';
 
 import 'integration_test_helper.dart';
@@ -130,6 +130,31 @@ void main() {
     await tester.pumpAndSettle();
 
     await IntegrationTestHelper().performLogout(tester);
+  });
+
+  testWidgets('Utente apre travelStats page', (WidgetTester tester) async {
+    await IntegrationTestHelper().performLogin(tester);
+    //Navigazione verso la ProfilePage
+    await tester.pumpAndSettle();
+    final profileButton = find.byKey(const Key('profileButton'));
+    await tester.ensureVisible(profileButton);
+    await tester.tap(profileButton);
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.byType(ProfilePage), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('settingsButton')));
+    await tester.pumpAndSettle();
+    // Tocca “Modifica Profilo”
+    final visitedNation = find.byKey(const Key('Nazioni Visitate'));
+    await tester.ensureVisible(visitedNation);
+    await tester.tap(visitedNation);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(TravelStatsPage), findsOneWidget);
+
+    await IntegrationTestHelper().performLogout(tester);
+
   });
 
 }

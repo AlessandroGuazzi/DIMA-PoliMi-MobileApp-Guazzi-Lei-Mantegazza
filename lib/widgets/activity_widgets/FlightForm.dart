@@ -1,4 +1,4 @@
-import 'package:dima_project/widgets/airportSearchWidget.dart';
+import 'package:dima_project/widgets/search_bottom_sheets/airportSearchWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dima_project/models/flightModel.dart';

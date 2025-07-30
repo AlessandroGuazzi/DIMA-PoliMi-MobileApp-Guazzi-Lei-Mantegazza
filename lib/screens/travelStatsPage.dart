@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:countries_world_map/countries_world_map.dart';
 import 'package:countries_world_map/data/maps/world_map.dart';
 import '../models/tripModel.dart';
-import '../widgets/progressBar.dart';
+import '../widgets/components/progressBar.dart';
 
 class TravelStatsPage extends StatefulWidget {
   late final DatabaseService databaseService;

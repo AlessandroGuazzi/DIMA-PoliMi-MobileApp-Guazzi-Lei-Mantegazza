@@ -4,7 +4,7 @@ import 'package:dima_project/services/CurrencyService.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/utils/CountryToCurrency.dart';
 import 'package:dima_project/utils/PlacesType.dart';
-import 'package:dima_project/widgets/placesSearchWidget.dart';
+import 'package:dima_project/widgets/search_bottom_sheets/placesSearchWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

@@ -246,9 +246,9 @@ class _TripCardWidgetState extends State<TripCardWidget> {
                             onPressed: _handleSaveButton,
                             icon: widget.isSaved
                                 ? Icon(
-                              Icons.bookmark_added_rounded,
-                              color: Theme.of(context).primaryColor,
-                            )
+                                    Icons.bookmark_added_rounded,
+                                    color: Theme.of(context).primaryColor,
+                                  )
                                 : const Icon(Icons.bookmark_add_outlined),
                           ),
                         ],
@@ -273,7 +273,9 @@ class _TripCardWidgetState extends State<TripCardWidget> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => ProfilePage(userId: widget.trip.creatorInfo!['username'])),
+          builder: (context) => Scaffold(
+              appBar: AppBar(),
+              body: ProfilePage(userId: widget.trip.creatorInfo!['id']))),
     );
   }
 

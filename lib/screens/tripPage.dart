@@ -1,6 +1,6 @@
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/utils/screenSize.dart';
-import 'package:dima_project/widgets/myBottomSheetHandle.dart';
+import 'package:dima_project/widgets/components/myBottomSheetHandle.dart';
 import 'package:dima_project/widgets/trip_widgets/itineraryWidget.dart';
 import 'package:dima_project/widgets/trip_widgets/tripExpensesWidget.dart';
 import 'package:dima_project/screens/mapPage.dart';
@@ -8,6 +8,8 @@ import 'package:dima_project/widgets/trip_widgets/tripInfoWidget.dart';
 import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/components/myConfirmDialog.dart';
 
 class TripPage extends StatefulWidget {
   final DatabaseService databaseService;
@@ -266,23 +268,15 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
     Navigator.pop(bottomSheetContext);
 
     final shouldDelete = await showDialog<bool>(
-      context: parentContext,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Conferma eliminazione'),
-        content: const Text('Vuoi eliminare questo viaggio?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Annulla'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text(
-              'Elimina',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
+      context: context,
+      builder: (_) => MyConfirmDialog(
+        icon: Icons.delete_forever_rounded,
+        iconColor: Theme.of(context).colorScheme.error,
+        title: 'Conferma Eliminazione',
+        message: 'Vuoi davvero eliminare questo viaggio?',
+        confirmText: 'Elimina',
+        cancelText: 'Annulla',
+        onConfirm: () => Navigator.pop(context, true),
       ),
     );
 

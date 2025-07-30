@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../models/userModel.dart';
 import '../services/authService.dart';
 import '../utils/screenSize.dart';
+import '../widgets/components/myConfirmDialog.dart';
 import 'avatarSelectionPage.dart';
 
 
@@ -213,76 +214,21 @@ class _AccountSettingsState extends State<AccountSettings> {
             key: Key('saveButton'),
             onPressed: () {
               showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        elevation: 10,
-                        backgroundColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 24),
-                        title: Column(
-                          children: [
-                            Icon(
-                              Icons.verified_user_rounded,
-                              size: 40,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            const SizedBox(height: 15),
-                            const Text(
-                              'Conferma Modifiche',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                        content: const Text(
-                          'Sei davvero sicuro di voler salvare le modifiche?',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        actionsAlignment: MainAxisAlignment.center,
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.grey,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: const Text('ANNULLA'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              updateUser();
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(context).primaryColor,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              elevation: 3,
-                            ),
-                            child: const Text('CONFERMA'),
-                          ),
-                        ],
-                      ));
+                context: context,
+                builder: (_) => MyConfirmDialog(
+                  icon: Icons.verified_user_rounded,
+                  iconColor: Theme.of(context).primaryColor,
+                  title: 'Conferma Modifiche',
+                  message: 'Sei davvero sicuro di voler salvare le modifiche?',
+                  confirmText: 'Conferma',
+                  cancelText: 'Annulla',
+                  onConfirm: () {
+                    updateUser();
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                ),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,

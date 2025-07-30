@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:dima_project/models/userModel.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/screenSize.dart';
+import '../../utils/screenSize.dart';
 
 class UserProfileCard extends StatelessWidget {
   final UserModel user;

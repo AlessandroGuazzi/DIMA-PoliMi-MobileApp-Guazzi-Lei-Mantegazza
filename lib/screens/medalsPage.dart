@@ -1,7 +1,7 @@
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/userModel.dart';
 import 'package:dima_project/utils/screenSize.dart';
-import 'package:dima_project/widgets/userProfileCard.dart';
+import 'package:dima_project/widgets/components/userProfileCard.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/services/databaseService.dart';
 

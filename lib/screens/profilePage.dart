@@ -1,9 +1,9 @@
 import 'package:dima_project/screens/medalsPage.dart';
 import 'package:dima_project/screens/tripPage.dart';
 import 'package:dima_project/utils/screenSize.dart';
-import 'package:dima_project/widgets/myBottomSheetHandle.dart';
+import 'package:dima_project/widgets/components/myBottomSheetHandle.dart';
 import 'package:dima_project/widgets/trip_widgets/tripCardWidget.dart';
-import 'package:dima_project/widgets/userProfileCard.dart';
+import 'package:dima_project/widgets/components/userProfileCard.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
@@ -19,7 +19,11 @@ class ProfilePage extends StatefulWidget {
   late final AuthService authService;
   final String? userId;
 
-  ProfilePage({super.key,required this.userId, databaseService, authService})
+  ProfilePage(
+      {super.key,
+      required this.userId,
+      databaseService,
+      authService,})
       : databaseService = databaseService ?? DatabaseService(),
         authService = authService ?? AuthService();
 
@@ -31,6 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<UserModel?>? _currentUserFuture;
   late Future<List<TripModel>> _futureTrips;
   late Future<List<TripModel>> _savedTrips;
+  bool _isMyProfile = false;
 
   @override
   void initState() {
@@ -80,6 +85,10 @@ class _ProfilePageState extends State<ProfilePage> {
         }
 
         final user = snapshot.data!;
+        final currentuser = widget.authService.currentUser;
+        if (currentuser != null && currentuser.uid == user.id) {
+          _isMyProfile = true;
+        }
         _savedTrips = widget.databaseService.getTripsByIds(user.savedTrip);
 
         return builder(user);
@@ -105,18 +114,20 @@ class _ProfilePageState extends State<ProfilePage> {
                           : Colors.white,
                   centerTitle: true,
                   actions: [
-                    IconButton(
-                      key: Key('Settings'),
-                      icon: Icon(
-                        key: const Key('settingsButton'),
-                        Icons.settings,
-                        color: myAppKey.currentState?.currentTheme ==
-                                ThemeMode.dark
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                      onPressed: () => _showSettingsModal(user),
-                    ),
+                    _isMyProfile
+                        ? IconButton(
+                            key: const Key('Settings'),
+                            icon: Icon(
+                              key: const Key('settingsButton'),
+                              Icons.settings,
+                              color: myAppKey.currentState?.currentTheme ==
+                                      ThemeMode.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                            onPressed: () => _showSettingsModal(user),
+                          )
+                        : const SizedBox.shrink(),
                   ],
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
@@ -125,7 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   bottom: const TabBar(
                     tabs: [
                       Tab(text: 'Viaggi Salvati'),
-                      Tab(text: 'I Tuoi Viaggi'),
+                      Tab(text: 'Viaggi Creati'),
                     ],
                   ),
                 ),
@@ -190,7 +201,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         unselectedLabelColor: Colors.grey,
                         tabs: const [
                           Tab(text: 'Viaggi Salvati'),
-                          Tab(text: 'I Tuoi Viaggi'),
+                          Tab(text: 'Viaggi Creati'),
                         ],
                       ),
                       Expanded(
@@ -236,7 +247,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => TripPage(trip: trip, isMyTrip: isMyTrip, databaseService: widget.databaseService),
+                    builder: (_) => TripPage(
+                        trip: trip,
+                        isMyTrip: isMyTrip,
+                        databaseService: widget.databaseService),
                   ),
                 );
               },
@@ -291,18 +305,21 @@ class _ProfilePageState extends State<ProfilePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    AccountSettings(currentUserFuture: _currentUserFuture, authService: widget.authService,),
+                builder: (context) => AccountSettings(
+                  currentUserFuture: _currentUserFuture,
+                  authService: widget.authService,
+                ),
               ),
             ).then((_) => setState(() {
-              if(widget.userId != null) {
-                _currentUserFuture = widget.databaseService.getUserByUid(widget.userId!);
-              }
+                  if (widget.userId != null) {
+                    _currentUserFuture =
+                        widget.databaseService.getUserByUid(widget.userId!);
+                  }
                 }));
           },
         ),
         ListTile(
-          key: Key('Nazioni Visitate'),
+          key: const Key('Nazioni Visitate'),
           leading: const Icon(Icons.travel_explore_outlined),
           title: Text('Nazioni Visitate',
               style: Theme.of(context).textTheme.bodyMedium),
@@ -310,7 +327,10 @@ class _ProfilePageState extends State<ProfilePage> {
             if (!isTablet) Navigator.pop(context);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => TravelStatsPage(databaseService: widget.databaseService,)),
+              MaterialPageRoute(
+                  builder: (context) => TravelStatsPage(
+                        databaseService: widget.databaseService,
+                      )),
             );
           },
         ),
@@ -323,13 +343,16 @@ class _ProfilePageState extends State<ProfilePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    MedalsPage(username: user.username!, userId: user.id!, databaseService: widget.databaseService),
+                builder: (context) => MedalsPage(
+                    username: user.username!,
+                    userId: user.id!,
+                    databaseService: widget.databaseService),
               ),
             ).then((_) => setState(() {
-              if(widget.userId != null) {
-                _currentUserFuture = widget.databaseService.getUserByUid(widget.userId!);
-              }
+                  if (widget.userId != null) {
+                    _currentUserFuture =
+                        widget.databaseService.getUserByUid(widget.userId!);
+                  }
                 }));
           },
         ),

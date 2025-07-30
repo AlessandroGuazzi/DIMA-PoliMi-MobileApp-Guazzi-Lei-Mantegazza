@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dima_project/models/airportModel.dart';
-import 'package:dima_project/widgets/airportSearchWidget.dart'; // importa il tuo widget
+import 'package:dima_project/widgets/search_bottom_sheets/airportSearchWidget.dart'; // importa il tuo widget
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart' show CachingAssetBundle, rootBundle;
