@@ -233,7 +233,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
                                           0.003,
                                       child: PopupMenuButton<int>(
                                         key: const Key('activityMenu'),
-                                        icon: const Icon(Icons.more_horiz),
+                                        icon: Icon(Icons.more_horiz, color: Theme.of(context).primaryColor),
                                         onSelected: (value) async {
                                           if (value == 1) {
                                             // Azione Modifica
