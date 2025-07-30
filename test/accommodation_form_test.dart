@@ -1,6 +1,7 @@
 import 'package:dima_project/models/accommodationModel.dart';
 import 'package:dima_project/widgets/activity_widgets/accommodationForm.dart';
 import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/widgets/placesSearchWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -10,15 +11,19 @@ void main() {
   group('AccommodationForm Widget', () {
     late TripModel testTrip;
     late MockDatabaseService mockDatabaseService;
+    late MockCurrencyService mockCurrencyService;
     late AccommodationModel accommodation;
 
     setUp(() async {
       mockDatabaseService = MockDatabaseService();
+      mockCurrencyService = MockCurrencyService();
+
       testTrip = TripModel(
         id: 'trip123',
         title: 'Test Trip',
         nations: [
-          {'name': 'Italy', 'code': 'IT'}
+          {'name': 'Italy', 'code': 'IT'},
+          {'name': 'United States', 'code': 'USA'}
         ],
         startDate: DateTime(2025, 12, 1),
         endDate: DateTime(2025, 12, 10),
@@ -45,6 +50,8 @@ void main() {
               trip: testTrip,
               accommodation: accommodation,
               databaseService: mockDatabaseService,
+              currencyService: mockCurrencyService,
+              //currencyService: mockCurrencyService,
             ),
           ),
         ),
@@ -84,6 +91,38 @@ void main() {
 
       expect(find.text('Per favore inserisci un\'alloggio'), findsOneWidget);
       expect(find.text('Per favore seleziona data di arrivo e fine'), findsOneWidget);
+    });
+
+    testWidgets('should open PlacesSearchWidget when location field is tapped', (WidgetTester tester) async {
+      await pumpTestableWidget(tester);
+      await tester.pumpAndSettle();
+
+      final locationField = find.widgetWithText(TextFormField, 'Dove dormirai?');
+      await tester.ensureVisible(locationField);
+      await tester.tap(locationField);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(PlacesSearchWidget), findsOneWidget);
+    });
+
+    testWidgets('should create accommodation when form is submitted', (WidgetTester tester) async {
+      await pumpTestableWidget(tester);
+      await tester.pumpAndSettle();
+      when(mockDatabaseService.createActivity(any)).thenAnswer((_) async => Future.value());
+      //fill form
+      final state = tester.state(find.byType(AccommodationForm)) as dynamic;
+      state.titleController.text  = 'Test Accommodation';
+      state.addressController.text = 'Test Address';
+      //fill dates
+      state.startDate = DateTime(2025, 12, 2);
+      state.endDate = DateTime(2025, 12, 5);
+      //submit
+      final buttonFinder = find.byKey(const Key('add_button'));
+      await tester.ensureVisible(buttonFinder);
+      await tester.tap(buttonFinder);
+      await tester.pumpAndSettle();
+
+      verify(mockDatabaseService.createActivity(any)).called(1);
     });
 
     testWidgets('should populate fields when editing existing accommodation', (WidgetTester tester) async {
@@ -179,9 +218,13 @@ void main() {
     });
 
 
-    testWidgets('should update currency dropdown and enter cost', (WidgetTester tester) async {
-      await pumpTestableWidget(tester); // funzione helper già esistente nel test
+    //TODO: this test is unfinished, need to mock  CurrencyService
+    testWidgets('should handles currency conversion', (WidgetTester tester) async {
 
+      // Mock del CurrencyService, double the original value
+      when(mockCurrencyService.getExchangeRate(any, any))
+          .thenAnswer((_) async => 2);
+      await pumpTestableWidget(tester, accommodation: accommodation);
       await tester.pumpAndSettle();
 
       final costField = find.widgetWithText(TextFormField, 'Costo');
@@ -191,12 +234,49 @@ void main() {
       await tester.enterText(costField, '200');
       expect(find.text('200'), findsOneWidget);
 
-      // Trova e interagisce con il DropdownButton della valuta
       final currencyDropdown = find.byType(DropdownButton<String>);
       expect(currencyDropdown, findsOneWidget);
 
       await tester.tap(currencyDropdown);
       await tester.pumpAndSettle();
+
+      //tap on the dollar sign
+      await tester.tap(find.text('\$'));
+      await tester.pumpAndSettle();
+
+      //click on aggiungi
+      await tester.tap(find.byKey(const Key('add_button')));
+      await tester.pumpAndSettle();
+
+      verify(mockCurrencyService.getExchangeRate('USD', 'EUR')).called(1);
+
+    });
+
+    testWidgets('should handle currency conversion errors', (WidgetTester tester) async {
+
+      when(mockCurrencyService.getExchangeRate(any, any))
+          .thenThrow(Exception('Currency conversion error'));
+      await pumpTestableWidget(tester, accommodation: accommodation);
+      await tester.pumpAndSettle();
+      final costField = find.widgetWithText(TextFormField, 'Costo');
+      expect(costField, findsOneWidget);
+
+      await tester.enterText(costField, '200');
+      expect(find.text('200'), findsOneWidget);
+      final currencyDropdown = find.byType(DropdownButton<String>);
+      expect(currencyDropdown, findsOneWidget);
+      await tester.tap(currencyDropdown);
+      await tester.pumpAndSettle();
+
+      //tap on the dollar sign
+      await tester.tap(find.text('\$'));
+      await tester.pumpAndSettle();
+
+      //click on aggiungi
+      await tester.tap(find.byKey(const Key('add_button')));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Currency conversion error'), findsOneWidget);
+
     });
   });
 }

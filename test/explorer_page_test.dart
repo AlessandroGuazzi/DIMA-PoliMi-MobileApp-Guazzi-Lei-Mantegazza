@@ -212,7 +212,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // mock db call
-    when(mockDatabaseService.handleTripSave(any, any)).thenAnswer((_) async {return true;});
+    when(mockDatabaseService.handleTripSave(any, any)).thenAnswer((_) async {});
 
     // Find the first trip's save button (saved icon)
     Finder saveButton = find.byIcon(Icons.bookmark_added_rounded).first;
@@ -221,7 +221,6 @@ void main() {
     // mock db call
     when(mockDatabaseService.handleTripSave(any, any)).thenAnswer((_) async {
       testCurrentUserModel.savedTrip!.remove(mockTripList[0].id);
-      return true;
     });
 
     // First tap: should remove save, decrement counter

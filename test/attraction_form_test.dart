@@ -2,6 +2,7 @@ import 'package:dima_project/models/attractionModel.dart';
 import 'package:dima_project/widgets/activity_widgets/attractionForm.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/utils/PlacesType.dart';
+import 'package:dima_project/widgets/placesSearchWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -158,8 +159,21 @@ void main() {
       expect(find.text('Museo'), findsOneWidget);
     });
 
+    
+    testWidgets('should open PlacesSearchWidget when location field is tapped', (WidgetTester tester) async {
+      await pumpTestableWidget(tester);
+      await tester.pumpAndSettle();
+
+      final locationField = find.widgetWithText(TextFormField, 'Dove?');
+      await tester.ensureVisible(locationField);
+      await tester.tap(locationField);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(PlacesSearchWidget), findsOneWidget);
+    });
 
 
+    //TODO: this test is not complete
     testWidgets('should update currency dropdown and enter cost', (WidgetTester tester) async {
       await pumpTestableWidget(tester, attraction: attraction);
       await tester.pumpAndSettle();
@@ -204,11 +218,10 @@ void main() {
     });
 
 
-    testWidgets('should create attraction with correct data when form is submitted', (WidgetTester tester) async {
+    testWidgets('should update attraction with correct data when form is submitted', (WidgetTester tester) async {
       await pumpTestableWidget(tester, attraction: attraction);
       await tester.pumpAndSettle();
 
-      // Stub del database service - stesso pattern degli altri test
       when(mockDatabaseService.updateActivity(any, any, any, any)).thenAnswer((_) async => Future.value());
 
       // Il form dovrebbe essere pre-popolato con i dati dell'attraction esistente

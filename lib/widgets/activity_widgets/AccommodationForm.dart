@@ -10,12 +10,17 @@ import 'package:intl/intl.dart';
 
 //TODO: address is not really the address yet, but probably we don't care
 class AccommodationForm extends StatefulWidget {
-
   AccommodationForm({
-    super.key, required this.trip, this.accommodation, databaseService,
-  }) : databaseService = databaseService ?? DatabaseService();
+    super.key,
+    required this.trip,
+    this.accommodation,
+    databaseService,
+    currencyService,
+  })  : databaseService = databaseService ?? DatabaseService(),
+        currencyService = currencyService ?? CurrencyService();
 
   final DatabaseService databaseService;
+  final CurrencyService currencyService;
   final AccommodationModel? accommodation; // per la modifica
   final TripModel trip;
 
@@ -70,6 +75,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
           children: [
             // Nome alloggio
             TextFormField(
+              key: const Key('nameField'),
               controller: titleController,
               readOnly: true,
               decoration: const InputDecoration(
@@ -86,6 +92,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
 
             // Indirizzo
             TextFormField(
+              key: const Key('addressField'),
               controller: addressController,
               readOnly: true,
               decoration: InputDecoration(
@@ -97,6 +104,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
 
             // Selezione date
             TextFormField(
+              key: const Key('datesField'),
               readOnly: true,
               controller: TextEditingController(
                 text: _startDate != null && _endDate != null
@@ -160,6 +168,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
 
             // Costo (opzionale)
             TextFormField(
+              key: const Key('costField'),
               controller: costController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
@@ -173,7 +182,8 @@ class _AccommodationFormState extends State<AccommodationForm> {
                       return DropdownMenuItem(
                         alignment: Alignment.center,
                         value: currency,
-                        child: CountryToCurrency().formatPopularCurrencies(currency),
+                        child: CountryToCurrency()
+                            .formatPopularCurrencies(currency),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -200,6 +210,7 @@ class _AccommodationFormState extends State<AccommodationForm> {
             const SizedBox(height: 20),
 
             ElevatedButton(
+              key: const Key('add_button'),
               onPressed: _submitForm,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,
@@ -298,11 +309,12 @@ class _AccommodationFormState extends State<AccommodationForm> {
 
   void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
-
+      print('Form submitted');
       //convert currency to 'EUR' for consistency
-      if(_selectedCurrency != 'EUR' && cost != null) {
+      if (_selectedCurrency != 'EUR' && cost != null) {
         try {
-          num currencyExchange = await CurrencyService().getExchangeRate(_selectedCurrency, 'EUR');
+          num currencyExchange =
+              await widget.currencyService.getExchangeRate(_selectedCurrency, 'EUR');
           cost = cost! * currencyExchange;
         } catch (e) {
           showDialog(
@@ -354,5 +366,24 @@ class _AccommodationFormState extends State<AccommodationForm> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Per favore compila tutti i campi correttamente!')));
     }
+  }
+
+
+
+
+
+  //methods necessary for testing purposes
+  @visibleForTesting
+  set startDate(DateTime? value) {
+    setState(() {
+      _startDate = value;
+    });
+  }
+
+  @visibleForTesting
+  set endDate(DateTime? value) {
+    setState(() {
+      _endDate = value;
+    });
   }
 }

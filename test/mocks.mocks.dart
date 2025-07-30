@@ -276,7 +276,7 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
       ) as _i8.Future<void>);
 
   @override
-  _i8.Future<bool> handleTripSave(
+  _i8.Future<void> handleTripSave(
     bool? isCurrentlySaved,
     String? tripId,
   ) =>
@@ -288,8 +288,9 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
             tripId,
           ],
         ),
-        returnValue: _i8.Future<bool>.value(false),
-      ) as _i8.Future<bool>);
+        returnValue: _i8.Future<void>.value(),
+        returnValueForMissingStub: _i8.Future<void>.value(),
+      ) as _i8.Future<void>);
 
   @override
   _i8.Future<void> createActivity(_i7.ActivityModel? activity) =>

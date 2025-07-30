@@ -1,5 +1,6 @@
 import 'package:dima_project/main.dart' as app;
 import 'package:dima_project/screens/authenticationPage.dart';
+import 'package:dima_project/screens/homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,7 +24,11 @@ class IntegrationTestHelper {
     await tester.ensureVisible(submitButton);
     await tester.tap(submitButton);
     await tester.pumpAndSettle();
-    await tester.pump(const Duration(seconds: 3));
+    // Wait until MyHomePage appear
+    while (find.byType(MyHomePage).evaluate().isEmpty) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.pumpAndSettle();
   }
 
   Future<void> performLogout(WidgetTester tester) async {
