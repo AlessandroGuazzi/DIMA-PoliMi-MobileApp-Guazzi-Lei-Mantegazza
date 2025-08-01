@@ -2,10 +2,10 @@ import 'package:dima_project/models/accommodationModel.dart';
 import 'package:dima_project/models/activityModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/databaseService.dart';
-import 'package:dima_project/widgets/activity_widgets/AccommodationForm.dart';
-import 'package:dima_project/widgets/activity_widgets/AttractionForm.dart';
-import 'package:dima_project/widgets/activity_widgets/FlightForm.dart';
-import 'package:dima_project/widgets/activity_widgets/TransportForm.dart';
+import 'package:dima_project/widgets/activity_widgets/forms/AccommodationForm.dart';
+import 'package:dima_project/widgets/activity_widgets/forms/AttractionForm.dart';
+import 'package:dima_project/widgets/activity_widgets/forms/FlightForm.dart';
+import 'package:dima_project/widgets/activity_widgets/forms/TransportForm.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

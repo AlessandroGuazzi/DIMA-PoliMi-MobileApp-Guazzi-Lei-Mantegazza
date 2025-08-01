@@ -32,18 +32,25 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Future<UserModel?>? _currentUserFuture;
-  late Future<List<TripModel>> _futureTrips;
-  late Future<List<TripModel>> _savedTrips;
+  Future<UserModel?>? _userFuture;
+  late Future<List<TripModel>> _createdTripsFuture;
+  late Future<List<TripModel>> _savedTripsFuture;
   bool _isMyProfile = false;
 
   @override
   void initState() {
     super.initState();
-    if (widget.userId != null) {
-      _currentUserFuture = widget.databaseService.getUserByUid(widget.userId!);
+    final currentUser = widget.authService.currentUser;
+
+
+    if (currentUser != null && widget.userId != null) {
+      //check if the user to be displayed is the current user
+      if (currentUser.uid == widget.userId) {
+        _isMyProfile = true;
+      }
+      _userFuture = widget.databaseService.getUserByUid(widget.userId!);
+      _createdTripsFuture = widget.databaseService.getTripsOfUserWithPrivacy(widget.userId!, !_isMyProfile);
     }
-    _futureTrips = widget.databaseService.getHomePageTrips();
   }
 
   Future<void> signOut() async {
@@ -59,14 +66,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _futureUserBuilder(Widget Function(UserModel user) builder) {
-    if (_currentUserFuture == null) {
+    if (_userFuture == null) {
       return const Scaffold(
         body: Center(child: Text('Nessun utente autenticato')),
       );
     }
 
     return FutureBuilder<UserModel?>(
-      future: _currentUserFuture,
+      future: _userFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -85,11 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
 
         final user = snapshot.data!;
-        final currentuser = widget.authService.currentUser;
-        if (currentuser != null && currentuser.uid == user.id) {
-          _isMyProfile = true;
-        }
-        _savedTrips = widget.databaseService.getTripsByIds(user.savedTrip);
+        _savedTripsFuture = widget.databaseService.getTripsByIds(user.savedTrip);
 
         return builder(user);
       },
@@ -143,8 +146,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
               body: TabBarView(
                 children: [
-                  _buildTripList(_savedTrips, isMyTrip: false),
-                  _buildTripList(_futureTrips, isMyTrip: true),
+                  _buildTripList(_savedTripsFuture, isMyTrip: false),
+                  _buildTripList(_createdTripsFuture, isMyTrip: true),
                 ],
               ),
             ),
@@ -207,8 +210,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       Expanded(
                         child: TabBarView(
                           children: [
-                            _buildTripList(_savedTrips, isMyTrip: false),
-                            _buildTripList(_futureTrips, isMyTrip: true),
+                            _buildTripList(_savedTripsFuture, isMyTrip: false),
+                            _buildTripList(_createdTripsFuture, isMyTrip: true),
                           ],
                         ),
                       ),
@@ -306,13 +309,13 @@ class _ProfilePageState extends State<ProfilePage> {
               context,
               MaterialPageRoute(
                 builder: (context) => AccountSettings(
-                  currentUserFuture: _currentUserFuture,
+                  currentUserFuture: _userFuture,
                   authService: widget.authService,
                 ),
               ),
             ).then((_) => setState(() {
                   if (widget.userId != null) {
-                    _currentUserFuture =
+                    _userFuture =
                         widget.databaseService.getUserByUid(widget.userId!);
                   }
                 }));
@@ -350,7 +353,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ).then((_) => setState(() {
                   if (widget.userId != null) {
-                    _currentUserFuture =
+                    _userFuture =
                         widget.databaseService.getUserByUid(widget.userId!);
                   }
                 }));

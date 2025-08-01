@@ -4,9 +4,9 @@ import 'package:dima_project/screens/mapPage.dart';
 import 'package:dima_project/screens/myTripsPage.dart';
 import 'package:dima_project/screens/tripPage.dart';
 import 'package:dima_project/screens/upsertTripPage.dart';
-import 'package:dima_project/widgets/activity_widgets/AccommodationForm.dart';
-import 'package:dima_project/widgets/activity_widgets/accommodationCardWidget.dart';
-import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/forms/AccommodationForm.dart';
+import 'package:dima_project/widgets/activity_widgets/accommodationActivityCard.dart';
+import 'package:dima_project/widgets/activity_widgets/flightActivityCard.dart';
 import 'package:dima_project/widgets/search_bottom_sheets/placesSearchWidget.dart';
 import 'package:dima_project/widgets/trip_widgets/tripExpensesWidget.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -188,7 +188,7 @@ void main() {
 
       //assert
       final flightCardFinder = find.byWidgetPredicate((widget) {
-        return widget is FlightCardWidget &&
+        return widget is FlightActivityCard &&
             widget.flight.departureAirPort?['iata']?.contains('FCO') == true &&
             widget.flight.arrivalAirPort?['iata']?.contains('JFK') == true;
       });
@@ -277,7 +277,7 @@ void main() {
 
       //assert
       final accommodationCardFinder = find.byWidgetPredicate((widget) {
-        return widget is AccommodationCardWidget &&
+        return widget is AccommodationActivityCard &&
             widget.accommodation.name?.contains('A') == true;
       });
       expect(accommodationCardFinder, findsOneWidget);
@@ -303,7 +303,7 @@ void main() {
 
       //find previously created activity (flight)
       final flightCardFinder = find.byWidgetPredicate((widget) {
-        return widget is FlightCardWidget &&
+        return widget is FlightActivityCard &&
             widget.flight.departureAirPort?['iata']?.contains('FCO') == true &&
             widget.flight.arrivalAirPort?['iata']?.contains('JFK') == true;
       });
@@ -339,7 +339,7 @@ void main() {
 
       //assert
       final newFlightCardFinder = find.byWidgetPredicate((widget) {
-        return widget is FlightCardWidget &&
+        return widget is FlightActivityCard &&
             widget.flight.departureAirPort?['iata']?.contains('MXP') == true &&
             widget.flight.arrivalAirPort?['iata']?.contains('JFK') == true;
       });
@@ -407,7 +407,7 @@ void main() {
 
       //find previously created activity (flight)
       final flightCardFinder = find.byWidgetPredicate((widget) {
-        return widget is FlightCardWidget &&
+        return widget is FlightActivityCard &&
             widget.flight.departureAirPort?['iata']?.contains('MXP') == true &&
             widget.flight.arrivalAirPort?['iata']?.contains('JFK') == true;
       });

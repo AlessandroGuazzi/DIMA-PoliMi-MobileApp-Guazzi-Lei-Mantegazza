@@ -617,6 +617,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
           startDate: _startDate,
           endDate: _endDate,
           imageRef: photoUrl,
+          isPrivate: true,
           timestamp: Timestamp.now(),
         );
         widget.databaseService

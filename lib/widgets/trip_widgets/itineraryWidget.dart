@@ -8,10 +8,10 @@ import 'package:dima_project/screens/createActivityPage.dart';
 import 'package:dima_project/screens/editActivityPage.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/utils/screenSize.dart';
-import 'package:dima_project/widgets/activity_widgets/accommodationCardWidget.dart';
-import 'package:dima_project/widgets/activity_widgets/attractionCardWidget.dart';
-import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
-import 'package:dima_project/widgets/activity_widgets/transportCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/accommodationActivityCard.dart';
+import 'package:dima_project/widgets/activity_widgets/attractionActivityCard.dart';
+import 'package:dima_project/widgets/activity_widgets/flightActivityCard.dart';
+import 'package:dima_project/widgets/activity_widgets/transportActivityCard.dart';
 import 'package:dima_project/widgets/components/myBottomSheetHandle.dart';
 import 'package:dima_project/widgets/trip_widgets/tripProgressBar.dart';
 import 'package:flutter/material.dart';
@@ -205,24 +205,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
                                   vertical: 8.5, horizontal: 4.0),
                               child: Stack(
                                 children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).cardColor,
-                                      borderRadius: BorderRadius.circular(
-                                          16), // Rounded edges
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black12,
-                                          // Light shadow color
-                                          blurRadius: 8,
-                                          // Softness of the shadow
-                                          offset: Offset(
-                                              0, 4), // Position of the shadow
-                                        ),
-                                      ],
-                                    ),
-                                    child: _buildActivityCard(activity),
-                                  ),
+                                  _buildActivityCard(activity),
 
                                   // EDIT and DELETE buttons
                                   if (widget.isMyTrip)
@@ -299,16 +282,16 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
   Widget _buildActivityCard(ActivityModel activity) {
     switch (activity.type) {
       case 'flight':
-        return FlightCardWidget(activity as FlightModel);
+        return FlightActivityCard(activity as FlightModel);
       case 'accommodation':
-        return AccommodationCardWidget(activity as AccommodationModel);
+        return AccommodationActivityCard(activity as AccommodationModel);
       case 'transport':
-        return Transportcardwidget(activity as TransportModel);
+        return TransportActivityCard(activity as TransportModel);
       case 'attraction':
-        return Attractioncardwidget(activity as AttractionModel);
+        return AttractionActivityCard(activity as AttractionModel);
       default:
         print('no attività');
-        return Placeholder(); // Widget di default se il tipo non è riconosciuto
+        return const Placeholder();
     }
   }
 

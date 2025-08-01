@@ -1,7 +1,7 @@
 // test/transportForm_test.dart
 import 'package:dima_project/models/transportModel.dart';
 import 'package:dima_project/models/tripModel.dart';
-import 'package:dima_project/widgets/activity_widgets/transportForm.dart';
+import 'package:dima_project/widgets/activity_widgets/forms/TransportForm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

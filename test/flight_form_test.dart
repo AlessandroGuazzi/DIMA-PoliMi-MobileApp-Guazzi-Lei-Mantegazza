@@ -1,6 +1,6 @@
 import 'package:dima_project/models/flightModel.dart';
-import 'package:dima_project/widgets/activity_widgets/flightForm.dart';
 import 'package:dima_project/models/tripModel.dart';
+import 'package:dima_project/widgets/activity_widgets/forms/FlightForm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';

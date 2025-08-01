@@ -95,6 +95,41 @@ class DatabaseService {
     return trips;
   }
 
+  //Method for retrieval of all 'Trips' documents that are created by the user in input, with choice on the privacy
+  Future<List<TripModel>> getTripsOfUserWithPrivacy(String userId, bool publicOnly) async {
+    List<TripModel> trips = [];
+
+    try {
+
+      QuerySnapshot<TripModel> querySnapshot;
+      if(publicOnly) {
+        querySnapshot = await tripCollection
+            .where("creatorInfo.id", isEqualTo: userId)
+            .where("isPrivate", isEqualTo: false)
+            .get();
+      } else {
+        querySnapshot = await tripCollection
+            .where("creatorInfo.id", isEqualTo: userId)
+            .get();
+      }
+
+      if (kDebugMode) {
+        print("Successfully completed");
+      }
+
+      for (var docSnapshot in querySnapshot.docs) {
+        trips.add(docSnapshot.data());
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error completing: $e");
+      }
+      return Future.error(e);
+    }
+
+    return trips;
+  }
+
   Future<List<TripModel>> getCompletedTrips([String userId = "defaultUserId"]) async {
     List<TripModel> trips = [];
 
@@ -225,7 +260,6 @@ class DatabaseService {
       throw Exception("Invalid tripId");
     }
   }
-
 
   Future<void> createActivity(ActivityModel activity) async {
     try {

@@ -4,8 +4,8 @@ import 'package:dima_project/services/databaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../services/CurrencyService.dart';
-import '../../utils/CountryToCurrency.dart';
+import '../../../services/CurrencyService.dart';
+import '../../../utils/CountryToCurrency.dart';
 
 class TransportForm extends StatefulWidget {
   TransportForm({

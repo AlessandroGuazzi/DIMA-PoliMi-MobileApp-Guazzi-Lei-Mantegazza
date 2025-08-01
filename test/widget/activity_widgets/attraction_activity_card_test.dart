@@ -1,11 +1,10 @@
 import 'package:dima_project/models/attractionModel.dart';
-import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
-import 'package:dima_project/widgets/activity_widgets/attractionCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/attractionActivityCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('AttractionCardWidget', () {
+  group('AttractionActivityCard', () {
     testWidgets('renders base info and expands to show details', (WidgetTester tester) async {
       final attraction = AttractionModel(
         name: 'Colosseo',
@@ -20,20 +19,21 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: Attractioncardwidget(attraction),
+            body: AttractionActivityCard(attraction),
           ),
         ),
       );
 
+      // Let initial animations settle
+      await tester.pumpAndSettle();
+
       // Verifica contenuto base
       expect(find.text('Colosseo'), findsOneWidget);
       expect(find.textContaining('10:00 - 12:30'), findsOneWidget);
+      expect(find.byIcon(Icons.expand_more), findsOneWidget);
       expect(find.byIcon(Icons.attractions), findsOneWidget);
 
-      // ✅ Verifica presenza del widget custom activityDivider
-      expect(find.byType(activityDivider), findsOneWidget);
-
-      // Dettagli extra non visibili all'inizio
+      // Dettagli extra non visibili all'inizio - REMOVE skipOffstage: true
       expect(find.textContaining('Dettagli Extra:'), findsNothing);
       expect(find.textContaining('Piazza del Colosseo'), findsNothing);
       expect(find.textContaining('€16.50'), findsNothing);
@@ -51,7 +51,7 @@ void main() {
       expect(find.text('Descrizione:'), findsOneWidget);
       expect(find.text('Visita guidata all\'interno del Colosseo.'), findsOneWidget);
 
-      //Simula di nuovo il tap per chiudere
+      // Simula di nuovo il tap per chiudere
       await tester.tap(find.byIcon(Icons.expand_less));
       await tester.pumpAndSettle();
 

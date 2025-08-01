@@ -1,5 +1,5 @@
 import 'package:dima_project/models/accommodationModel.dart';
-import 'package:dima_project/widgets/activity_widgets/accommodationCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/accommodationActivityCard.dart';
 import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,7 +21,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: AccommodationCardWidget(accommodation),
+          body: AccommodationActivityCard(accommodation),
         ),
       ),
     );

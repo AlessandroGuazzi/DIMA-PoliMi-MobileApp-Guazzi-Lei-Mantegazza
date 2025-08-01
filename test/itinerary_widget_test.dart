@@ -3,10 +3,10 @@ import 'package:dima_project/models/flightModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/screens/createActivityPage.dart';
 import 'package:dima_project/services/databaseService.dart';
-import 'package:dima_project/widgets/activity_widgets/FlightForm.dart';
+import 'package:dima_project/widgets/activity_widgets/forms/FlightForm.dart';
 import 'package:dima_project/widgets/trip_widgets/itineraryWidget.dart';
-import 'package:dima_project/widgets/activity_widgets/flightCardWidget.dart';
-import 'package:dima_project/widgets/activity_widgets/attractionCardWidget.dart';
+import 'package:dima_project/widgets/activity_widgets/flightActivityCard.dart';
+import 'package:dima_project/widgets/activity_widgets/attractionActivityCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -60,8 +60,8 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.byType(FlightCardWidget), findsOneWidget);
-    expect(find.byType(Attractioncardwidget), findsOneWidget);
+    expect(find.byType(FlightActivityCard), findsOneWidget);
+    expect(find.byType(AttractionActivityCard), findsOneWidget);
   });
 
   testWidgets('opens bottom sheet when add button is pressed', (WidgetTester tester) async {

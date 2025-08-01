@@ -5,8 +5,8 @@ import 'package:dima_project/models/flightModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/databaseService.dart';
 
-import '../../services/CurrencyService.dart';
-import '../../utils/CountryToCurrency.dart';
+import '../../../services/CurrencyService.dart';
+import '../../../utils/CountryToCurrency.dart';
 
 class FlightForm extends StatefulWidget {
   final TripModel trip;
