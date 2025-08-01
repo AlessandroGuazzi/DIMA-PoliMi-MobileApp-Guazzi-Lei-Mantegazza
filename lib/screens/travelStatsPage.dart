@@ -8,8 +8,9 @@ import '../widgets/components/progressBar.dart';
 
 class TravelStatsPage extends StatefulWidget {
   late final DatabaseService databaseService;
+  final String? userId;
 
-  TravelStatsPage({super.key, databaseService})
+  TravelStatsPage({super.key, databaseService, this.userId})
       : databaseService = databaseService ?? DatabaseService();
 
   @override
@@ -347,7 +348,13 @@ class _TravelStatsPageState extends State<TravelStatsPage> {
   @override
   void initState() {
     super.initState();
-    _completedTrips = widget.databaseService.getCompletedTrips();
+    if(widget.userId != null) {
+      // Caso 1: userId è presente
+      _completedTrips = widget.databaseService.getCompletedTrips(widget.userId!);
+    } else {
+      // Caso 2: userId non è presente
+      _completedTrips = widget.databaseService.getCompletedTrips();
+    }
   }
 
   @override

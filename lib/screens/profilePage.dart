@@ -118,20 +118,18 @@ class _ProfilePageState extends State<ProfilePage> {
                           : Colors.white,
                   centerTitle: true,
                   actions: [
-                    _isMyProfile
-                        ? IconButton(
-                            key: const Key('Settings'),
-                            icon: Icon(
-                              key: const Key('settingsButton'),
-                              Icons.settings,
-                              color: myAppKey.currentState?.currentTheme ==
-                                      ThemeMode.dark
-                                  ? Colors.white
-                                  : Colors.black,
-                            ),
-                            onPressed: () => _showSettingsModal(user),
-                          )
-                        : const SizedBox.shrink(),
+                    IconButton(
+                      key: const Key('Settings'),
+                      icon: Icon(
+                        key: const Key('settingsButton'),
+                        Icons.settings,
+                        color: myAppKey.currentState?.currentTheme ==
+                                ThemeMode.dark
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      onPressed: () => _showSettingsModal(user, _isMyProfile),
+                    )
                   ],
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
@@ -212,7 +210,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: TabBarView(
                           children: [
                             _buildTripList(_savedTripsFuture, isMyTrip: false),
-                            _buildTripList(_createdTripsFuture, isMyTrip: true),
+                            _buildTripList(_createdTripsFuture, isMyTrip: widget.isCurrentUser),
                           ],
                         ),
                       ),
@@ -267,7 +265,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   //For mobile
-  void _showSettingsModal(UserModel user) {
+  void _showSettingsModal(UserModel user, bool isMyProfile) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: false,
@@ -299,29 +297,31 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildProfileMenuListView(bool isTablet, UserModel user) {
     return Column(
       children: [
-        ListTile(
-          key: Key('Modifica Profilo'),
-          leading: const Icon(Icons.person),
-          title: Text('Modifica Profilo',
-              style: Theme.of(context).textTheme.bodyMedium),
-          onTap: () {
-            if (!isTablet) Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AccountSettings(
-                  currentUserFuture: _userFuture,
-                  authService: widget.authService,
+        // Opzione "Modifica Profilo" condizionale
+        if (_isMyProfile)
+          ListTile(
+            key: const Key('Modifica Profilo'),
+            leading: const Icon(Icons.person),
+            title: Text('Modifica Profilo',
+                style: Theme.of(context).textTheme.bodyMedium),
+            onTap: () {
+              if (!isTablet) Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AccountSettings(
+                    currentUserFuture: _userFuture,
+                    authService: widget.authService,
+                  ),
                 ),
-              ),
-            ).then((_) => setState(() {
-                  if (widget.userId != null) {
-                    _userFuture =
-                        widget.databaseService.getUserByUid(widget.userId!);
-                  }
-                }));
-          },
-        ),
+              ).then((_) => setState(() {
+                if (widget.userId != null) {
+                  _userFuture =
+                      widget.databaseService.getUserByUid(widget.userId!);
+                }
+              }));
+            },
+          ),
         ListTile(
           key: const Key('Nazioni Visitate'),
           leading: const Icon(Icons.travel_explore_outlined),
@@ -333,15 +333,16 @@ class _ProfilePageState extends State<ProfilePage> {
               context,
               MaterialPageRoute(
                   builder: (context) => TravelStatsPage(
-                        databaseService: widget.databaseService,
-                      )),
+                    databaseService: widget.databaseService,
+                    userId: widget.userId!,
+                  )),
             );
           },
         ),
         ListTile(
           leading: const Icon(Icons.monetization_on),
           title:
-              Text('Medaglie', style: Theme.of(context).textTheme.bodyMedium),
+          Text('Medaglie', style: Theme.of(context).textTheme.bodyMedium),
           onTap: () {
             if (!isTablet) Navigator.pop(context);
             Navigator.push(
@@ -353,39 +354,43 @@ class _ProfilePageState extends State<ProfilePage> {
                     databaseService: widget.databaseService),
               ),
             ).then((_) => setState(() {
-                  if (widget.userId != null) {
-                    _userFuture =
-                        widget.databaseService.getUserByUid(widget.userId!);
-                  }
-                }));
+              if (widget.userId != null) {
+                _userFuture =
+                    widget.databaseService.getUserByUid(widget.userId!);
+              }
+            }));
           },
         ),
-        ListTile(
-          key: Key('Theme Settings'),
-          title: Text(
+        // Opzione "Tema" condizionale
+        if (_isMyProfile)
+          ListTile(
+            key: const Key('Theme Settings'),
+            title: Text(
+                myAppKey.currentState?.currentTheme == ThemeMode.dark
+                    ? 'Tema chiaro'
+                    : 'Tema scuro',
+                style: Theme.of(context).textTheme.bodyMedium),
+            leading: Icon(
               myAppKey.currentState?.currentTheme == ThemeMode.dark
-                  ? 'Tema chiaro'
-                  : 'Tema scuro',
-              style: Theme.of(context).textTheme.bodyMedium),
-          leading: Icon(
-            myAppKey.currentState?.currentTheme == ThemeMode.dark
-                ? Icons.light_mode
-                : Icons.dark_mode,
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+            ),
+            onTap: () {
+              if (!isTablet) Navigator.pop(context);
+              myAppKey.currentState?.toggleTheme();
+            },
           ),
-          onTap: () {
-            if (!isTablet) Navigator.pop(context);
-            myAppKey.currentState?.toggleTheme();
-          },
-        ),
-        ListTile(
-          key: Key('Logout'),
-          leading: const Icon(Icons.logout, color: Colors.red),
-          title: Text('Log Out', style: Theme.of(context).textTheme.bodyMedium),
-          onTap: () async {
-            await signOut();
-            if (!isTablet) Navigator.of(context).pop();
-          },
-        ),
+        // Opzione "Logout" condizionale
+        if (_isMyProfile)
+          ListTile(
+            key: const Key('Logout'),
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: Text('Log Out', style: Theme.of(context).textTheme.bodyMedium),
+            onTap: () async {
+              await signOut();
+              if (!isTablet) Navigator.of(context).pop();
+            },
+          ),
       ],
     );
   }
