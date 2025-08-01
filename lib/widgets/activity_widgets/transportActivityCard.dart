@@ -22,6 +22,14 @@ class _TransportActivityCardState extends State<TransportActivityCard> {
     final primaryColor = theme.primaryColor;
     final secondaryColor = theme.colorScheme.secondary;
 
+    final departure = widget.transport.departureDate;
+    final durationMinutes = widget.transport.duration;
+    final arrival = (departure != null && durationMinutes != null)
+        ? departure.add(Duration(minutes: durationMinutes.toInt()))
+        : null;
+
+
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -59,9 +67,12 @@ class _TransportActivityCardState extends State<TransportActivityCard> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '${widget.transport.departurePlace ?? ""} → ${widget.transport.arrivalPlace ?? ""}',
-                            style: theme.textTheme.headlineMedium,
+                          Padding(
+                            padding: const EdgeInsets.only(right: 9.0),
+                            child: Text(
+                              '${widget.transport.departurePlace ?? ""} → ${widget.transport.arrivalPlace ?? ""}',
+                              style: theme.textTheme.headlineMedium,
+                            ),
                           ),
                           const SizedBox(height: 6),
                           Row(
@@ -78,14 +89,17 @@ class _TransportActivityCardState extends State<TransportActivityCard> {
                           if (widget.transport.duration != null && widget.transport.duration != 0)
                             Row(
                               children: [
-                                Icon(Icons.access_time, size: 20, color: primaryColor),
-                                const SizedBox(width: 6),
+                                Icon(Icons.access_time_filled_outlined, size: 20, color: Theme.of(context).primaryColor),
+                                const SizedBox(width: 3),
                                 Text(
-                                  'Arrivo: ${widget.transport.departureDate != null ? '${(widget.transport.departureDate!.hour).toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
+                                  'Arrivo: ${arrival != null
+                                      ? '${arrival.hour.toString().padLeft(2, '0')}:${arrival.minute.toString().padLeft(2, '0')}'
+                                      : 'N/A'}',
                                   style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
                                 ),
                               ],
-                            ),
+                            )
+
                         ],
                       ),
                     ),
@@ -134,9 +148,10 @@ class _TransportActivityCardState extends State<TransportActivityCard> {
                               Icon(Icons.timelapse, size: 20, color: primaryColor),
                               const SizedBox(width: 6),
                               Text(
-                                "Durata: ${widget.transport.duration! ~/ 60}h ${widget.transport.duration! % 60}m",
+                                'Durata: ${widget.transport.duration! >= 60 ? '${widget.transport.duration! ~/ 60}h ' : ''}'
+                                    '${widget.transport.duration! % 60 > 0 ? '${widget.transport.duration! % 60}m' : (widget.transport.duration! < 60 ? '${widget.transport.duration!}m' : '')}',
                                 style: theme.textTheme.bodyLarge,
-                              ),
+                              )
                             ],
                           ),
                         ),
