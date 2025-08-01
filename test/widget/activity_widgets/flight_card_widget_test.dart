@@ -1,5 +1,3 @@
-import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
-import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/flightActivityCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

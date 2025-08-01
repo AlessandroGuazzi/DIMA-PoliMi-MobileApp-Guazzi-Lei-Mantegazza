@@ -108,6 +108,7 @@ void main() {
             userId: userId,
             databaseService: mockDatabaseService,
             authService: mockAuthService,
+            isCurrentUser: true,
           ),
         ),
       );

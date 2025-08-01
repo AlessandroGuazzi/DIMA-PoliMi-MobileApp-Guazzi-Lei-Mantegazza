@@ -275,7 +275,7 @@ class _TripCardWidgetState extends State<TripCardWidget> {
       MaterialPageRoute(
           builder: (context) => Scaffold(
               appBar: AppBar(),
-              body: ProfilePage(userId: widget.trip.creatorInfo!['id']))),
+              body: ProfilePage(userId: widget.trip.creatorInfo!['id'], isCurrentUser: false,))),
     );
   }
 

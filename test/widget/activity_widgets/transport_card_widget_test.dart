@@ -1,5 +1,4 @@
 import 'package:dima_project/models/transportModel.dart';
-import 'package:dima_project/widgets/activity_widgets/activityDividerWidget.dart';
 import 'package:dima_project/widgets/activity_widgets/transportActivityCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

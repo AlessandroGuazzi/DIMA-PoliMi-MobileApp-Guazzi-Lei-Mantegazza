@@ -18,12 +18,13 @@ class ProfilePage extends StatefulWidget {
   late final DatabaseService databaseService;
   late final AuthService authService;
   final String? userId;
+  final bool isCurrentUser;
 
   ProfilePage(
       {super.key,
       required this.userId,
       databaseService,
-      authService,})
+      authService, required this.isCurrentUser,})
       : databaseService = databaseService ?? DatabaseService(),
         authService = authService ?? AuthService();
 
@@ -147,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
               body: TabBarView(
                 children: [
                   _buildTripList(_savedTripsFuture, isMyTrip: false),
-                  _buildTripList(_createdTripsFuture, isMyTrip: true),
+                  _buildTripList(_createdTripsFuture, isMyTrip: widget.isCurrentUser),
                 ],
               ),
             ),
