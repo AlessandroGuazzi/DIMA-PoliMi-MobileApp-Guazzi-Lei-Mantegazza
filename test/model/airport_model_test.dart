@@ -3,7 +3,7 @@ import 'package:dima_project/models/airportModel.dart';
 
 void main() {
   group('Airport model', () {
-    test('fromJson crea oggetto Airport correttamente', () {
+    test('fromJson correctly create an object Airport', () {
       final json = {
         'iata': 'FCO',
         'name': 'Rome Fiumicino',
@@ -17,7 +17,7 @@ void main() {
       expect(airport.iso, 'IT');
     });
 
-    test('fromJson gestisce campi mancanti', () {
+    test('fromJson handles missing fields', () {
       final json = {
         'iata': null,
         'name': null,
