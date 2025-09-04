@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'mocks.mocks.dart';
-import 'mocks.dart';
+import '../../../mocks.mocks.dart';
+import '../../../mocks.dart';
 
 void main() {
   group('AttractionForm Widget', () {
@@ -159,7 +159,6 @@ void main() {
       expect(find.text('Museo'), findsOneWidget);
     });
 
-    
     testWidgets('should open PlacesSearchWidget when location field is tapped', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
       await tester.pumpAndSettle();
@@ -170,6 +169,19 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(PlacesSearchWidget), findsOneWidget);
+    });
+
+    testWidgets('should open date range picker when date field is tapped', (WidgetTester tester) async {
+      await pumpTestableWidget(tester);
+      await tester.pumpAndSettle();
+
+      final dateField = find.byKey(const Key('DatesField'));
+      await tester.ensureVisible(dateField);
+      await tester.tap(dateField);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DateRangePickerDialog), findsOneWidget);
+
     });
 
 
@@ -216,7 +228,6 @@ void main() {
       // Verifica che appaia l'errore di validazione per il costo
       expect(find.text('Per favore inserisci un costo valido'), findsOneWidget);
     });
-
 
     testWidgets('should update attraction with correct data when form is submitted', (WidgetTester tester) async {
       await pumpTestableWidget(tester, attraction: attraction);

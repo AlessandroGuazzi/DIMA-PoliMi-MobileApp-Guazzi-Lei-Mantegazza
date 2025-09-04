@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:intl/intl.dart';
-import 'mocks.mocks.dart';
+import '../../../mocks.mocks.dart';
 
 void main() {
   group('TransportForm Widget', () {
@@ -34,7 +34,7 @@ void main() {
         departurePlace: 'Rome',
         arrivalPlace: 'Paris',
         departureDate: DateTime(2025, 6, 15, 10, 30),
-        transportType: 'Train',
+        transportType: 'Treno',
         expenses: 120.50,
         duration: 300, // 5 ore
         type: 'transport',
@@ -60,25 +60,23 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    // --- Test: Rendering dei campi del Widget ---
     testWidgets('dovrebbe renderizzare correttamente tutti i campi del form per un nuovo trasporto', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
 
-      expect(find.widgetWithText(TextFormField, 'Departure Place'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, 'Arrival Place'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, 'Departure Date'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, 'Departure Time'), findsOneWidget);
-      expect(find.widgetWithText(DropdownButtonFormField<String>, 'Transport Type'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, 'Costo'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Luogo di partenza'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Destinazione'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Data'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Ora'), findsOneWidget);
+      expect(find.widgetWithText(DropdownButtonFormField<String>, 'Tipo di trasporto'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Costo (opzionale)'), findsOneWidget);
       expect(find.widgetWithText(TextFormField, 'Durata (opzionale)'), findsOneWidget);
-      expect(find.widgetWithText(ElevatedButton, 'Save Transport'), findsOneWidget);
+      expect(find.widgetWithText(ElevatedButton, 'Aggiungi trasporto'), findsOneWidget);
 
       expect(find.byIcon(Icons.calendar_today), findsOneWidget);
       expect(find.byIcon(Icons.access_time), findsOneWidget);
-      expect(find.byIcon(Icons.timer), findsOneWidget);
+      expect(find.byIcon(Icons.timer_outlined), findsOneWidget);
     });
 
-    // --- Test: Popolamento campi per la modifica ---
     testWidgets('dovrebbe popolare correttamente i campi quando si modifica un trasporto esistente', (WidgetTester tester) async {
       await pumpTestableWidget(tester, transport: existingTransport);
 
@@ -86,99 +84,74 @@ void main() {
       expect(find.text('Paris'), findsOneWidget);
       expect(find.text(DateFormat('dd/MM/yy').format(existingTransport.departureDate!)), findsOneWidget);
       expect(find.text('10:30 AM'), findsOneWidget); // O '10:30' a seconda delle impostazioni locali
-      expect(find.text('Train'), findsOneWidget);
+      expect(find.text('Treno'), findsOneWidget);
       expect(find.text('120.5'), findsOneWidget);
       expect(find.text('5h 0m'), findsOneWidget); // Durata pre-popolata
     });
 
-    // --- Test: Errori di validazione ---
     testWidgets('dovrebbe mostrare errori di validazione quando i campi obbligatori sono vuoti alla sottomissione', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
 
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save Transport'));
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Aggiungi trasporto'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Enter departure place'), findsOneWidget);
-      expect(find.text('Enter arrival place'), findsOneWidget);
-      expect(find.text('Select a date'), findsOneWidget);
-      expect(find.text('Select a time'), findsOneWidget);
-      expect(find.text('Select a transport type'), findsOneWidget);
-      expect(find.text('Please fill out all required fields'), findsOneWidget); // SnackBar
+      expect(find.text('Inserisci un luogo di partenza'), findsOneWidget);
+      expect(find.text('Inserisci una destinazione'), findsOneWidget);
+      expect(find.text('Seleziona una data'), findsOneWidget);
+      expect(find.text('Seleziona un orario'), findsOneWidget);
+      expect(find.text('Seleziona un tipo di trasporto'), findsOneWidget);
+      expect(find.text('Compila tutti i campi'), findsOneWidget); // SnackBar
     });
 
-    // --- Test: Interazione con il Date Picker ---
     testWidgets('dovrebbe permettere la selezione della data di partenza', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
 
       // Tocca il campo data
-      await tester.tap(find.widgetWithText(TextFormField, 'Departure Date'));
+      await tester.tap(find.widgetWithText(TextFormField, 'Data'));
       await tester.pumpAndSettle();
 
       // Verifica che il DatePicker sia mostrato
       expect(find.byType(DatePickerDialog), findsOneWidget);
-
-      // Tocca il pulsante OK (per accettare la data predefinita o selezionata)
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
-
-      // Verifica che il campo data sia aggiornato con una data valida (oggi o initialDate)
-      // Per un test più robusto, si dovrebbe mockare showDatePicker per restituire una data specifica.
-      // Per coerenza con l'esempio precedente, verifichiamo la presenza del formato.
-      /*final formState = tester.state<StatefulElement>(find.byType(TransportForm)).state as dynamic; // Accesso dinamico per lo stato privato
-      expect(formState._departureDate, isNotNull);
-      expect(find.text(DateFormat('dd/MM/yy').format(formState._departureDate!)), findsOneWidget);*/
     });
 
-    // --- Test: Interazione con il Time Picker ---
-    /*testWidgets('dovrebbe permettere la selezione dell\'ora di partenza', (WidgetTester tester) async {
+    testWidgets('dovrebbe permettere la selezione dell" ora di partenza', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
 
       // Tocca il campo ora
-      await tester.tap(find.widgetWithText(TextFormField, 'Departure Time'));
+      final departureTimeField = find.widgetWithText(TextFormField, 'Ora');
+      await tester.ensureVisible(departureTimeField);
+      await tester.pumpAndSettle();
+      await tester.tap(departureTimeField);
       await tester.pumpAndSettle();
 
       // Verifica che il TimePicker sia mostrato
       expect(find.byType(TimePickerDialog), findsOneWidget);
+    });
 
-      // Tocca il pulsante OK
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
-
-      // Verifica che il campo ora sia aggiornato con un'ora valida
-      final formState = tester.state<StatefulElement>(find.byType(TransportForm)).state as dynamic;
-      expect(formState._departureTime, isNotNull);
-      expect(find.text(formState._departureTime!.format(tester.element(find.byType(TransportForm)))), findsOneWidget);
-    });*/
-
-
-    // --- Test: Validazione del costo ---
     testWidgets('dovrebbe mostrare errore di validazione per un costo non valido', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
 
-      final costField = find.widgetWithText(TextFormField, 'Costo');
+      final costField = find.widgetWithText(TextFormField, 'Costo (opzionale)');
       await tester.enterText(costField, '-10');
 
       // Compila gli altri campi obbligatori per scatenare la validazione completa
-      await tester.enterText(find.widgetWithText(TextFormField, 'Departure Place'), 'A');
-      await tester.enterText(find.widgetWithText(TextFormField, 'Arrival Place'), 'B');
+      await tester.enterText(find.widgetWithText(TextFormField, 'Luogo di partenza'), 'A');
+      await tester.enterText(find.widgetWithText(TextFormField, 'Destinazione'), 'B');
 
       await tester.pumpAndSettle();
 
       // Trova il pulsante che potrebbe essere fuori schermo
-      final buttonFinder = find.widgetWithText(ElevatedButton, 'Save Transport');
+      final buttonFinder = find.widgetWithText(ElevatedButton, 'Aggiungi trasporto');
 
-      // 1. Scorri fino a rendere visibile il pulsante
       await tester.ensureVisible(buttonFinder);
       await tester.pumpAndSettle();
 
-      // 2. Ora che è visibile, tappa il pulsante
       await tester.tap(buttonFinder);
       await tester.pumpAndSettle();
 
-      expect(find.text('Per favore inserisci un costo valido'), findsOneWidget);
+      expect(find.text('Inserisci un valore valido'), findsOneWidget);
     });
 
-    // --- Test: Interazione con il Duration Picker ---
     testWidgets('dovrebbe permettere la selezione della durata', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
 
@@ -251,15 +224,14 @@ void main() {
       expect(capturedTransport.type, 'transport');
     });*/
 
-    // --- Test: Sottomissione del Form (Aggiornamento di un trasporto esistente) ---
     testWidgets('dovrebbe chiamare updateActivity con i dati corretti quando si aggiorna un trasporto esistente', (WidgetTester tester) async {
       await pumpTestableWidget(tester, transport: existingTransport);
 
       // Modifica alcuni campi
-      await tester.enterText(find.widgetWithText(TextFormField, 'Arrival Place'), 'New York');
-      await tester.enterText(find.widgetWithText(TextFormField, 'Costo'), '200.00');
+      await tester.enterText(find.widgetWithText(TextFormField, 'Destinazione'), 'New York');
+      await tester.enterText(find.widgetWithText(TextFormField, 'Costo (opzionale)'), '200.00');
 
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save Transport'));
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Aggiungi trasporto'));
       await tester.pumpAndSettle();
 
       // Verifica che updateActivity sia stato chiamato
@@ -290,17 +262,19 @@ void main() {
         ),
       );
 
-      final buttonFinder = find.widgetWithText(ElevatedButton, 'Save Transport');
+      final buttonFinder = find.widgetWithText(ElevatedButton, 'Aggiungi trasporto');
       await tester.ensureVisible(buttonFinder);
       await tester.pumpAndSettle();
       await tester.tap(buttonFinder);
       await tester.pumpAndSettle();
 
       // Check validation messages for required fields
-      expect(find.text('Enter departure place'), findsOneWidget);
-      expect(find.text('Enter arrival place'), findsOneWidget);
-      expect(find.text('Select a time'), findsOneWidget);
-      expect(find.text('Select a transport type'), findsOneWidget);
+      expect(find.text('Inserisci un luogo di partenza'), findsOneWidget);
+      expect(find.text('Inserisci una destinazione'), findsOneWidget);
+      expect(find.text('Seleziona una data'), findsOneWidget);
+      expect(find.text('Seleziona un orario'), findsOneWidget);
+      expect(find.text('Seleziona un tipo di trasporto'), findsOneWidget);
+      expect(find.text('Compila tutti i campi'), findsOneWidget);
 
       // Ensure createActivity was NOT called
       verifyNever(mockDatabaseService.createActivity(any));
@@ -318,7 +292,7 @@ void main() {
         ),
       );
 
-      final transportTypeDropdown = find.widgetWithText(DropdownButtonFormField<String>, 'Transport Type');
+      final transportTypeDropdown = find.widgetWithText(DropdownButtonFormField<String>, 'Tipo di trasporto');
       expect(transportTypeDropdown, findsOneWidget);
 
       await tester.tap(transportTypeDropdown);
@@ -327,9 +301,9 @@ void main() {
 
       // Verifica che tutti i tipi siano presenti come testo
       expect(find.text('Bus'), findsWidgets);
-      expect(find.text('Train'), findsWidgets);
-      expect(find.text('Car'), findsWidgets);
-      expect(find.text('Ferry'), findsWidgets);
+      expect(find.text('Treno'), findsWidgets);
+      expect(find.text('Auto'), findsWidgets);
+      expect(find.text('Traghetto'), findsWidgets);
 
       // Verifica che tutte le icone siano visibili nel menu
       expect(find.byIcon(Icons.directions_bus), findsWidgets);
@@ -337,8 +311,6 @@ void main() {
       expect(find.byIcon(Icons.directions_car), findsWidgets);
       expect(find.byIcon(Icons.directions_boat), findsWidgets);
     });
-
-
 
   });
 }

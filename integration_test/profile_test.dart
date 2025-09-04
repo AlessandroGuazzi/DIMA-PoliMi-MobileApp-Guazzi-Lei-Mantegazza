@@ -1,13 +1,25 @@
+import 'package:dima_project/screens/authenticationPage.dart';
 import 'package:dima_project/screens/profilePage.dart';
 import 'package:dima_project/screens/travelStatsPage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:dima_project/main.dart' as app;
 import 'package:integration_test/integration_test.dart';
 
 import 'integration_test_helper.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  //dummy test to ensure that we are logged out
+  testWidgets('User logs out', (WidgetTester tester) async {
+    app.main();
+    await tester.pumpAndSettle();
+    if(find.byType(AuthPage).evaluate().isEmpty) {
+      await IntegrationTestHelper().performLogout(tester);
+    };
+    await tester.pumpAndSettle();
+  });
 
   testWidgets('Modifica i dati del proprio profilo', (WidgetTester tester) async {
     await IntegrationTestHelper().performLogin(tester);
@@ -54,9 +66,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Gestione del dialog di conferma
-      final confirmButtonFinder = find.text('CONFERMA');
+      final confirmButtonFinder = find.byKey(const Key('confirmDialogButton'));
       await tester.pumpAndSettle();
-      final annullaButtonFinder = find.text('ANNULLA');
+      final annullaButtonFinder = find.byKey(const Key('cancelButton'));
       expect(confirmButtonFinder, findsOneWidget, reason: 'Il dialog di conferma deve comparire');
       expect(annullaButtonFinder, findsOneWidget, reason: 'Il tasto per annullare il salvataggio delle modifiche deve esserci');
       await tester.tap(confirmButtonFinder);
@@ -74,11 +86,9 @@ void main() {
     expect(find.text('Test Example'), findsOneWidget);
 
 
-
     await IntegrationTestHelper().performLogout(tester);
 
   });
-
 
   testWidgets('Cambia tema da chiaro a scuro e viceversa', (WidgetTester tester) async {
 

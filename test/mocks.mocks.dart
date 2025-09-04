@@ -235,6 +235,22 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
       ) as _i8.Future<List<_i6.TripModel>>);
 
   @override
+  _i8.Future<List<_i6.TripModel>> getTripsOfUserWithPrivacy(
+    String? userId,
+    bool? publicOnly,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getTripsOfUserWithPrivacy,
+          [
+            userId,
+            publicOnly,
+          ],
+        ),
+        returnValue: _i8.Future<List<_i6.TripModel>>.value(<_i6.TripModel>[]),
+      ) as _i8.Future<List<_i6.TripModel>>);
+
+  @override
   _i8.Future<List<_i6.TripModel>> getCompletedTrips(
           [String? userId = 'defaultUserId']) =>
       (super.noSuchMethod(

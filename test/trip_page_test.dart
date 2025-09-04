@@ -140,11 +140,10 @@ void main() {
     await tester.tap(find.widgetWithText(ListTile, 'Elimina'));
     await tester.pumpAndSettle();
 
-    // aswert delete dialog
-    expect(find.text('Conferma eliminazione'), findsOneWidget);
-    expect(find.text('Elimina'), findsOneWidget);
+    //assert delete dialog
+    expect(find.byKey(const Key('deleteTripDialog')), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(TextButton, 'Elimina'));
+    await tester.tap(find.byKey(const Key('confirmDialogButton')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200)); // delayed snackbar
 

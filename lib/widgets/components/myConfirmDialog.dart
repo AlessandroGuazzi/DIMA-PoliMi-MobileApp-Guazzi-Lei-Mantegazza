@@ -59,6 +59,7 @@ class MyConfirmDialog extends StatelessWidget {
       actionsAlignment: MainAxisAlignment.center,
       actions: [
         TextButton(
+          key: const Key('cancelButton'),
           onPressed: () => Navigator.pop(context),
           style: TextButton.styleFrom(
             foregroundColor: Colors.grey,
@@ -71,6 +72,7 @@ class MyConfirmDialog extends StatelessWidget {
           child: Text(cancelText),
         ),
         ElevatedButton(
+          key: const Key('confirmDialogButton'),
           onPressed: () {
             onConfirm();
           },

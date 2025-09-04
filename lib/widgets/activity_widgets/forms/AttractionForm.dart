@@ -130,6 +130,7 @@ class _AttractionFormState extends State<AttractionForm> {
 
             //Location
             TextFormField(
+              key: const Key('locationField'),
               controller: locationController,
               readOnly: true,
               decoration: const InputDecoration(
@@ -150,8 +151,9 @@ class _AttractionFormState extends State<AttractionForm> {
             ),
             const SizedBox(height: 20),
 
-            // Start Date
+            // DAtes
             TextFormField(
+              key: const Key('DatesField'),
               readOnly: true,
               controller: TextEditingController(
                 text: _startDate != null && _endDate != null
@@ -225,6 +227,7 @@ class _AttractionFormState extends State<AttractionForm> {
 
             // Costo (opzionale)
             TextFormField(
+              key: const Key('costField'),
               controller: costController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
@@ -232,6 +235,7 @@ class _AttractionFormState extends State<AttractionForm> {
                 prefixIcon: Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 4.0),
                   child: DropdownButton<String>(
+                    key: const Key('currencyDropdown'),
                     alignment: Alignment.center,
                     value: _selectedCurrency,
                     items: _currencies.map((currency) {
@@ -274,11 +278,12 @@ class _AttractionFormState extends State<AttractionForm> {
             const SizedBox(height: 30),
 
             ElevatedButton(
+              key: const Key('submit_button'),
               onPressed: _submitForm,
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: Text('Aggiungi attività'),
+              child: const Text('Aggiungi attività'),
             ),
           ],
         ),
@@ -467,5 +472,20 @@ class _AttractionFormState extends State<AttractionForm> {
       default:
         return Icons.attractions;
     }
+  }
+
+  //methods necessary for testing purposes
+  @visibleForTesting
+  set startDate(DateTime? value) {
+    setState(() {
+      _startDate = value;
+    });
+  }
+
+  @visibleForTesting
+  set endDate(DateTime? value) {
+    setState(() {
+      _endDate = value;
+    });
   }
 }

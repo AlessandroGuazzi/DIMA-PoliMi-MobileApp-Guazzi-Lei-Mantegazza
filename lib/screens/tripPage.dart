@@ -270,6 +270,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (_) => MyConfirmDialog(
+        key: const Key('deleteTripDialog'),
         icon: Icons.delete_forever_rounded,
         iconColor: Theme.of(context).colorScheme.error,
         title: 'Conferma Eliminazione',

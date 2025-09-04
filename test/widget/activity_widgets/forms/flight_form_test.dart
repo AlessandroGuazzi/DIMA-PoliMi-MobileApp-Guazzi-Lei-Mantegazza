@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:mockito/mockito.dart';
-import 'mocks.mocks.dart';
-import 'mocks.dart';
+import '../../../mocks.mocks.dart';
+import '../../../mocks.dart';
 
 void main() {
   group('FlightForm Widget', () {
@@ -67,74 +67,59 @@ void main() {
       await pumpTestableWidget(tester, flight: flight);
       await tester.pumpAndSettle();
 
-      // Controlli per i TextFormField
-      expect(find.widgetWithText(TextFormField, 'Departure Airport'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, 'Arrival Airport'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, 'Departure Date'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, 'Departure Time'), findsOneWidget);
-      expect(find.widgetWithText(TextFormField, 'Duration (in hours)'), findsOneWidget);
+      // Controlli per i TextFormField (in ITALIAN)
+      expect(find.widgetWithText(TextFormField, 'Aeroporto di partenza'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Aeroporto di arrivo'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Data'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Ora'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Durata del volo (in ore)'), findsOneWidget);
       expect(find.widgetWithText(TextFormField, 'Costo'), findsOneWidget);
 
       // Pulsante di salvataggio
-      expect(find.widgetWithText(ElevatedButton, 'Save Flight'), findsOneWidget);
+      expect(find.widgetWithText(ElevatedButton, 'Aggiungi volo'), findsOneWidget);
     });
 
     testWidgets('should show validation errors if required fields are empty', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: FlightForm(trip: testTrip, databaseService: mockDatabaseService,),
+            body: FlightForm(
+              trip: testTrip,
+              databaseService: mockDatabaseService,
+            ),
           ),
         ),
       );
 
-      // Tappa il pulsante senza compilare
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save Flight'));
+      // Tap the button without filling anything
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Aggiungi volo'));
       await tester.pump();
 
       // Controllo che compaiano errori di validazione
-      expect(find.text('Required'), findsNWidgets(3)); // Departure, Arrival, Duration
-      expect(find.text('Select a date'), findsOneWidget);
-      expect(find.text('Select a time'), findsOneWidget);
+      expect(find.text('Compila il campo'), findsNWidgets(2)); // Departure + Arrival
+      expect(find.text('Inserisci una durata'), findsOneWidget); // Duration
+      expect(find.text('Seleziona una data'), findsOneWidget);  // Date
+      expect(find.text('Seleziona l\'ora'), findsOneWidget);    // Time
+      // Verifica che createActivity NON sia stato chiamato
+      verifyNever(mockDatabaseService.createActivity(any));
     });
-
-    testWidgets('should update currency dropdown and enter cost', (WidgetTester tester) async {
-      await pumpTestableWidget(tester, flight: flight);
-      await tester.pumpAndSettle();
-
-      final costField = find.widgetWithText(TextFormField, 'Costo');
-      expect(costField, findsOneWidget);
-
-      // Trova e tocca il dropdown
-      final dropdown = find.byType(DropdownButton<String>);
-      expect(dropdown, findsOneWidget);
-
-      await tester.tap(dropdown);
-      await tester.pumpAndSettle();
-
-      // Inserisci un valore di costo
-      await tester.enterText(costField, '150');
-      expect(find.text('150'), findsOneWidget);
-    });
-
 
     testWidgets('should create flight with correct data when form is submitted', (WidgetTester tester) async {
-      await mockDatabaseService.createActivity(flight);// ✅ Questo ritorna void;
+      await mockDatabaseService.createActivity(flight);
 
       await pumpTestableWidget(tester, flight: flight);
       await tester.pumpAndSettle();
 
-      // Stub del database service - stesso pattern degli altri test
+      // Stub del database service
       when(mockDatabaseService.createActivity(any)).thenAnswer((_) async => Future.value());  // ✅ Questo ritorna void
 
-      // Il form dovrebbe essere pre-popolato con i dati del flight esistente
       // Verifica che i campi siano popolati correttamente
       expect(find.text('Rome Fiumicino (FCO)'), findsOneWidget);
       expect(find.text('John F. Kennedy Intl (JFK)'), findsOneWidget);
 
       // Compila/modifica alcuni campi necessari
       await tester.enterText(
-          find.widgetWithText(TextFormField, 'Duration (in hours)'),
+          find.widgetWithText(TextFormField, 'Durata del volo (in ore)'),
           '9'
       );
 
@@ -144,7 +129,7 @@ void main() {
       );
 
       // Tap su "Save Flight"
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save Flight'));
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Aggiungi volo'));
       await tester.pumpAndSettle();
       await tester.pump(const Duration(milliseconds: 200));
 
@@ -162,30 +147,6 @@ void main() {
       expect(capturedFlight.arrivalAirPort!['iata'], 'JFK');
     });
 
-    testWidgets('should show validation errors for empty required fields', (WidgetTester tester) async {
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: FlightForm(trip: testTrip, databaseService: mockDatabaseService,),
-          ),
-        ),
-      );
-
-      // Tap su "Save Flight" senza compilare i campi
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save Flight'));
-      await tester.pumpAndSettle();
-
-      // Verifica che vengano mostrati gli errori di validazione
-      expect(find.text('Required'), findsWidgets);
-      expect(find.text('Select a date'), findsOneWidget);
-      expect(find.text('Select a time'), findsOneWidget);
-
-      // Verifica che createActivity NON sia stato chiamato
-      verifyNever(mockDatabaseService.createActivity(any));
-    });
-
-
     testWidgets('should validate cost field with negative values', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
       await tester.pumpAndSettle();
@@ -199,7 +160,7 @@ void main() {
       //await tester.tap(locationField);
       await tester.pumpAndSettle();
 
-      final buttonFinder = find.widgetWithText(ElevatedButton, 'Save Flight');
+      final buttonFinder = find.widgetWithText(ElevatedButton, 'Aggiungi volo');
 
       // Ottieni il widget e simula il tap direttamente
       final button = tester.widget<ElevatedButton>(buttonFinder);
@@ -207,7 +168,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verifica che appaia l'errore di validazione per il costo
-      expect(find.text('Per favore inserisci un costo valido'), findsOneWidget);
+      expect(find.text('Inserisci un valore valido'), findsOneWidget);
     });
 
     testWidgets('should update currency dropdown and enter cost', (WidgetTester tester) async {
@@ -245,8 +206,6 @@ void main() {
       //expect(find.text('10:00'), findsOneWidget);
 
       expect(find.text('500.00'), findsOneWidget);
-      // Se il campo valuta è presente e predefinito (es. 'EUR')
-      //expect(find.text('€'), findsOneWidget);
 
       // Se il campo durata è pre-popolato come '9h 0m'
       expect(find.text('9.0'), findsOneWidget);
@@ -256,7 +215,7 @@ void main() {
       await pumpTestableWidget(tester);
 
       // Trova il campo "Departure Date"
-      final startDateField = find.widgetWithText(TextFormField, 'Departure Date');
+      final startDateField = find.widgetWithText(TextFormField, 'Data');
       expect(startDateField, findsOneWidget);
 
       // Tap per aprire il DatePicker
@@ -265,7 +224,7 @@ void main() {
 
       // Verifica che si apra il DatePicker
       expect(find.text('Select date'), findsOneWidget);
-      expect(find.text('20'), findsWidgets); // attenzione: più '20' potrebbero esistere
+      expect(find.text('20'), findsWidgets);
 
       // Tap sul giorno 20 (l'ultimo tra quelli trovati)
       await tester.tap(find.text('20').last);
@@ -276,16 +235,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verifica che il campo ora contenga la data selezionata
-      // Supponendo che venga formattata ad esempio come '2025-12-20'
       expect(find.textContaining('20/12/25'), findsOneWidget);
-       // potrebbe essere '2025-12-20'
+
     });
 
     testWidgets('tapping on departure time field opens time picker and selects time', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
 
       // Trova il campo dell’orario di partenza
-      final departureTimeField = find.widgetWithText(TextFormField, 'Departure Time');
+      final departureTimeField = find.widgetWithText(TextFormField, 'Ora');
       expect(departureTimeField, findsOneWidget);
 
       // Tap per aprire il TimePicker
@@ -293,11 +251,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verifica che il TimePicker sia visibile
-      // Il testo dipende dal locale, ma 'OK' è spesso presente
-      expect(find.text('OK'), findsOneWidget);
-
-      // Facoltativo: seleziona un orario. Il TimePicker nativo è difficile da manipolare nei test widget.
-      // In genere si salta questo passaggio e si conferma direttamente.
+      expect(find.text('Select time'), findsOneWidget);
 
       // Conferma l’orario
       await tester.tap(find.text('OK'));

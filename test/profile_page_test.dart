@@ -11,12 +11,10 @@ import 'package:dima_project/widgets/trip_widgets/tripCardWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-
-
 import 'mocks.mocks.dart';
 
 void main() {
-  //TODO: fix tests since profile page was modified
+
   group('ProfilePage Tests', () {
     late MockDatabaseService mockDatabaseService;
     late MockAuthService mockAuthService;
@@ -94,7 +92,7 @@ void main() {
       when(mockUser.uid).thenReturn('test-uid');
       when(mockDatabaseService.getUserByUid('test-uid'))
           .thenAnswer((_) async => testUser);
-      when(mockDatabaseService.getHomePageTrips())
+      when(mockDatabaseService.getTripsOfUserWithPrivacy(any, any))
           .thenAnswer((_) async => testTrips);
       when(mockDatabaseService.getTripsByIds(['trip1', 'trip2']))
           .thenAnswer((_) async => testTrips);
@@ -148,7 +146,7 @@ void main() {
       testWidgets('initState initializes futures correctly', (tester) async {
         await tester.pumpWidget(createTestWidget('test-uid'));
 
-        verify(mockDatabaseService.getHomePageTrips()).called(1);
+        verify(mockDatabaseService.getTripsOfUserWithPrivacy(any, any)).called(1);
       });
     });
 
@@ -175,7 +173,7 @@ void main() {
 
         //tab bar
         expect(find.text('Viaggi Salvati'), findsOneWidget);
-        expect(find.text('I Tuoi Viaggi'), findsOneWidget);
+        expect(find.text('Viaggi Creati'), findsOneWidget);
       });
 
       testWidgets('displays default profile image when user has no profile pic',
@@ -300,14 +298,15 @@ void main() {
 
       testWidgets('displays empty message when no created trips',
           (tester) async {
-        when(mockDatabaseService.getHomePageTrips())
+        //mock again to simulate the case where the user has no created trips
+        when(mockDatabaseService.getTripsOfUserWithPrivacy(any, any))
             .thenAnswer((_) async => []);
 
         await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
         //switch tab
-        await tester.tap(find.text('I Tuoi Viaggi'));
+        await tester.tap(find.text('Viaggi Creati'));
         await tester.pumpAndSettle();
 
         expect(find.text('Nessun viaggio creato'), findsOneWidget);
@@ -435,16 +434,19 @@ void main() {
 
       testWidgets('handles errors during trip loading', (tester) async {
         await runZonedGuarded(() async {
-          when(mockDatabaseService.getHomePageTrips())
+          when(mockDatabaseService.getTripsByIds(any))
+              .thenAnswer((_) async => throw Exception('Test error'));
+          when(mockDatabaseService.getTripsOfUserWithPrivacy(any, any))
               .thenAnswer((_) async => throw Exception('Test error'));
 
           await tester.pumpWidget(createTestWidget('test-uid'));
           await tester.pumpAndSettle();
 
-          // Switch tab
-          await tester.tap(find.text('I Tuoi Viaggi'));
-          await tester.pumpAndSettle();
+          expect(find.text('Nessun viaggio salvato'), findsOneWidget);
 
+          //switch tab
+          await tester.tap(find.text('Viaggi Creati'));
+          await tester.pumpAndSettle();
           expect(find.text('Nessun viaggio creato'), findsOneWidget);
         }, (error, stack) {
           print('Error: $error');

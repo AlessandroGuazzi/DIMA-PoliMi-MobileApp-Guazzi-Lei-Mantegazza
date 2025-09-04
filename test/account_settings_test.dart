@@ -263,7 +263,7 @@ void main() {
     expect(find.text('Sei davvero sicuro di voler salvare le modifiche?'), findsOneWidget);
 
     //Cancel closes dialog
-    final cancelButton = find.widgetWithText(TextButton, 'ANNULLA');
+    final cancelButton = find.byKey(const Key('cancelButton'));
     expect(cancelButton, findsOneWidget);
     await tester.tap(cancelButton);
     await tester.pumpAndSettle();

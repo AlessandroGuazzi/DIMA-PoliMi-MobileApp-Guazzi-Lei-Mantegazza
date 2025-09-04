@@ -138,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   bottom: const TabBar(
                     tabs: [
                       Tab(text: 'Viaggi Salvati'),
-                      Tab(text: 'Viaggi Creati'),
+                      Tab(text: 'Viaggi Creati', key: Key('Created Trips'),),
                     ],
                   ),
                 ),

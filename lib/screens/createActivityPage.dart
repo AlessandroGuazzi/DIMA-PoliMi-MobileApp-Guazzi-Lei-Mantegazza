@@ -10,9 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CreateActivityPage extends StatefulWidget {
-  CreateActivityPage({
-    super.key, required this.type, required this.trip, databaseService}
-      ) : databaseService = databaseService ?? DatabaseService();
+  CreateActivityPage(
+      {super.key, required this.type, required this.trip, databaseService})
+      : databaseService = databaseService ?? DatabaseService();
 
   final DatabaseService databaseService;
   final TripModel trip;
@@ -27,13 +27,16 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Create ${widget.type}"),
+        title: Text("Aggiungi ${translateWidgetType(widget.type)}"),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: switch (widget.type) {
-          'flight' => FlightForm(trip: widget.trip, databaseService: widget.databaseService), //questo aggiunto solo per il test
+          'flight' => FlightForm(
+              trip: widget.trip,
+              databaseService:
+                  widget.databaseService), //questo aggiunto solo per il test
           'accommodation' => AccommodationForm(trip: widget.trip),
           'transport' => TransportForm(trip: widget.trip),
           'attraction' => AttractionForm(trip: widget.trip),
@@ -43,4 +46,18 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
     );
   }
 
+  String translateWidgetType(String type) {
+    switch (type) {
+      case 'flight':
+        return 'volo';
+      case 'accommodation':
+        return 'alloggio';
+      case 'transport':
+        return 'trasporto';
+      case 'attraction':
+        return 'attrazione';
+      default:
+        return 'attività';
+    }
+  }
 }

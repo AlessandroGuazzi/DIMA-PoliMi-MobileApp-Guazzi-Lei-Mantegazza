@@ -70,6 +70,7 @@ void main() {
         .thenAnswer((_) async => testTripList);
     when(mockDatabaseService.getHomePageTrips()).thenAnswer((_) async => []
     );
+    when(mockDatabaseService.getTripsOfUserWithPrivacy(any, any)).thenAnswer((_) async => []);
   });
 
   testWidgets('MyHomePage shows AppBar and NavigationBar', (

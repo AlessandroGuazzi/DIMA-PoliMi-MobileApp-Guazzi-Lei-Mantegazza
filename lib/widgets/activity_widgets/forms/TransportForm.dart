@@ -40,9 +40,9 @@ class _TransportFormState extends State<TransportForm> {
   //final List<String> _transportTypes = ['Bus', 'Train', 'Car', 'Ferry'];
   final Map<String, IconData> _transportIcons = {
     'Bus': Icons.directions_bus,
-    'Train': Icons.train,
-    'Car': Icons.directions_car,
-    'Ferry': Icons.directions_boat,
+    'Treno': Icons.train,
+    'Auto': Icons.directions_car,
+    'Traghetto': Icons.directions_boat,
   };
 
 
@@ -88,62 +88,77 @@ class _TransportFormState extends State<TransportForm> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextFormField(
+              key: const Key('departurePlaceField'),
               controller: departurePlaceController,
-              decoration: const InputDecoration(labelText: "Departure Place"),
-              validator: (value) => value!.isEmpty ? "Enter departure place" : null,
+              decoration: const InputDecoration(labelText: "Luogo di partenza", prefixIcon: Icon(Icons.location_on_outlined)),
+              validator: (value) => value!.isEmpty ? "Inserisci un luogo di partenza" : null,
             ),
             const SizedBox(height: 20),
 
             TextFormField(
+              key: const Key('arrivalPlaceField'),
               controller: arrivalPlaceController,
-              decoration: const InputDecoration(labelText: "Arrival Place"),
-              validator: (value) => value!.isEmpty ? "Enter arrival place" : null,
+              decoration: const InputDecoration(labelText: "Destinazione", prefixIcon: Icon(Icons.flag_outlined)),
+              validator: (value) => value!.isEmpty ? "Inserisci una destinazione" : null,
             ),
             const SizedBox(height: 20),
 
-            // Date Picker
-            GestureDetector(
-              onTap: _selectDepartureDate,
-              child: AbsorbPointer(
-                child: TextFormField(
-                  readOnly: true,
-                  decoration: const InputDecoration(
-                    labelText: "Departure Date",
-                    prefixIcon: Icon(Icons.calendar_today),
-                    hintText: 'Select date',
+            Row(
+              children: [
+                // Date Picker
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _selectDepartureDate,
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          labelText: "Data",
+                          prefixIcon: Icon(Icons.calendar_today),
+                        ),
+                        controller: TextEditingController(
+                          text: _departureDate != null
+                              ? DateFormat('dd/MM/yy').format(_departureDate!)
+                              : '',
+                        ),
+                        validator: (_) =>
+                        _departureDate == null ? "Seleziona una data" : null,
+                      ),
+                    ),
                   ),
-                  controller: TextEditingController(
-                    text: _departureDate != null
-                        ? DateFormat('dd/MM/yy').format(_departureDate!)
-                        : '',
-                  ),
-                  validator: (_) => _departureDate == null ? "Select a date" : null,
                 ),
-              ),
-            ),
-            const SizedBox(height: 20),
 
-            // Time Picker
-            GestureDetector(
-              onTap: _selectDepartureTime,
-              child: AbsorbPointer(
-                child: TextFormField(
-                  readOnly: true,
-                  decoration: const InputDecoration(
-                    labelText: "Departure Time",
-                    prefixIcon: Icon(Icons.access_time),
-                    hintText: 'Select time',
+                const SizedBox(width: 16), // space between fields
+
+                // Time Picker
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _selectDepartureTime,
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        key: const Key('departureTimeField'),
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          labelText: "Ora",
+                          prefixIcon: Icon(Icons.access_time),
+                        ),
+                        controller: TextEditingController(
+                          text: _departureTime != null
+                              ? _departureTime!.format(context)
+                              : '',
+                        ),
+                        validator: (_) =>
+                        _departureTime == null ? "Seleziona un orario" : null,
+                      ),
+                    ),
                   ),
-                  controller: TextEditingController(
-                    text: _departureTime != null ? _departureTime!.format(context) : '',
-                  ),
-                  validator: (_) => _departureTime == null ? "Select a time" : null,
                 ),
-              ),
+              ],
             ),
             const SizedBox(height: 20),
 
             DropdownButtonFormField<String>(
+              key: const Key('transportTypeDropdown'),
               value: _selectedType,
               items: _transportIcons.keys.map((type) {
                 return DropdownMenuItem(
@@ -158,10 +173,10 @@ class _TransportFormState extends State<TransportForm> {
                 );
               }).toList(),
               decoration: const InputDecoration(
-                labelText: "Transport Type",
-                //prefixIcon: Icon(Icons.directions_transit),
+                labelText: "Tipo di trasporto",
+                prefixIcon: Icon(Icons.directions_transit_outlined),
               ),
-              validator: (value) => value == null ? "Select a transport type" : null,
+              validator: (value) => value == null ? "Seleziona un tipo di trasporto" : null,
               onChanged: (value) => setState(() {
                 _selectedType = value;
               }),
@@ -171,10 +186,11 @@ class _TransportFormState extends State<TransportForm> {
 
             // Costo (opzionale)
             TextFormField(
+              key: const Key('costField'),
               controller: costController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'Costo',
+                labelText: 'Costo (opzionale)',
                 prefixIcon: Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 4.0),
                   child: DropdownButton<String>(
@@ -202,7 +218,7 @@ class _TransportFormState extends State<TransportForm> {
                 if (value != null && value.isNotEmpty) {
                   final costValue = double.tryParse(value);
                   if (costValue == null || costValue < 0) {
-                    return "Per favore inserisci un costo valido";
+                    return "Inserisci un valore valido";
                   }
                   cost = costValue;
                 }
@@ -212,11 +228,12 @@ class _TransportFormState extends State<TransportForm> {
             const SizedBox(height: 20),
 
             TextFormField(
+              key: const Key('durationField'),
               controller: _durationController,
               readOnly: true,
               decoration: const InputDecoration(
                 labelText: 'Durata (opzionale)',
-                prefixIcon: Icon(Icons.timer),
+                prefixIcon: Icon(Icons.timer_outlined),
                 hintText: 'Seleziona durata',
               ),
               onTap: () async {
@@ -236,8 +253,12 @@ class _TransportFormState extends State<TransportForm> {
 
 
             ElevatedButton(
+              key: const Key('submitButton'),
               onPressed: _submitForm,
-              child: const Text("Save Transport"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: const Text("Aggiungi trasporto"),
             ),
           ],
         ),
@@ -332,9 +353,24 @@ class _TransportFormState extends State<TransportForm> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill out all required fields')),
+        const SnackBar(content: Center(child: Text('Compila tutti i campi'))),
       );
     }
+  }
+
+  //methods necessary for testing purposes
+  @visibleForTesting
+  set departureDate(DateTime? value) {
+    setState(() {
+      _departureDate = value;
+    });
+  }
+
+  @visibleForTesting
+  set departureTime(TimeOfDay? value) {
+    setState(() {
+      _departureTime = value;
+    });
   }
 }
 

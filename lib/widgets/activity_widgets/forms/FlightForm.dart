@@ -27,8 +27,10 @@ class FlightForm extends StatefulWidget {
 class _FlightFormState extends State<FlightForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController departureAirportController = TextEditingController();
-  final TextEditingController arrivalAirportController = TextEditingController();
+  final TextEditingController departureAirportController =
+      TextEditingController();
+  final TextEditingController arrivalAirportController =
+      TextEditingController();
   final TextEditingController durationController = TextEditingController();
   final TextEditingController expensesController = TextEditingController();
 
@@ -70,19 +72,20 @@ class _FlightFormState extends State<FlightForm> {
   void dispose() {
     departureAirportController.dispose();
     arrivalAirportController.dispose();
-    //flightCompanyController.dispose();
     durationController.dispose();
     expensesController.dispose();
     super.dispose();
   }
 
-
-  void _showAirportSearchDialog(TextEditingController controller, bool isDeparture) {
+  void _showAirportSearchDialog(
+      TextEditingController controller, bool isDeparture) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(isDeparture ? "Select Departure Airport" : "Select Arrival Airport"),
+          title: Text(isDeparture
+              ? "Seleziona l'aeroporto di partenza"
+              : "Seleziona l'aeroporto di arrivo"),
           content: SingleChildScrollView(
             child: SizedBox(
               width: double.maxFinite,
@@ -114,13 +117,14 @@ class _FlightFormState extends State<FlightForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-
             TextFormField(
               key: const Key('departureAirportField'),
               readOnly: true,
               controller: departureAirportController,
-              decoration: const InputDecoration(labelText: "Departure Airport"),
-              validator: (value) => value!.isEmpty ? "Required" : null,
+              decoration: const InputDecoration(
+                  labelText: "Aeroporto di partenza",
+                  prefixIcon: const Icon(Icons.flight_takeoff)),
+              validator: (value) => value!.isEmpty ? "Compila il campo" : null,
               onTap: () {
                 FocusScope.of(context).requestFocus(FocusNode());
                 _showAirportSearchDialog(departureAirportController, true);
@@ -132,66 +136,80 @@ class _FlightFormState extends State<FlightForm> {
               key: const Key('arrivalAirportField'),
               readOnly: true,
               controller: arrivalAirportController,
-              decoration: const InputDecoration(labelText: "Arrival Airport"),
-              validator: (value) => value!.isEmpty ? "Required" : null,
+              decoration: const InputDecoration(
+                  labelText: "Aeroporto di arrivo",
+                  prefixIcon: const Icon(Icons.flight_land)),
+              validator: (value) => value!.isEmpty ? "Compila il campo" : null,
               onTap: () {
-                FocusScope.of(context).requestFocus(FocusNode()); // Nasconde la tastiera
-                _showAirportSearchDialog(arrivalAirportController, false); // Mostra il dialogo per la scelta aeroporto
+                FocusScope.of(context)
+                    .requestFocus(FocusNode()); // Nasconde la tastiera
+                _showAirportSearchDialog(arrivalAirportController,
+                    false); // Mostra il dialogo per la scelta aeroporto
               },
             ),
             const SizedBox(height: 16),
 
-            /*TextFormField(
-              controller: flightCompanyController,
-              decoration: const InputDecoration(labelText: "Flight Company (optional)"),
-            ),
-            const SizedBox(height: 16),*/
+            Row(
+              children: [
+                // Departure Date
+                Expanded(
+                  child: TextFormField(
+                    key: const Key('departureDateField'),
+                    readOnly: true,
+                    controller: TextEditingController(
+                      text: _departureDate != null
+                          ? DateFormat('dd/MM/yy').format(_departureDate!)
+                          : '',
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: "Data",
+                      prefixIcon: Icon(Icons.calendar_today),
+                    ),
+                    onTap: () => _pickDate(context),
+                    validator: (_) =>
+                    _departureDate == null ? "Seleziona una data" : null,
+                  ),
+                ),
 
-            // Departure Date
-            TextFormField(
-              key: const Key('departureDateField'),
-              readOnly: true,
-              controller: TextEditingController(
-                text: _departureDate != null
-                    ? "${DateFormat('dd/MM/yy').format(_departureDate!)}"
-                    : '',
-              ),
-              decoration: const InputDecoration(
-                labelText: "Departure Date",
-                prefixIcon: Icon(Icons.calendar_today),
-              ),
+                const SizedBox(width: 16), // space between fields
 
-              onTap: () => _pickDate(context),
-              validator: (_) => _departureDate == null ? "Select a date" : null,
+                // Departure Time
+                Expanded(
+                  child: TextFormField(
+                    key: const Key('departureTimeField'),
+                    readOnly: true,
+                    controller: TextEditingController(
+                      text: _departureTime != null
+                          ? _departureTime!.format(context)
+                          : '',
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: "Ora",
+                      prefixIcon: Icon(Icons.access_time),
+                    ),
+                    onTap: () => _pickTime(context),
+                    validator: (_) =>
+                    _departureTime == null ? "Seleziona l'ora" : null,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
 
-            // Departure Time
-            TextFormField(
-              key: const Key('departureTimeField'),
-              readOnly: true,
-              controller: TextEditingController(
-                text: _departureTime != null ? _departureTime!.format(context) : '',
-              ),
-              decoration: const InputDecoration(
-                labelText: "Departure Time",
-                prefixIcon: Icon(Icons.access_time),
-              ),
-              //initialValue: _departureTime != null ? _departureTime!.format(context) : '',
-              onTap: () => _pickTime(context),
-              validator: (_) => _departureTime == null ? "Select a time" : null,
-            ),
             const SizedBox(height: 16),
 
             TextFormField(
               key: const Key('durationField'),
               controller: durationController,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: "Duration (in hours)"),
+              decoration: const InputDecoration(
+                  labelText: "Durata del volo (in ore)",
+                  prefixIcon: const Icon(Icons.timelapse)),
               validator: (value) {
-                if (value == null || value.isEmpty) return "Required";
+                if (value == null || value.isEmpty)
+                  return "Inserisci una durata";
                 final parsed = double.tryParse(value);
-                if (parsed == null || parsed <= 0) return "Enter a valid positive number";
+                if (parsed == null || parsed <= 0)
+                  return "Inserisci un valore valido";
                 return null;
               },
             ),
@@ -213,7 +231,8 @@ class _FlightFormState extends State<FlightForm> {
                       return DropdownMenuItem(
                         alignment: Alignment.center,
                         value: currency,
-                        child: CountryToCurrency().formatPopularCurrencies(currency),
+                        child: CountryToCurrency()
+                            .formatPopularCurrencies(currency),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -230,7 +249,7 @@ class _FlightFormState extends State<FlightForm> {
                 if (value != null && value.isNotEmpty) {
                   final costValue = double.tryParse(value);
                   if (costValue == null || costValue < 0) {
-                    return "Per favore inserisci un costo valido";
+                    return "Inserisci un valore valido";
                   }
                   cost = costValue;
                 }
@@ -242,7 +261,10 @@ class _FlightFormState extends State<FlightForm> {
             ElevatedButton(
               key: const Key('submitButton'),
               onPressed: _submitForm,
-              child: const Text("Save Flight"),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: const Text("Aggiungi volo"),
             ),
           ],
         ),
@@ -259,8 +281,8 @@ class _FlightFormState extends State<FlightForm> {
     final initialDate = now.isBefore(startDate)
         ? startDate
         : now.isAfter(endDate)
-        ? endDate
-        : now;
+            ? endDate
+            : now;
 
     final picked = await showDatePicker(
       context: context,
@@ -273,7 +295,6 @@ class _FlightFormState extends State<FlightForm> {
       setState(() => _departureDate = picked);
     }
   }
-
 
   Future<void> _pickTime(BuildContext context) async {
     final pickedTime = await showTimePicker(
@@ -293,11 +314,11 @@ class _FlightFormState extends State<FlightForm> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-
       //convert currency to 'EUR' for consistency
-      if(_selectedCurrency != 'EUR' && cost != null) {
+      if (_selectedCurrency != 'EUR' && cost != null) {
         try {
-          num currencyExchange = await CurrencyService().getExchangeRate(_selectedCurrency, 'EUR');
+          num currencyExchange =
+              await CurrencyService().getExchangeRate(_selectedCurrency, 'EUR');
           cost = cost! * currencyExchange;
         } catch (e) {
           showDialog(
@@ -317,9 +338,11 @@ class _FlightFormState extends State<FlightForm> {
         }
       }
 
-      final departureDateTime = combineDateAndTime(_departureDate!, _departureTime!);
+      final departureDateTime =
+          combineDateAndTime(_departureDate!, _departureTime!);
       final durationHours = double.parse(durationController.text);
-      final arrivalDateTime = departureDateTime.add(Duration(minutes: (durationHours * 60).toInt()));
+      final arrivalDateTime = departureDateTime
+          .add(Duration(minutes: (durationHours * 60).toInt()));
 
       final updatedFlight = FlightModel(
         tripId: widget.trip.id,
@@ -343,7 +366,9 @@ class _FlightFormState extends State<FlightForm> {
 
       if (widget.flight == null) {
         // Caso: creazione
-        db.createActivity(updatedFlight).then((_) => Navigator.pop(context, true));
+        db
+            .createActivity(updatedFlight)
+            .then((_) => Navigator.pop(context, true));
       } else {
         // Caso: modifica
         final oldCost = widget.flight!.expenses ?? 0;
@@ -351,9 +376,10 @@ class _FlightFormState extends State<FlightForm> {
         final diff = (newCost - oldCost).abs();
         final isAdd = newCost > oldCost;
 
-        db.updateActivity(widget.flight!.id!, updatedFlight, diff, isAdd).then((_) => Navigator.pop(context, true));
+        db
+            .updateActivity(widget.flight!.id!, updatedFlight, diff, isAdd)
+            .then((_) => Navigator.pop(context, true));
       }
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill out all required fields.')),
