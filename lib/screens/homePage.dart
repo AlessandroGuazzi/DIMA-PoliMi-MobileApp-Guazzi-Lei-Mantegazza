@@ -1,6 +1,8 @@
 import 'package:dima_project/models/userModel.dart';
+import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/services/databaseService.dart';
+import 'package:dima_project/widgets/components/myAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/screens/myTripsPage.dart';
 import 'package:dima_project/screens/profilePage.dart';
@@ -44,12 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ExplorerPage(
             databaseService: widget.databaseService, authService: widget.authService),
         MyTripsPage(databaseService: widget.databaseService),
-        ProfilePage(
-          userId: widget.authService.currentUser?.uid,
-          databaseService: widget.databaseService,
-          authService: widget.authService,
-          isCurrentUser: true,
-        ),
       ];
 
   Future<void> signOut() async {
@@ -76,37 +72,58 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         }
 
-        final user = snapshot.data;
+        final user = snapshot.data!;
 
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          appBar: AppBar(
-            title: Text('Benvenuto ${user!.name ?? ''}'),
-            centerTitle: true,
-          ),
+          appBar: MyAppBar(user: user,context: context, databaseService: widget.databaseService, authService: widget.authService,),
           body: _pages[_selectedIndex],
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-            destinations: const [
-              NavigationDestination(
-                key: Key('searchButton'),
-                icon: Icon(Icons.search, size: 25),
-                label: 'Esplora',
-              ),
-              NavigationDestination(
-                key: Key('homeButton'),
-                icon: Icon(Icons.home_outlined, size: 25),
-                selectedIcon: Icon(Icons.home, size: 25),
-                label: 'Home',
-              ),
-              NavigationDestination(
-                key: Key('profileButton'),
-                icon: Icon(Icons.account_box_outlined, size: 25),
-                selectedIcon: Icon(Icons.account_box, size: 25),
-                label: 'Profilo',
-              ),
-            ],
+          floatingActionButton: FloatingActionButton(
+            shape: const CircleBorder(),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => UpsertTripPage(
+                  databaseService: widget.databaseService,
+                  authService: widget.authService,
+                )),
+              ).then((value) => setState(() {_selectedIndex = 1;}));
+            },
+            child: const Icon(Icons.add),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: BottomAppBar(
+            shape: const CircularNotchedRectangle(),
+            notchMargin: 10,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // Left navigation item
+                IconButton(
+                  key: const Key('searchButton'),
+                  icon: Icon(
+                    Icons.search,
+                    size: 25,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () => setState(() => _selectedIndex = 0),
+                  tooltip: 'Esplora',
+                ),
+
+                const SizedBox(width: 10),
+                // Right navigation item
+                IconButton(
+                  key: const Key('homeButton'),
+                  icon: Icon(
+                    _selectedIndex == 1 ? Icons.home : Icons.home_outlined,
+                    size: 25,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () => setState(() => _selectedIndex = 1),
+                  tooltip: 'Home',
+                ),
+              ],
+            ),
           ),
         );
       },

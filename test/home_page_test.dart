@@ -5,6 +5,7 @@ import 'package:dima_project/screens/explorerPage.dart';
 import 'package:dima_project/screens/homePage.dart';
 import 'package:dima_project/screens/myTripsPage.dart';
 import 'package:dima_project/screens/profilePage.dart';
+import 'package:dima_project/widgets/components/myAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -86,18 +87,19 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(AppBar), findsOneWidget);
-    expect(find.text('Benvenuto ${testCurrentUserModel.name}'), findsOneWidget);
-
-    expect(find.byType(NavigationBar), findsOneWidget);
-
-    expect(find.text('Esplora'), findsOneWidget);
-    expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Profilo'), findsOneWidget);
-
-    expect(find.widgetWithIcon(NavigationBar, Icons.search), findsOneWidget);
-    expect(find.widgetWithIcon(NavigationBar, Icons.home_outlined), findsOneWidget);
-    expect(find.widgetWithIcon(NavigationBar, Icons.account_box_outlined), findsOneWidget);
+    expect(find.byType(MyAppBar), findsOneWidget);
+    expect(find.text('simplyTravel'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(MyAppBar), // look inside MyAppBar
+        matching: find.byType(CircleAvatar), // match CircleAvatar
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(BottomAppBar), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsOneWidget);
+    expect(find.widgetWithIcon(BottomAppBar, Icons.search), findsOneWidget);
+    expect(find.widgetWithIcon(BottomAppBar, Icons.home_outlined), findsOneWidget);
   });
 
 
@@ -118,7 +120,6 @@ void main() {
     //initial state
     expect(find.byType(ExplorerPage), findsOneWidget);
     expect(find.byType(MyTripsPage), findsNothing);
-    expect(find.byType(ProfilePage), findsNothing);
 
     await tester.tap(find.byKey(const Key('homeButton')));
     await tester.pumpAndSettle();
@@ -133,13 +134,5 @@ void main() {
     expect(find.byType(ExplorerPage), findsNothing);
     expect(find.byType(MyTripsPage), findsNothing);
     expect(find.byType(ProfilePage), findsOneWidget);
-
-    //back to Explorer page
-    await tester.tap(find.byKey(const Key('searchButton')));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(ExplorerPage), findsOneWidget);
-    expect(find.byType(MyTripsPage), findsNothing);
-    expect(find.byType(ProfilePage), findsNothing);
   });
 }

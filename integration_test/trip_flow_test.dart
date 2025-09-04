@@ -38,11 +38,6 @@ void main() {
 
     testWidgets('User creates a trip', (WidgetTester tester) async {
       await IntegrationTestHelper().performLogin(tester);
-      //navigate to home page
-      final homeButton = find.byKey(const Key('homeButton'));
-      await tester.ensureVisible(homeButton);
-      await tester.tap(homeButton);
-      await tester.pumpAndSettle();
 
       //tap on add trip button
       final addTripButton = find.byType(FloatingActionButton);
@@ -117,6 +112,98 @@ void main() {
       //assert that we are in myTripsPage and trip is visible
       expect(find.byType(MyTripsPage), findsOneWidget);
       expect(find.text('Test Trip'), findsOneWidget);
+
+      await IntegrationTestHelper().performLogout(tester);
+    });
+
+    testWidgets('User adds an attraction activity to a trip', (WidgetTester tester) async {
+      await IntegrationTestHelper().performLogin(tester);
+      //navigate to home page
+      final homeButton = find.byKey(const Key('homeButton'));
+      await tester.ensureVisible(homeButton);
+      await tester.pumpAndSettle();
+      await tester.tap(homeButton);
+      await tester.pumpAndSettle();
+
+      //click on previously created test trip
+      final testTrip = find.text('Test Trip');
+      await tester.ensureVisible(testTrip);
+      await tester.pumpAndSettle();
+      await tester.tap(testTrip);
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      //tap on add activity button
+      final addActivityButton = find.byKey(const Key('newActivityButton'));
+      expect(addActivityButton, findsOneWidget);
+      await tester.tap(addActivityButton);
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      //tap on attraction button
+      final flightButton = find.widgetWithText(ListTile, 'Attrazione');
+      await tester.ensureVisible(flightButton);
+      await tester.pumpAndSettle();
+      await tester.tap(flightButton);
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      //fill form
+      ///location
+      final locationField = find.byKey(const Key('locationField'));
+      await tester.ensureVisible(locationField);
+      await tester.pumpAndSettle();
+      await tester.tap(locationField);
+      await tester.pumpAndSettle();
+      expect(find.byType(PlacesSearchWidget), findsOneWidget);
+      //find searchBar
+      final searchBar = find.byKey(const Key('placesSearchBar'));
+      await tester.enterText(searchBar, 'A');
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
+      //click on the first result
+      final firstResult = find.byType(ListTile).first;
+      await tester.ensureVisible(firstResult);
+      await tester.pumpAndSettle();
+      await tester.tap(firstResult);
+      await tester.pumpAndSettle();
+      ///dates
+      final state = tester.state(find.byType(AttractionForm)) as dynamic;
+      //fill dates
+      state.startDate = DateTime.now().add(const Duration(days: 1));
+      state.endDate = DateTime.now().add(const Duration(days: 2));
+      //add cost with change of currency
+      final costField = find.byKey(const Key('costField'));
+      await tester.ensureVisible(costField);
+      await tester.pumpAndSettle();
+      //find currency dropdown
+      final currencyDropdown = find.byKey(const Key('currencyDropdown'));
+      await tester.ensureVisible(currencyDropdown);
+      await tester.pumpAndSettle();
+      await tester.tap(currencyDropdown);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('\$'));
+      await tester.pumpAndSettle();
+      //add cost
+      await tester.enterText(costField, '100');
+      await tester.pumpAndSettle();
+      //submit
+      final submitButton = find.byKey(const Key('submit_button'));
+      await tester.ensureVisible(submitButton);
+      await tester.tap(submitButton);
+      await tester.pumpAndSettle();
+      await pumpUntilFound(tester, find.byType(ItineraryWidget));
+      await tester.pump(const Duration(seconds:2));
+
+
+
+      //assert
+      final attractionCardFinder = find.byWidgetPredicate((widget) {
+        return widget is AttractionActivityCard &&
+            widget.attraction.name?.contains('A') == true;
+      });
+      expect(attractionCardFinder, findsOneWidget);
+
 
       await IntegrationTestHelper().performLogout(tester);
     });
@@ -205,7 +292,7 @@ void main() {
       await tester.tap(expandButton);
       await tester.pumpAndSettle();
       //assert
-      expect(find.textContaining('Costo'), findsOneWidget);
+      expect(find.textContaining('Fiumicino'), findsOneWidget);
 
       await IntegrationTestHelper().performLogout(tester);
     });
@@ -283,96 +370,6 @@ void main() {
             widget.accommodation.name?.contains('A') == true;
       });
       expect(accommodationCardFinder, findsOneWidget);
-
-      await IntegrationTestHelper().performLogout(tester);
-    });
-
-    testWidgets('User adds an attraction activity to a trip', (WidgetTester tester) async {
-      await IntegrationTestHelper().performLogin(tester);
-      //navigate to home page
-      final homeButton = find.byKey(const Key('homeButton'));
-      await tester.ensureVisible(homeButton);
-      await tester.pumpAndSettle();
-      await tester.tap(homeButton);
-      await tester.pumpAndSettle();
-
-      //click on previously created test trip
-      final testTrip = find.text('Test Trip');
-      await tester.ensureVisible(testTrip);
-      await tester.pumpAndSettle();
-      await tester.tap(testTrip);
-      await tester.pumpAndSettle();
-      await tester.pump(const Duration(milliseconds: 500));
-
-      //tap on add activity button
-      final addActivityButton = find.byKey(const Key('newActivityButton'));
-      expect(addActivityButton, findsOneWidget);
-      await tester.tap(addActivityButton);
-      await tester.pumpAndSettle();
-      await tester.pump(const Duration(milliseconds: 500));
-
-      //tap on attraction button
-      final flightButton = find.widgetWithText(ListTile, 'Attrazione');
-      await tester.ensureVisible(flightButton);
-      await tester.pumpAndSettle();
-      await tester.tap(flightButton);
-      await tester.pumpAndSettle();
-      await tester.pump(const Duration(milliseconds: 500));
-
-      //fill form
-      ///location
-      final locationField = find.byKey(const Key('locationField'));
-      await tester.ensureVisible(locationField);
-      await tester.pumpAndSettle();
-      await tester.tap(locationField);
-      await tester.pumpAndSettle();
-      expect(find.byType(PlacesSearchWidget), findsOneWidget);
-      //find searchBar
-      final searchBar = find.byKey(const Key('placesSearchBar'));
-      await tester.enterText(searchBar, 'A');
-      await tester.pumpAndSettle();
-      await tester.pump(const Duration(seconds: 1));
-      //click on the first result
-      final firstResult = find.byType(ListTile).first;
-      await tester.ensureVisible(firstResult);
-      await tester.pumpAndSettle();
-      await tester.tap(firstResult);
-      await tester.pumpAndSettle();
-      ///dates
-      final state = tester.state(find.byType(AttractionForm)) as dynamic;
-      //fill dates
-      state.startDate = DateTime.now().add(const Duration(days: 1));
-      state.endDate = DateTime.now().add(const Duration(days: 2));
-      //add cost with change of currency
-      final costField = find.byKey(const Key('costField'));
-      await tester.ensureVisible(costField);
-      await tester.pumpAndSettle();
-      //find currency dropdown
-      final currencyDropdown = find.byKey(const Key('currencyDropdown'));
-      await tester.ensureVisible(currencyDropdown);
-      await tester.pumpAndSettle();
-      await tester.tap(currencyDropdown);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('\$'));
-      await tester.pumpAndSettle();
-      //add cost
-      await tester.enterText(costField, '100');
-      await tester.pumpAndSettle();
-      //submit
-      final submitButton = find.byKey(const Key('submit_button'));
-      await tester.ensureVisible(submitButton);
-      await tester.tap(submitButton);
-      await tester.pumpAndSettle();
-      await pumpUntilFound(tester, find.byType(ItineraryWidget));
-
-
-      //assert
-      final attractionCardFinder = find.byWidgetPredicate((widget) {
-        return widget is AttractionActivityCard &&
-            widget.attraction.name?.contains('A') == true;
-      });
-      expect(attractionCardFinder, findsOneWidget);
-
 
       await IntegrationTestHelper().performLogout(tester);
     });
@@ -842,7 +839,6 @@ Future<void> pumpUntilFound(
     await tester.pump(interval);
     if (finder.evaluate().isNotEmpty) {
       print('Widget found within ${timeout.inSeconds} seconds: $finder');
-      await tester.pump(const Duration(milliseconds: 1));
       return; // Widget found ✅
     }
   }

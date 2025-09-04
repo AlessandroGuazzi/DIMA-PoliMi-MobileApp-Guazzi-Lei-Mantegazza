@@ -47,6 +47,12 @@ class MyThemeData {
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
           iconTheme:
               WidgetStateProperty.all(IconThemeData(color: primaryColor))),
+      bottomAppBarTheme: BottomAppBarTheme(
+        height: 65,
+        color: white,
+        elevation: 4,
+        shape: const CircularNotchedRectangle(),
+      ),
       cardTheme: CardThemeData(
         color: white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -182,6 +188,11 @@ class MyThemeData {
         unselectedIconTheme: IconThemeData(size: isTablet ? 26 : 24),
         showSelectedLabels: true,
         type: BottomNavigationBarType.fixed,
+      ),
+      bottomAppBarTheme: const BottomAppBarTheme(
+        color: CupertinoColors.darkBackgroundGray, // matches backgroundColor
+        elevation: 4,
+        shape: CircularNotchedRectangle(),
       ),
       cardTheme: CardThemeData(
         color: black,

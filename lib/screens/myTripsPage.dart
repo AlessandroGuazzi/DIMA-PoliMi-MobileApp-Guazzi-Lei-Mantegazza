@@ -55,13 +55,6 @@ class _MyTripsPageState extends State<MyTripsPage> {
           );
         },
       ),
-      //TODO: reposition it for tablet
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'newTripButton',
-        onPressed: _goToNewTripPage,
-        child: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

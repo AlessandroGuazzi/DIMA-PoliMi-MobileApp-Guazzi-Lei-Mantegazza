@@ -105,50 +105,49 @@ class _ProfilePageState extends State<ProfilePage> {
       length: 2,
       child: _futureUserBuilder((user) {
         return Scaffold(
-          body: SafeArea(
-            child: NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                SliverAppBar(
-                  expandedHeight: 350,
-                  pinned: true,
-                  floating: false,
-                  backgroundColor:
-                      myAppKey.currentState?.currentTheme == ThemeMode.dark
-                          ? Colors.black
-                          : Colors.white,
-                  centerTitle: true,
-                  actions: [
-                    IconButton(
-                      key: const Key('Settings'),
-                      icon: Icon(
-                        key: const Key('settingsButton'),
-                        Icons.settings,
-                        color: myAppKey.currentState?.currentTheme ==
-                                ThemeMode.dark
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                      onPressed: () => _showSettingsModal(user, _isMyProfile),
-                    )
-                  ],
-                  flexibleSpace: FlexibleSpaceBar(
-                    collapseMode: CollapseMode.pin,
-                    background: Center(child: UserProfileCard(user: user)),
-                  ),
-                  bottom: const TabBar(
-                    tabs: [
-                      Tab(text: 'Viaggi Salvati'),
-                      Tab(text: 'Viaggi Creati', key: Key('Created Trips'),),
-                    ],
-                  ),
-                ),
-              ],
-              body: TabBarView(
-                children: [
-                  _buildTripList(_savedTripsFuture, isMyTrip: false),
-                  _buildTripList(_createdTripsFuture, isMyTrip: widget.isCurrentUser),
+          body: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              SliverAppBar(
+                iconTheme: Theme.of(context).iconTheme,
+                expandedHeight: 350,
+                pinned: true,
+                floating: false,
+                backgroundColor:
+                    myAppKey.currentState?.currentTheme == ThemeMode.dark
+                        ? Colors.black
+                        : Colors.white,
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    key: const Key('Settings'),
+                    icon: Icon(
+                      key: const Key('settingsButton'),
+                      Icons.settings,
+                      color: myAppKey.currentState?.currentTheme ==
+                              ThemeMode.dark
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                    onPressed: () => _showSettingsModal(user, _isMyProfile),
+                  )
                 ],
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.pin,
+                  background: Center(child: UserProfileCard(user: user)),
+                ),
+                bottom: const TabBar(
+                  tabs: [
+                    Tab(text: 'Viaggi Salvati'),
+                    Tab(text: 'Viaggi Creati', key: Key('Created Trips'),),
+                  ],
+                ),
               ),
+            ],
+            body: TabBarView(
+              children: [
+                _buildTripList(_savedTripsFuture, isMyTrip: false),
+                _buildTripList(_createdTripsFuture, isMyTrip: widget.isCurrentUser),
+              ],
             ),
           ),
         );
@@ -388,7 +387,7 @@ class _ProfilePageState extends State<ProfilePage> {
             title: Text('Log Out', style: Theme.of(context).textTheme.bodyMedium),
             onTap: () async {
               await signOut();
-              if (!isTablet) Navigator.of(context).pop();
+              if (!isTablet) Navigator.of(context).popUntil((route) => route.isFirst);
             },
           ),
       ],

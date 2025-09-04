@@ -33,7 +33,7 @@ class IntegrationTestHelper {
 
   Future<void> performLogout(WidgetTester tester) async {
 
-    final bottomBar = find.byType(NavigationBar);
+    final bottomBar = find.byType(BottomAppBar);
     await tester.pumpAndSettle();
     //if bottom bar is not present
     while (!tester.any(bottomBar)) {
@@ -44,7 +44,7 @@ class IntegrationTestHelper {
       await tester.pumpAndSettle();
       await tester.pump(const Duration(milliseconds: 500));
     }
-    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(BottomAppBar), findsOneWidget);
 
 
     //tap on profile button
