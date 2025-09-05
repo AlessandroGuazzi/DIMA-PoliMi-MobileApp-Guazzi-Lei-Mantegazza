@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Simply Travel</string>
+	<string>Iter</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Simply Travel</string>
+	<string>dima_project</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -45,9 +45,5 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSCalendarsUsageDescription</key>
-    <string>Questa app ha bisogno di accedere al tuo calendario per aggiungere eventi del viaggio.</string>
-    <key>NSContactsUsageDescription</key>
-    <string>Questa app ha bisogno di accedere al tuo calendario per aggiungere eventi del viaggio.</string>
 </dict>
 </plist>

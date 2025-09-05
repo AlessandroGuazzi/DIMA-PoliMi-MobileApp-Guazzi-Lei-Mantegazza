@@ -40,10 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
   List<Widget> get _pages => [
         ExplorerPage(
-            databaseService: widget.databaseService, authService: widget.authService),
+            databaseService: widget.databaseService,
+            authService: widget.authService),
         MyTripsPage(databaseService: widget.databaseService),
       ];
 
@@ -76,22 +76,32 @@ class _MyHomePageState extends State<MyHomePage> {
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           extendBody: true,
-          appBar: MyAppBar(user: user,context: context, databaseService: widget.databaseService, authService: widget.authService,),
+          appBar: MyAppBar(
+            user: user,
+            context: context,
+            databaseService: widget.databaseService,
+            authService: widget.authService,
+          ),
           body: _pages[_selectedIndex],
           floatingActionButton: FloatingActionButton(
             shape: const CircleBorder(),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => UpsertTripPage(
-                  databaseService: widget.databaseService,
-                  authService: widget.authService,
-                )),
-              ).then((value) => setState(() {_selectedIndex = 1;}));
+                MaterialPageRoute(
+                    builder: (_) => UpsertTripPage(
+                          databaseService: widget.databaseService,
+                          authService: widget.authService,
+                        )),
+              ).then((value) => setState(() {
+                    print('Returned from upsertt');
+                    _selectedIndex = 1;
+                  }));
             },
-            child: const Icon(Icons.add),
+            child: const Icon(Icons.add_location_alt_outlined, size: 30,),
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: BottomAppBar(
             shape: const CircularNotchedRectangle(),
             notchMargin: 10,

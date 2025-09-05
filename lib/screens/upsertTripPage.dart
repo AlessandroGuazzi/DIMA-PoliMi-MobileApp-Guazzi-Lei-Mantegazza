@@ -620,7 +620,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
           isPrivate: true,
           timestamp: Timestamp.now(),
         );
-        widget.databaseService
+        await widget.databaseService
             .createTrip(trip)
             .then((value) => Navigator.pop(context, true));
       } else {

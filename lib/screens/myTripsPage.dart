@@ -28,6 +28,13 @@ class _MyTripsPageState extends State<MyTripsPage> {
     super.initState();
     _futureTrips = widget.databaseService.getHomePageTrips();
   }
+  @override
+  void didUpdateWidget(covariant MyTripsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    //reassign future on widget update
+    _futureTrips = widget.databaseService.getHomePageTrips();
+
+  }
 
   @override
   Widget build(BuildContext context) {
