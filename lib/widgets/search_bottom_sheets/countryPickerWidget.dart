@@ -80,14 +80,29 @@ class _CountryPickerWidgetState extends State<CountryPickerWidget> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: SearchBar(
-                hintText: 'Cerca una nazione...',
-                leading: Icon(Icons.search),
-                backgroundColor:
-                    Theme.of(context).searchBarTheme.backgroundColor,
-                onChanged: (query) {
-                  _filterCountries(query.trim());
-                },
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.center,
+                    colors: [
+                      Theme.of(context).primaryColor,
+                      Theme.of(context).secondaryHeaderColor,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.all(2), // thickness
+                child: SearchBar(
+                  hintText: 'Cerca una nazione...',
+                  hintStyle: WidgetStatePropertyAll(Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey)),
+                  leading: const Icon(Icons.search),
+                  backgroundColor:
+                      Theme.of(context).searchBarTheme.backgroundColor,
+                  onChanged: (query) {
+                    _filterCountries(query.trim());
+                  },
+                ),
               ),
             ),
             Expanded(

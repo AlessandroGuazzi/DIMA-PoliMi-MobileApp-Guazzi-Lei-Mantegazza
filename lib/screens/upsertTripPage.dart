@@ -343,9 +343,9 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
                 controller: citiesController,
                 enabled: _selectedCountries.isEmpty ? false : true,
                 readOnly: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Aggiungi tappe',
-                  prefixIcon: const Icon(Icons.location_city),
+                  prefixIcon: Icon(Icons.location_city),
                 ),
                 onTap: () {
                   _openCitiesSearch();
@@ -384,7 +384,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
                       ? DateFormat('dd/MM/yy').format(_newStartDate!)
                       : '',
                 ),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Quando partirai?',
                   prefixIcon: Icon(Icons.date_range),
                 ),

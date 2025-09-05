@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/models/userModel.dart';
@@ -27,6 +29,9 @@ class AuthService {
       required String username,
       required DateTime? birthDate,
       required String nationality}) async {
+    //generates a random number between 0 and 5
+    final random = Random().nextInt(6);
+    final path = 'assets/avatars/avatar_$random.png';
     try {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
@@ -35,7 +40,7 @@ class AuthService {
         name: name,
         surname: surname,
         username: username,
-        profilePic: null,
+        profilePic: path,
         birthDate: birthDate,
         mail: email,
         birthCountry: nationality,

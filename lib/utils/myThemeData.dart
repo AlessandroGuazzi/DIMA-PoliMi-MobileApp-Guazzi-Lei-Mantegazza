@@ -47,7 +47,7 @@ class MyThemeData {
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
           iconTheme:
               WidgetStateProperty.all(IconThemeData(color: primaryColor))),
-      bottomAppBarTheme: BottomAppBarTheme(
+      bottomAppBarTheme: BottomAppBarThemeData(
         height: 65,
         color: white,
         elevation: 4,
@@ -153,14 +153,12 @@ class MyThemeData {
       ),
       searchBarTheme: SearchBarThemeData(
         backgroundColor: WidgetStateProperty.all(white),
-        elevation: WidgetStateProperty.all(0),
+        elevation: WidgetStateProperty.all(1),
         shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50.0),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
-        side: WidgetStateProperty.all(BorderSide(
-            color: primaryColor, style: BorderStyle.solid, width: 0.9)),
       ),
     );
   }
@@ -189,7 +187,7 @@ class MyThemeData {
         showSelectedLabels: true,
         type: BottomNavigationBarType.fixed,
       ),
-      bottomAppBarTheme: const BottomAppBarTheme(
+      bottomAppBarTheme: const BottomAppBarThemeData(
         color: CupertinoColors.darkBackgroundGray, // matches backgroundColor
         elevation: 4,
         shape: CircularNotchedRectangle(),
@@ -301,14 +299,10 @@ class MyThemeData {
       ),
       searchBarTheme: SearchBarThemeData(
         backgroundColor: WidgetStateProperty.all(black),
-        elevation: WidgetStateProperty.all(2.0),
+        elevation: WidgetStateProperty.all(1),
         shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50.0),
-            side: const BorderSide(
-              color: Colors.white,
-              width: 1.0,
-            ),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
         overlayColor: WidgetStateProperty.all(CupertinoColors.systemGrey),

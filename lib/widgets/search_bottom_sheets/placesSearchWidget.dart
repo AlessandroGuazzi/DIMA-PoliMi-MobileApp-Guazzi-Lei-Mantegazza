@@ -59,14 +59,32 @@ class PlacesSearchWidgetState extends State<PlacesSearchWidget> {
 
                     //to modify textfield
                     builder: (context, controller, focusNode) {
-                      return SearchBar(
-                        key: const Key('placesSearchBar'),
-                        controller: controller,
-                        focusNode: focusNode,
-                        hintText: 'Cerca...',
-                        leading: Icon(Icons.search),
-                        backgroundColor:
-                            Theme.of(context).searchBarTheme.backgroundColor,
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.center,
+                            colors: [
+                              Theme.of(context).primaryColor,
+                              Theme.of(context).secondaryHeaderColor,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.all(2),
+                        child: SearchBar(
+                          key: const Key('placesSearchBar'),
+                          controller: controller,
+                          focusNode: focusNode,
+                          hintText: 'Cerca...',
+                          hintStyle: WidgetStatePropertyAll(Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(color: Colors.grey)),
+                          leading: const Icon(Icons.search),
+                          backgroundColor:
+                              Theme.of(context).searchBarTheme.backgroundColor,
+                        ),
                       );
                     },
 
@@ -110,8 +128,9 @@ class PlacesSearchWidgetState extends State<PlacesSearchWidget> {
                         String placeType = widget.type.name;
                         //this is needed due to how google places api treat cities call
                         if (placeType == 'cities') placeType = '(cities)';
-                        places = await widget.googlePlacesService.searchAutocomplete(
-                            query, widget.selectedCountryCodes, placeType);
+                        places = await widget.googlePlacesService
+                            .searchAutocomplete(
+                                query, widget.selectedCountryCodes, placeType);
                       }
                       return places;
                     })),

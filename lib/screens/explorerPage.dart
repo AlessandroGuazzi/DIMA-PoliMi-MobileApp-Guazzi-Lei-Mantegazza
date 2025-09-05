@@ -132,7 +132,6 @@ class _ExplorerPageState extends State<ExplorerPage> {
           Expanded(
               child: Container(
             decoration: BoxDecoration(
-              color: Colors.transparent,
               gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.center,
@@ -143,10 +142,9 @@ class _ExplorerPageState extends State<ExplorerPage> {
               ),
               borderRadius: BorderRadius.circular(18),
             ),
-            padding: const EdgeInsets.all(1.3), // thickness
+            padding: const EdgeInsets.all(2), // thickness
             child: SearchBar(
               key: const Key('searchBar'),
-              elevation: WidgetStateProperty.all(2),
               hintText: "Cerca una destinazione...",
               hintStyle: WidgetStateProperty.all(
                 Theme.of(context)
