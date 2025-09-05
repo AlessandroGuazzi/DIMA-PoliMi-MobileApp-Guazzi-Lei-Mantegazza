@@ -64,7 +64,8 @@ class _ExplorerPageState extends State<ExplorerPage> {
 
           //ensure that this executes only the first time the widget is built
           if (_savedTripsId.isEmpty && _allTrips.isEmpty) {
-            _savedTripsId = List<String>.from(userSnapshot.data!.savedTrip ?? []);
+            _savedTripsId =
+                List<String>.from(userSnapshot.data!.savedTrip ?? []);
           }
 
           //second future builder wait for trips to be loaded
@@ -129,29 +130,63 @@ class _ExplorerPageState extends State<ExplorerPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
+              child: Container(
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.center,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).secondaryHeaderColor,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            padding: const EdgeInsets.all(1.3), // thickness
             child: SearchBar(
-              key: Key('searchBar'),
-              elevation: WidgetStateProperty.all(1),
+              key: const Key('searchBar'),
+              elevation: WidgetStateProperty.all(2),
               hintText: "Cerca una destinazione...",
+              hintStyle: WidgetStateProperty.all(
+                Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.grey),
+              ),
               onChanged: (query) {
                 setState(() {
                   _filterTrips(query);
                 });
               },
-              leading: const Icon(
-                Icons.search,
+              leading: const Padding(
+                padding: EdgeInsets.only(left: 8.0),
+                child: Icon(Icons.search, color: Colors.grey),
               ),
               trailing: [
                 GestureDetector(
                     onTap: () => _openSortWidget(),
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.filter_alt_outlined),
-                    ))
+                    child: Container(
+                      padding: const EdgeInsets.all(9),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(12)),
+                      child: const Icon(
+                        Icons.filter_alt_outlined,
+                        color: Colors.white,
+                      ),
+                    )),
               ],
-              backgroundColor: Theme.of(context).searchBarTheme.backgroundColor,
+              padding: WidgetStateProperty.all(
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              ),
+              shape: WidgetStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
             ),
-          ),
+          )),
         ],
       ),
     );
@@ -210,24 +245,25 @@ class _ExplorerPageState extends State<ExplorerPage> {
   void _handleTripSave(bool isCurrentlySaved, String tripId) async {
     try {
       await widget.databaseService.handleTripSave(isCurrentlySaved, tripId);
-        //update the local state
-        setState(() {
-          TripModel tripToUpdate = _filteredTrips.firstWhere((trip) => trip.id == tripId);
-          if (isCurrentlySaved) {
-            _savedTripsId.remove(tripId);
-            //update the counter locally
-            if (tripToUpdate.saveCounter != null && tripToUpdate.saveCounter! > 0) {
-              tripToUpdate.saveCounter = (tripToUpdate.saveCounter ?? 0) - 1;
-            } else {
-              //unexpected case, mimic database behavior
-              tripToUpdate.saveCounter = 0;
-            }
+      //update the local state
+      setState(() {
+        TripModel tripToUpdate =
+            _filteredTrips.firstWhere((trip) => trip.id == tripId);
+        if (isCurrentlySaved) {
+          _savedTripsId.remove(tripId);
+          //update the counter locally
+          if (tripToUpdate.saveCounter != null &&
+              tripToUpdate.saveCounter! > 0) {
+            tripToUpdate.saveCounter = (tripToUpdate.saveCounter ?? 0) - 1;
           } else {
-            _savedTripsId.add(tripId);
-            tripToUpdate.saveCounter = (tripToUpdate.saveCounter ?? 0) + 1;
+            //unexpected case, mimic database behavior
+            tripToUpdate.saveCounter = 0;
           }
-        });
-
+        } else {
+          _savedTripsId.add(tripId);
+          tripToUpdate.saveCounter = (tripToUpdate.saveCounter ?? 0) + 1;
+        }
+      });
     } on Exception catch (e) {
       SnackBar(content: Text('Errore $e'));
     }

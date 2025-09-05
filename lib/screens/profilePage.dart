@@ -137,7 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 bottom: const TabBar(
                   tabs: [
-                    Tab(text: 'Viaggi Salvati'),
+                    Tab(text: 'Viaggi Salvati', key: Key('Saved Trips'),),
                     Tab(text: 'Viaggi Creati', key: Key('Created Trips'),),
                   ],
                 ),
@@ -240,6 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
         final trips = snapshot.data!;
         return ListView.builder(
+          padding: const EdgeInsets.only(top: 5),
           itemCount: trips.length,
           itemBuilder: (context, index) {
             final trip = trips[index];

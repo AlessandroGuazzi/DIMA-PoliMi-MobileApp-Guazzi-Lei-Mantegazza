@@ -5,7 +5,6 @@ import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/widgets/components/myAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/screens/myTripsPage.dart';
-import 'package:dima_project/screens/profilePage.dart';
 import 'package:dima_project/screens/explorerPage.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -76,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          extendBody: true,
           appBar: MyAppBar(user: user,context: context, databaseService: widget.databaseService, authService: widget.authService,),
           body: _pages[_selectedIndex],
           floatingActionButton: FloatingActionButton(
@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   key: const Key('searchButton'),
                   icon: Icon(
                     Icons.search,
-                    size: 25,
+                    size: 27,
                     color: Theme.of(context).primaryColor,
                   ),
                   onPressed: () => setState(() => _selectedIndex = 0),
@@ -116,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   key: const Key('homeButton'),
                   icon: Icon(
                     _selectedIndex == 1 ? Icons.home : Icons.home_outlined,
-                    size: 25,
+                    size: 27,
                     color: Theme.of(context).primaryColor,
                   ),
                   onPressed: () => setState(() => _selectedIndex = 1),
