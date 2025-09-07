@@ -192,16 +192,17 @@ void main() {
       await tester.ensureVisible(submitButton);
       await tester.tap(submitButton);
       await tester.pumpAndSettle();
-      await pumpUntilFound(tester, find.byType(ItineraryWidget));
+
+      final attractionCardFinder = find.byWidgetPredicate((widget) {
+        return widget is AttractionActivityCard &&
+            widget.attraction.name?.contains('A') == true;
+      });
+      await pumpUntilFound(tester, attractionCardFinder);
       await tester.pump(const Duration(seconds:2));
 
 
 
       //assert
-      final attractionCardFinder = find.byWidgetPredicate((widget) {
-        return widget is AttractionActivityCard &&
-            widget.attraction.name?.contains('A') == true;
-      });
       expect(attractionCardFinder, findsOneWidget);
 
 
@@ -689,7 +690,7 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('\$').last);
-      await tester.pumpAndSettle(const Duration(seconds: 1));
+      await tester.pumpAndSettle(const Duration(seconds: 4));
 
 
       dropdown = tester.widget(dropdownFinder);
@@ -839,7 +840,7 @@ Future<void> pumpUntilFound(
     await tester.pump(interval);
     if (finder.evaluate().isNotEmpty) {
       print('Widget found within ${timeout.inSeconds} seconds: $finder');
-      return; // Widget found ✅
+      return;
     }
   }
 

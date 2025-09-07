@@ -18,7 +18,6 @@ class _AccommodationActivityCardState extends State<AccommodationActivityCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primaryColor = theme.primaryColor;
-    final secondaryColor = theme.colorScheme.secondary;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
@@ -68,7 +67,7 @@ class _AccommodationActivityCardState extends State<AccommodationActivityCard> {
                               const SizedBox(width: 6),
                               Text(
                                 'Check In: ${widget.accommodation.checkIn != null ? '${widget.accommodation.checkIn!.hour.toString().padLeft(2, '0')}:${widget.accommodation.checkIn!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
-                                style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+                                style: theme.textTheme.bodyMedium,
                               ),
                             ],
                           ),
@@ -79,7 +78,7 @@ class _AccommodationActivityCardState extends State<AccommodationActivityCard> {
                               const SizedBox(width: 6),
                               Text(
                                 'Check Out: ${widget.accommodation.checkOut != null ? '${widget.accommodation.checkOut!.hour.toString().padLeft(2, '0')}:${widget.accommodation.checkOut!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
-                                style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+                                style: theme.textTheme.bodyMedium,
                               ),
                             ],
                           ),

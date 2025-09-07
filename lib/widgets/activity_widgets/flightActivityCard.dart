@@ -18,7 +18,6 @@ class _FlightActivityCardState extends State<FlightActivityCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primaryColor = theme.primaryColor;
-    final secondaryColor = theme.colorScheme.secondary;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
@@ -70,7 +69,7 @@ class _FlightActivityCardState extends State<FlightActivityCard> {
                                 child: Text(
                                   'Partenza: ${widget.flight.departureDate != null ? '${widget.flight.departureDate!.hour.toString().padLeft(2, '0')}:${widget.flight.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
                                   overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+                                  style: theme.textTheme.bodyMedium,
                                 ),
                               ),
                             ],
@@ -84,7 +83,7 @@ class _FlightActivityCardState extends State<FlightActivityCard> {
                                 child: Text(
                                   'Arrivo: ${widget.flight.arrivalDate != null ? '${widget.flight.arrivalDate!.hour.toString().padLeft(2, '0')}:${widget.flight.arrivalDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
                                   overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+                                  style: theme.textTheme.bodyMedium,
                                 ),
                               ),
                             ],

@@ -19,7 +19,6 @@ class _TransportActivityCardState extends State<TransportActivityCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primaryColor = theme.primaryColor;
-    final secondaryColor = theme.colorScheme.secondary;
 
     final departure = widget.transport.departureDate;
     final durationMinutes = widget.transport.duration;
@@ -80,7 +79,7 @@ class _TransportActivityCardState extends State<TransportActivityCard> {
                               const SizedBox(width: 6),
                               Text(
                                 'Partenza: ${widget.transport.departureDate != null ? '${widget.transport.departureDate!.hour.toString().padLeft(2, '0')}:${widget.transport.departureDate!.minute.toString().padLeft(2, '0')}' : 'N/A'}',
-                                style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+                                style: theme.textTheme.bodyMedium,
                               ),
                             ],
                           ),
@@ -94,7 +93,7 @@ class _TransportActivityCardState extends State<TransportActivityCard> {
                                   'Arrivo: ${arrival != null
                                       ? '${arrival.hour.toString().padLeft(2, '0')}:${arrival.minute.toString().padLeft(2, '0')}'
                                       : 'N/A'}',
-                                  style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+                                  style: theme.textTheme.bodyMedium,
                                 ),
                               ],
                             )

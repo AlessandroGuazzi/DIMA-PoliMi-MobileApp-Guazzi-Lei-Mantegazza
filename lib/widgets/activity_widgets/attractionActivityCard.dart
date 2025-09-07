@@ -18,7 +18,6 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primaryColor = theme.primaryColor;
-    final secondaryColor = theme.colorScheme.secondary;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
@@ -72,7 +71,7 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
                                       ? '${widget.attraction.startDate!.hour.toString().padLeft(2, '0')}:${widget.attraction.startDate!.minute.toString().padLeft(2, '0')} - '
                                       '${widget.attraction.endDate!.hour.toString().padLeft(2, '0')}:${widget.attraction.endDate!.minute.toString().padLeft(2, '0')}'
                                       : 'Orario non disponibile',
-                                  style: theme.textTheme.bodyMedium?.copyWith(color: secondaryColor),
+                                  style: theme.textTheme.bodyMedium,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),

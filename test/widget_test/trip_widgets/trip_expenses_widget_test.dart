@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pie_chart/pie_chart.dart';
 
-import '../mocks.mocks.dart';
+import '../../mocks.mocks.dart';
 
 void main() {
   group('TripExpensesWidget Tests', () {

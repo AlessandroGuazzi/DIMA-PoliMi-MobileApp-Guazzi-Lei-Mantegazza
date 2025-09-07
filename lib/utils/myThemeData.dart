@@ -187,10 +187,10 @@ class MyThemeData {
         showSelectedLabels: true,
         type: BottomNavigationBarType.fixed,
       ),
-      bottomAppBarTheme: const BottomAppBarThemeData(
-        color: CupertinoColors.darkBackgroundGray, // matches backgroundColor
+      bottomAppBarTheme: BottomAppBarThemeData(
+        color: black,
         elevation: 4,
-        shape: CircularNotchedRectangle(),
+        shape: const CircularNotchedRectangle(),
       ),
       cardTheme: CardThemeData(
         color: black,

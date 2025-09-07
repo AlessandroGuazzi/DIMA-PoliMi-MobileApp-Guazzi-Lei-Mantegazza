@@ -160,6 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
         length: 2,
         child: _futureUserBuilder((user) {
           return Scaffold(
+            appBar: AppBar(),
             body: Row(
               children: [
                 //left section
@@ -388,7 +389,7 @@ class _ProfilePageState extends State<ProfilePage> {
             title: Text('Log Out', style: Theme.of(context).textTheme.bodyMedium),
             onTap: () async {
               await signOut();
-              if (!isTablet) Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.of(context).popUntil((route) => route.isFirst);
             },
           ),
       ],

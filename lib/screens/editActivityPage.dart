@@ -24,7 +24,7 @@ class _EditActivityPageState extends State<EditActivityPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit ${widget.activity.type}"),
+        title: Text("Modifica ${translateWidgetType(widget.activity.type)}"),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Padding(
@@ -38,5 +38,20 @@ class _EditActivityPageState extends State<EditActivityPage> {
         },
       ),
     );
+  }
+
+  String translateWidgetType(String? type) {
+    switch (type) {
+      case 'flight':
+        return 'volo';
+      case 'accommodation':
+        return 'alloggio';
+      case 'transport':
+        return 'trasporto';
+      case 'attraction':
+        return 'attrazione';
+      default:
+        return 'attività';
+    }
   }
 }
