@@ -29,186 +29,192 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).primaryColor,
-              Theme.of(context).secondaryHeaderColor
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 700,
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        FocusScope.of(context).unfocus(); // chiude la tastiera
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).primaryColor,
+                Theme.of(context).secondaryHeaderColor
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 700,
               ),
-              elevation: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 30),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset('assets/app_logo.png',
-                            width: 150, height: 150),
-                        if (!isLogin) ...[
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                elevation: 8,
+                margin: const EdgeInsets.symmetric(horizontal: 30),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset('assets/app_logo.png',
+                              width: 150, height: 150),
+                          if (!isLogin) ...[
+                            TextFormField(
+                              key: const Key('nameField'),
+                              controller: _name,
+                              decoration: InputDecoration(
+                                labelText: 'Nome',
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Per favore seleziona un nome";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              key: const Key('surnameField'),
+                              controller: _surname,
+                              decoration: const InputDecoration(
+                                labelText: 'Cognome',
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Per favore seleziona un cognome";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              key: const Key('usernameField'),
+                              controller: _username,
+                              decoration: const InputDecoration(
+                                labelText: 'Username',
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Per favore seleziona un username";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              key: const Key('birthDateField'),
+                              controller: _birthDate,
+                              readOnly: true,
+                              onTap: () => _selectDate(context),
+                              decoration: const InputDecoration(
+                                labelText: 'Data di Nascita',
+                                suffixIcon: Icon(Icons.calendar_today),
+                              ),
+                              validator: (value) {
+                                if (selectedBirthDate == null) {
+                                  return "Per favore seleziona una data di nascita";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              key: const Key('nationalityField'),
+                              controller: _nationality,
+                              readOnly: true,
+                              decoration: const InputDecoration(
+                                labelText: 'Nazionalità',
+                              ),
+                              onTap: () => {_openCountryPicker()},
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Per favore seleziona una nazionalità";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                          ],
                           TextFormField(
-                            key: const Key('nameField'),
-                            controller: _name,
-                            decoration: InputDecoration(
-                              labelText: 'Nome',
+                            key: const Key('emailField'),
+                            controller: _email,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: const InputDecoration(
+                              labelText: 'Email',
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return "Per favore seleziona un nome";
+                                return "Per favore inserisci un indirizzo email";
                               }
                               return null;
                             },
                           ),
                           const SizedBox(height: 12),
                           TextFormField(
-                            key: const Key('surnameField'),
-                            controller: _surname,
+                            key: const Key('passwordField'),
+                            controller: _password,
+                            obscureText: true,
                             decoration: const InputDecoration(
-                              labelText: 'Cognome',
+                              labelText: 'Password',
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return "Per favore seleziona un cognome";
+                                return "Per favore inserisci una password";
                               }
                               return null;
                             },
                           ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            key: const Key('usernameField'),
-                            controller: _username,
-                            decoration: const InputDecoration(
-                              labelText: 'Username',
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            key: const Key('submitButton'),
+                            onPressed: () {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                if (isLogin) {
+                                  signIn();
+                                } else {
+                                  createUser();
+                                }
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(double.infinity, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Per favore seleziona un username";
-                              }
-                              return null;
-                            },
+                            child: Text(isLogin ? 'Accedi' : 'Registrati'),
                           ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            key: const Key('birthDateField'),
-                            controller: _birthDate,
-                            readOnly: true,
-                            onTap: () => _selectDate(context),
-                            decoration: const InputDecoration(
-                              labelText: 'Data di Nascita',
-                              suffixIcon: Icon(Icons.calendar_today),
+                          TextButton(
+                            key: const Key('toggleAuthMode'),
+                            onPressed: () {
+                              setState(() {
+                                _formKey.currentState?.reset();
+                                _email.clear();
+                                _password.clear();
+                                isLogin = !isLogin;
+                              });
+                            },
+                            child: Text(
+                              isLogin
+                                  ? 'Non hai un account? Registrati'
+                                  : 'Hai un account? Accedi',
+                              style: TextStyle(
+                                  color: Theme.of(context).secondaryHeaderColor),
                             ),
-                            validator: (value) {
-                              if (selectedBirthDate == null) {
-                                return "Per favore seleziona una data di nascita";
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            key: const Key('nationalityField'),
-                            controller: _nationality,
-                            readOnly: true,
-                            decoration: const InputDecoration(
-                              labelText: 'Nazionalità',
-                            ),
-                            onTap: () => {_openCountryPicker()},
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Per favore seleziona una nazionalità";
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 12),
+                          )
                         ],
-                        TextFormField(
-                          key: const Key('emailField'),
-                          controller: _email,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Per favore inserisci un indirizzo email";
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          key: const Key('passwordField'),
-                          controller: _password,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Per favore inserisci una password";
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          key: const Key('submitButton'),
-                          onPressed: () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              if (isLogin) {
-                                signIn();
-                              } else {
-                                createUser();
-                              }
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: Text(isLogin ? 'Accedi' : 'Registrati'),
-                        ),
-                        TextButton(
-                          key: const Key('toggleAuthMode'),
-                          onPressed: () {
-                            setState(() {
-                              _formKey.currentState?.reset();
-                              _email.clear();
-                              _password.clear();
-                              isLogin = !isLogin;
-                            });
-                          },
-                          child: Text(
-                            isLogin
-                                ? 'Non hai un account? Registrati'
-                                : 'Hai un account? Accedi',
-                            style: TextStyle(
-                                color: Theme.of(context).secondaryHeaderColor),
-                          ),
-                        )
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -230,9 +236,9 @@ class _AuthPageState extends State<AuthPage> {
             const SizedBox(width: 10),
             Expanded(
                 child: Text(
-              error.message ?? message,
-              softWrap: true,
-            )),
+                  error.message ?? message,
+                  softWrap: true,
+                )),
           ],
         ),
         backgroundColor: Colors.red,

@@ -97,34 +97,40 @@ class _AccountSettingsState extends State<AccountSettings> {
           //executes only the first time the widget is built
           _selectedAvatarPath ??= user.profilePic;
 
-          return Scaffold(
-              appBar: AppBar(
-                title: const Text('Modifica Profilo'),
-                backgroundColor: Theme.of(context).primaryColor,
-                elevation: 0,
-              ),
-              body: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).secondaryHeaderColor
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
+          return GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              FocusScope.of(context).unfocus(); // chiude la tastiera
+            },
+            child: Scaffold(
+                appBar: AppBar(
+                  title: const Text('Modifica Profilo'),
+                  backgroundColor: Theme.of(context).primaryColor,
+                  elevation: 0,
                 ),
-                child: Center(
-                  child: Card(
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 40, horizontal: 20),
-                    elevation: 8,
-                    child: ResponsiveLayout(
-                        mobileLayout: _buildMobileLayout(user),
-                        tabletLayout: _buildTabletLayout(user)),
+                body: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).primaryColor,
+                        Theme.of(context).secondaryHeaderColor
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                   ),
-                ),
-              ));
+                  child: Center(
+                    child: Card(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 40, horizontal: 20),
+                      elevation: 8,
+                      child: ResponsiveLayout(
+                          mobileLayout: _buildMobileLayout(user),
+                          tabletLayout: _buildTabletLayout(user)),
+                    ),
+                  ),
+                )),
+          );
         });
   }
 
@@ -169,26 +175,26 @@ class _AccountSettingsState extends State<AccountSettings> {
           const SizedBox(height: 30),
           _buildTextField(
             key: const Key('nameField'),
-            label: 'Nome',
+            label: '${user.name}',
             controller: _name,
             initialValue: '${user.name}',
           ),
           _buildTextField(
             key: const Key('surnameField'),
-            label: 'Cognome',
+            label: '${user.surname}',
             controller: _surname,
             initialValue: '${user.surname}',
           ),
           _buildTextField(
             key: const Key('usernameField'),
-            label: 'Username',
+            label: '${user.username}',
             controller: _username,
             initialValue: '${user.username}',
           ),
           TextField(
             controller: _dateController,
             decoration: InputDecoration(
-              labelText: 'Data di Nascita',
+              labelText: '${user.birthDate?.toIso8601String().split('T')[0]}',
               suffixIcon: IconButton(
                 icon: const Icon(Icons.calendar_today),
                 onPressed: () => _selectDate(context),

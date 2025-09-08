@@ -76,9 +76,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Modifica Profilo'), findsOneWidget);
-      expect(find.text('Nome'), findsOneWidget);
-      expect(find.text('Cognome'), findsOneWidget);
-      expect(find.text('Username'), findsOneWidget);
+      expect(find.text('Mario'), findsWidgets);
+      expect(find.text('Rossi'), findsWidgets);
+      expect(find.text('mariorossi'), findsWidgets);
     });
   });
 
@@ -101,11 +101,11 @@ void main() {
 
       final nameField = find.byWidgetPredicate(
         (widget) =>
-            widget is TextField && widget.decoration?.labelText == 'Nome',
+            widget is TextField && widget.decoration?.labelText == 'InitialName',
       );
 
       expect(nameField, findsOneWidget);
-      expect(find.text('InitialName'), findsOneWidget);
+      expect(find.text('InitialName'), findsWidgets);
 
       await tester.enterText(nameField, 'NewName');
       expect(find.text('NewName'), findsOneWidget);
@@ -118,11 +118,11 @@ void main() {
 
       final surnameField = find.byWidgetPredicate(
         (widget) =>
-            widget is TextField && widget.decoration?.labelText == 'Cognome',
+            widget is TextField && widget.decoration?.labelText == 'InitialSurname',
       );
 
       expect(surnameField, findsOneWidget);
-      expect(find.text('InitialSurname'), findsOneWidget);
+      expect(find.text('InitialSurname'), findsWidgets);
 
       await tester.enterText(surnameField, 'NewSurname');
       expect(find.text('NewSurname'), findsOneWidget);
@@ -135,11 +135,11 @@ void main() {
 
       final usernameField = find.byWidgetPredicate(
         (widget) =>
-            widget is TextField && widget.decoration?.labelText == 'Username',
+            widget is TextField && widget.decoration?.labelText == 'initialuser',
       );
 
       expect(usernameField, findsOneWidget);
-      expect(find.text('initialuser'), findsOneWidget);
+      expect(find.text('initialuser'), findsWidgets);
 
       await tester.enterText(usernameField, 'newusername');
       expect(find.text('newusername'), findsOneWidget);
@@ -157,7 +157,7 @@ void main() {
       );
 
       expect(descriptionField, findsOneWidget);
-      expect(find.text('Initial description'), findsOneWidget);
+      expect(find.text('Initial description'), findsWidgets);
 
       await tester.enterText(descriptionField, 'Updated description');
       expect(find.text('Updated description'), findsOneWidget);
@@ -172,7 +172,7 @@ void main() {
       final birthDateField = find.byWidgetPredicate(
         (widget) =>
             widget is TextField &&
-            widget.decoration?.labelText == 'Data di Nascita',
+            widget.decoration?.labelText == '1990-02-02',
       );
 
       expect(birthDateField, findsOneWidget);
