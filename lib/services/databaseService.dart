@@ -278,7 +278,7 @@ class DatabaseService {
   Future<void> createActivity(ActivityModel activity) async {
     try {
       await db.collection('Activities').add(activity.toFirestore());
-      updateTripCost(activity.tripId!, activity.expenses ?? 0.0, true, activity.type!); //TODO AGGIORNARE COSTO COME ATTRIBUTO DEL GENITORE
+      updateTripCost(activity.tripId!, activity.expenses ?? 0.0, true, activity.type!);
       print('Successfully added a new ${activity.runtimeType}!');
     } on Exception catch (e) {
       print("Error creating activity: $e");
@@ -297,20 +297,45 @@ class DatabaseService {
 
   Future<void> deleteTrip(String tripId) async {
     try {
-      // Elimina prima tutte le attività collegate
-      QuerySnapshot activitiesSnapshot = await db
-          .collection('Activities')
-          .where('tripId', isEqualTo: tripId)
-          .get();
+      await db.runTransaction((transaction) async {
+        final tripRef = db.collection('Trips').doc(tripId);
+        final userRef = userCollection.doc(currentUserId);
 
-      for (QueryDocumentSnapshot doc in activitiesSnapshot.docs) {
-        await doc.reference.delete();
-      }
-      // Poi elimina il trip vero e proprio
-      await db.collection('Trips').doc(tripId).delete();
+        final tripSnapshot = await transaction.get(tripRef);
 
-    } on Exception catch (e) {
-      print('Error deleting trip and its activities: $e');
+        if (!tripSnapshot.exists) {
+          throw Exception("Trip not found");
+        }
+
+        // if user created the trip
+        final userSnapshot = await transaction.get(userRef);
+        final createdTrips = List<String>.from(userSnapshot['createdTrip'] ?? []);
+        if (!createdTrips.contains(tripId)) {
+          throw Exception("User does not own this trip");
+        }
+
+        // Delete activities linked to this trip
+        final activitiesSnapshot = await db
+            .collection('Activities')
+            .where('tripId', isEqualTo: tripId)
+            .get();
+        for (var doc in activitiesSnapshot.docs) {
+          transaction.delete(doc.reference);
+        }
+
+        // Delete the trip
+        transaction.delete(tripRef);
+
+        // Update user doc
+        transaction.update(userRef, {
+          'createdTrip': FieldValue.arrayRemove([tripId]),
+        });
+      });
+
+    } on FirebaseException catch (e) {
+      print('Firebase error deleting trip: ${e.message}');
+    } catch (e) {
+      print('Error deleting trip: $e');
     }
   }
 

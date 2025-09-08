@@ -159,6 +159,8 @@ class MyThemeData {
             borderRadius: BorderRadius.circular(14),
           ),
         ),
+        overlayColor: WidgetStateProperty.all(backgroundColor),
+
       ),
     );
   }
@@ -247,6 +249,11 @@ class MyThemeData {
         prefixIconColor: CupertinoColors.systemGrey3,
         labelStyle: TextStyle(color: CupertinoColors.systemGrey3),
       ),
+      tabBarTheme: TabBarThemeData(
+        indicatorColor: primaryColor,
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.grey,
+      ),
       textTheme: TextTheme(
         displayLarge: TextStyle(
           fontSize: isTablet ? 36 : 32,
@@ -305,7 +312,7 @@ class MyThemeData {
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        overlayColor: WidgetStateProperty.all(CupertinoColors.systemGrey),
+        overlayColor: WidgetStateProperty.all(CupertinoColors.darkBackgroundGray),
       ),
     );
   }

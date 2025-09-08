@@ -295,7 +295,7 @@ class _AccountSettingsState extends State<AccountSettings> {
       MaterialPageRoute(
         builder: (context) => AvatarSelectionPage(
           avatarPaths: List.generate(
-            12,
+            9,
             (index) => 'assets/avatars/avatar_$index.png',
           ),
           onAvatarSelected: (path) {

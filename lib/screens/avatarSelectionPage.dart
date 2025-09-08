@@ -28,7 +28,7 @@ class AvatarSelectionPage extends StatelessWidget {
             onTap: () {
               onAvatarSelected(path);
             },
-            child: Image.asset(path),
+            child: Image.asset(path, fit: BoxFit.cover),
           );
         },
       ),

@@ -179,6 +179,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
               TextFormField(
                 key: const Key('titleField'),
                 controller: titleController,
+                onTapOutside: (event) { FocusScope.of(context).unfocus();},
                 decoration: InputDecoration(
                   labelText: 'Titolo',
                   hintText: 'Inserisci il titolo del viaggio',
@@ -198,6 +199,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
                 key: const Key('countriesField'),
                 controller: countriesController,
                 readOnly: true,
+                onTapOutside: (event) { FocusScope.of(context).unfocus();},
                 decoration: InputDecoration(
                   hintText: 'Che nazioni visiterai?',
                   prefixIcon: Icon(Icons.location_on),
@@ -242,6 +244,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
                 controller: citiesController,
                 enabled: _selectedCountries.isEmpty ? false : true,
                 readOnly: true,
+                onTapOutside: (event) { FocusScope.of(context).unfocus();},
                 decoration: InputDecoration(
                   hintText: 'Che città visiterai?',
                   prefixIcon: Icon(Icons.location_city),
@@ -279,6 +282,7 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
                 key: const Key('datesField'),
                 readOnly: true,
                 controller: datesController,
+                onTapOutside: (event) { FocusScope.of(context).unfocus();},
                 decoration: InputDecoration(
                   hintText: 'Quando partirai?',
                   prefixIcon: Icon(Icons.date_range),
