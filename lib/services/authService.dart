@@ -29,8 +29,8 @@ class AuthService {
       required String username,
       required DateTime? birthDate,
       required String nationality}) async {
-    //generates a random number between 0 and 5
-    final random = Random().nextInt(6);
+    //generates a random number between 0 and 11
+    final random = Random().nextInt(12);
     final path = 'assets/avatars/avatar_$random.png';
     try {
       await _firebaseAuth.createUserWithEmailAndPassword(
