@@ -79,8 +79,8 @@ class _MyTripsPageState extends State<MyTripsPage> {
             //labelColor: Theme.of(context).primaryColor,
             unselectedLabelColor: Colors.grey,
             indicatorColor: Theme.of(context).primaryColor,
-            labelStyle: Theme.of(context).textTheme.headlineMedium,
-            unselectedLabelStyle: Theme.of(context).textTheme.bodyMedium,
+            labelStyle: Theme.of(context).textTheme.titleMedium,
+            unselectedLabelStyle: Theme.of(context).textTheme.bodySmall,
             tabs: const [
               Tab(text: 'I tuoi viaggi'),     // Upcoming Trips
               Tab(text: 'Viaggi passati'),   // Past Trips

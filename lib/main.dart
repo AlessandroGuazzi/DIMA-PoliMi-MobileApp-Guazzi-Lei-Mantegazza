@@ -4,6 +4,7 @@ import 'package:dima_project/services/authService.dart';
 import 'package:dima_project/utils/screenSize.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'firebase_options.dart';
 import 'screens/homePage.dart';
 
@@ -27,6 +28,31 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
 
   ThemeMode _themeMode = ThemeMode.light;
+
+  @override
+  void initState() {
+    super.initState();
+    // Wait for the first frame so MediaQuery is available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setOrientation();
+    });
+  }
+
+  void _setOrientation() {
+    final isTablet = ScreenSize.isTablet(context);
+    if (isTablet) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    } else {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
+    }
+  }
 
   void toggleTheme() {
     setState(() {
