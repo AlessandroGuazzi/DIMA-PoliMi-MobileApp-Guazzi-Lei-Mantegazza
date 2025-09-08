@@ -102,7 +102,6 @@ class _UpsertTripPageState extends State<UpsertTripPage> {
           child: const Center(child: CircularProgressIndicator()));
     } else {
       return Scaffold(
-        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: widget.isUpdate == null || !widget.isUpdate!
               ? const Text("Crea un nuovo viaggio!")

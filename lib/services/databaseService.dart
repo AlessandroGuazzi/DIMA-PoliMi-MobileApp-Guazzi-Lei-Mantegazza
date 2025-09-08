@@ -64,8 +64,22 @@ class DatabaseService {
       debugPrint("Trip retrieval completed");
 
       for (var docSnapshot in querySnapshot.docs) {
-        trips.add(docSnapshot.data());
+        TripModel trip = docSnapshot.data();
+
+        //fetch the user
+        final userId = trip.creatorInfo?['id'];
+        if (userId != null) {
+          final userDoc = await userCollection.doc(userId).get();
+          final userData = userDoc.data();
+          //assign new data
+          if (userData != null && trip.creatorInfo != null) {
+            trip.creatorInfo!['username'] = userData.username ?? 'Unknown';
+            trip.creatorInfo!['profilePic'] = userData.profilePic ?? 'assets/profile.png';
+          }
+        }
+        trips.add(trip);
       }
+
     } catch (e) {
       debugPrint("Error retrieving trip: $e");
     }
