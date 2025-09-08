@@ -143,13 +143,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //callback method to rebuild appBar
   void rebuildAppBar() {
-    setState(() {
-      final currentUser = widget.authService.currentUser;
-      if (currentUser != null) {
+    final currentUser = widget.authService.currentUser;
+    if (currentUser != null) {
+      print('Utente autenticato: ${currentUser.uid}');
+      setState(() {
         _userFuture = widget.databaseService.getUserByUid(currentUser.uid);
-      } else {
-        _userFuture = Future.error('Utente non autenticato');
-      }
-    });
+      });
+    }
   }
 }

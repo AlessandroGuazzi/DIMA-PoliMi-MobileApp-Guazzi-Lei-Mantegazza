@@ -29,27 +29,11 @@ class UserProfileCard extends StatelessWidget {
                   children: [
 
                     // Profile Picture with Border
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Theme.of(context).secondaryHeaderColor,
-                          width: 3,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(context).primaryColor.withOpacity(0.2),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: ScreenSize.screenHeight(context) * 0.1,
-                        backgroundImage: user.profilePic != null
-                            ? AssetImage(user.profilePic!)
-                            : const AssetImage('assets/profile.png'),
-                      ),
+                    CircleAvatar(
+                      radius: ScreenSize.screenHeight(context) * 0.1,
+                      backgroundImage: user.profilePic != null
+                          ? AssetImage(user.profilePic!)
+                          : const AssetImage('assets/profile.png'),
                     ),
 
                     const SizedBox(height: 10),

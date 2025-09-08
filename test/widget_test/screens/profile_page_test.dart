@@ -137,7 +137,10 @@ void main() {
         await tester.pumpWidget(createTestWidget('test-uid'));
         await tester.pumpAndSettle();
 
-        await tester.tap(find.text('Log Out'));
+        final logoutButton = find.text('Log Out');
+        await tester.ensureVisible(logoutButton);
+        expect(logoutButton, findsOneWidget);
+        await tester.tap(logoutButton);
         await tester.pump();
 
         verify(mockAuthService.signOut()).called(1);
