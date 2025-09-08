@@ -81,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
             context: context,
             databaseService: widget.databaseService,
             authService: widget.authService,
+            rebuildAppBar: rebuildAppBar,
           ),
           body: _pages[_selectedIndex],
           floatingActionButton: FloatingActionButton(
@@ -138,5 +139,17 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  //callback method to rebuild appBar
+  void rebuildAppBar() {
+    setState(() {
+      final currentUser = widget.authService.currentUser;
+      if (currentUser != null) {
+        _userFuture = widget.databaseService.getUserByUid(currentUser.uid);
+      } else {
+        _userFuture = Future.error('Utente non autenticato');
+      }
+    });
   }
 }

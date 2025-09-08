@@ -222,8 +222,8 @@ class _AccountSettingsState extends State<AccountSettings> {
                   message: 'Sei davvero sicuro di voler salvare le modifiche?',
                   confirmText: 'Conferma',
                   cancelText: 'Annulla',
-                  onConfirm: () {
-                    updateUser();
+                  onConfirm: () async {
+                    await updateUser();
                     Navigator.pop(context);
                     Navigator.pop(context);
                   },

@@ -12,6 +12,7 @@ class MyAppBar extends AppBar {
     required BuildContext context,
     required DatabaseService databaseService,
     required AuthService authService,
+    required VoidCallback rebuildAppBar,
   }) : super(
           title: Text(
             'simplyTravel',
@@ -34,7 +35,9 @@ class MyAppBar extends AppBar {
                         authService: authService,
                             ),
                       ),
-                );
+                ).then((_) {
+                  rebuildAppBar();
+                });
               },
               child: Container(
                 padding: const EdgeInsets.all(2), // border width
