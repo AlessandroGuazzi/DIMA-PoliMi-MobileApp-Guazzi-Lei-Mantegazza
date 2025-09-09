@@ -22,8 +22,9 @@ class _AirportSearchWidgetState extends State<AirportSearchWidget> {
   @override
   void initState() {
     super.initState();
-    _loadAirports();
+    Future.delayed(const Duration(milliseconds: 200), () => _loadAirports());
   }
+
 
   Future<void> _loadAirports() async {
     final bundle = widget.assetBundle ?? DefaultAssetBundle.of(context);
