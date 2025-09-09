@@ -28,6 +28,13 @@ class _TripInfoWidgetState extends State<TripInfoWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant TripInfoWidget oldWidget) {
+    start = widget.trip.startDate!;
+    end = widget.trip.endDate!;
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Card(
