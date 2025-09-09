@@ -274,12 +274,12 @@ class _AccountSettingsState extends State<AccountSettings> {
     required String label,
     required TextEditingController controller,
     String? initialValue,
-    Key? key, // aggiunto parametro opzionale
+    Key? key,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: TextField(
-        key: key, // assegnata la key
+        key: key,
         decoration: InputDecoration(
           labelText: label,
           hintText: initialValue,

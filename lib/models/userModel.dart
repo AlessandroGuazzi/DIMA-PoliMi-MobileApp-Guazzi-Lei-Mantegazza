@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima_project/models/tripModel.dart';
+
 
 class UserModel {
   final String? id;

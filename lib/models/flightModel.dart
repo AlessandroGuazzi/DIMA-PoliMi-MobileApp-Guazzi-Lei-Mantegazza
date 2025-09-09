@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/activityModel.dart';
-import 'package:dima_project/models/airportModel.dart';
 
 class FlightModel extends ActivityModel{
   //final String? id;

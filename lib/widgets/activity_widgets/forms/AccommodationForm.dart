@@ -8,7 +8,6 @@ import 'package:dima_project/widgets/search_bottom_sheets/placesSearchWidget.dar
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-//TODO: address is not really the address yet, but probably we don't care
 class AccommodationForm extends StatefulWidget {
   AccommodationForm({
     super.key,

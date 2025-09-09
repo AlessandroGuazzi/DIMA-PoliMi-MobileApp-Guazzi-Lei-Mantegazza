@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/activityModel.dart';
 
-//enum ActivityType { sightseeing, adventure, relaxation, cultural, other }
 
 class AttractionModel extends ActivityModel{
   //final String? id;

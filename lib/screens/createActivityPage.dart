@@ -36,7 +36,7 @@ class _CreateActivityPageState extends State<CreateActivityPage> {
           'flight' => FlightForm(
               trip: widget.trip,
               databaseService:
-                  widget.databaseService), //questo aggiunto solo per il test
+                  widget.databaseService),
           'accommodation' => AccommodationForm(trip: widget.trip),
           'transport' => TransportForm(trip: widget.trip),
           'attraction' => AttractionForm(trip: widget.trip),
