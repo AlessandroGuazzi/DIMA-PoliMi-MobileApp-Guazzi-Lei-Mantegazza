@@ -3,7 +3,7 @@ import 'package:mockito/mockito.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima_project/models/flightModel.dart';
 
-import '../mocks.mocks.dart'; // genera usando mockito: MockDocumentSnapshot
+import '../mocks.mocks.dart';
 
 void main() {
   group("FlightModel Tests", () {

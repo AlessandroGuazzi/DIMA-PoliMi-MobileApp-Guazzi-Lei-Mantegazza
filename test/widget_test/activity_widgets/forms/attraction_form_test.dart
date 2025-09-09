@@ -92,16 +92,16 @@ void main() {
         ),
       );
 
-      // Trova il pulsante che potrebbe essere fuori schermo
+
       final buttonFinder = find.widgetWithText(ElevatedButton, 'Aggiungi attività');
 
-      // 1. Scorri fino a rendere visibile il pulsante
+
       await tester.ensureVisible(buttonFinder);
-      await tester.pumpAndSettle(); // Attendi che l'animazione di scroll termini
+      await tester.pumpAndSettle();
 
       // 2. Ora che è visibile, tappa il pulsante
       await tester.tap(buttonFinder);
-      await tester.pumpAndSettle(); // Attendi l'aggiornamento dello stato (es. la comparsa dei messaggi di errore)
+      await tester.pumpAndSettle();
 
       // 3. Controlla che compaiano gli errori di validazione
       expect(find.text('Inserisci un luogo'), findsOneWidget);
@@ -256,7 +256,7 @@ void main() {
 
       // 1. Scorri fino a rendere visibile il pulsante
       await tester.ensureVisible(buttonFinder);
-      await tester.pumpAndSettle(); // Attendi che l'animazione di scroll termini
+      await tester.pumpAndSettle();
 
       // 2. Ora che è visibile, tappa il pulsante
       await tester.tap(buttonFinder);

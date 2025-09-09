@@ -2,6 +2,8 @@ import 'package:dima_project/models/attractionModel.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/utils/screenSize.dart';
 
+import '../../utils/PlacesType.dart';
+
 class AttractionActivityCard extends StatefulWidget {
   const AttractionActivityCard(this.attraction, {super.key});
 
@@ -13,6 +15,17 @@ class AttractionActivityCard extends StatefulWidget {
 
 class _AttractionActivityCardState extends State<AttractionActivityCard> {
   bool isExpanded = false;
+
+  final Map<PlacesType, String> activityTypes = {
+    PlacesType.museum: 'Museo',
+    PlacesType.restaurant: 'Ristorante',
+    PlacesType.stadium: 'Stadio',
+    PlacesType.park: 'Parco Naturale',
+    PlacesType.zoo: 'Zoo',
+    PlacesType.church: 'Chiesa',
+    PlacesType.movie_theater: 'Cinema',
+    PlacesType.tourist_attraction: 'Attrazione turistica',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +59,8 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
                         ),
                       ),
                       child: Icon(
-                        iconSelector(widget.attraction.attractionType ?? 'default'),
+                        iconSelector(
+                            widget.attraction.attractionType ?? 'default'),
                         size: 48,
                         color: primaryColor,
                       ),
@@ -63,13 +77,15 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              Icon(Icons.schedule, size: 20, color: primaryColor),
+                              Icon(Icons.schedule,
+                                  size: 20, color: primaryColor),
                               const SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  widget.attraction.startDate != null && widget.attraction.endDate != null
+                                  widget.attraction.startDate != null &&
+                                          widget.attraction.endDate != null
                                       ? '${widget.attraction.startDate!.hour.toString().padLeft(2, '0')}:${widget.attraction.startDate!.minute.toString().padLeft(2, '0')} - '
-                                      '${widget.attraction.endDate!.hour.toString().padLeft(2, '0')}:${widget.attraction.endDate!.minute.toString().padLeft(2, '0')}'
+                                          '${widget.attraction.endDate!.hour.toString().padLeft(2, '0')}:${widget.attraction.endDate!.minute.toString().padLeft(2, '0')}'
                                       : 'Orario non disponibile',
                                   style: theme.textTheme.bodyMedium,
                                   overflow: TextOverflow.ellipsis,
@@ -90,13 +106,16 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Divider(color: primaryColor.withOpacity(0.3), thickness: 1.2),
+                        Divider(
+                            color: primaryColor.withOpacity(0.3),
+                            thickness: 1.2),
                         const SizedBox(height: 10),
-
-                        if (widget.attraction.address != null && widget.attraction.address!.isNotEmpty)
+                        if (widget.attraction.address != null &&
+                            widget.attraction.address!.isNotEmpty)
                           Row(
                             children: [
-                              Icon(Icons.location_on, size: 20, color: primaryColor),
+                              Icon(Icons.location_on,
+                                  size: 20, color: primaryColor),
                               const SizedBox(width: 6),
                               Expanded(
                                 child: Text(
@@ -107,26 +126,31 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
                               ),
                             ],
                           ),
-
-                        if (widget.attraction.attractionType != null && widget.attraction.attractionType!.isNotEmpty) ...[
+                        if (widget.attraction.attractionType != null &&
+                            widget.attraction.attractionType!.isNotEmpty) ...[
                           const SizedBox(height: 10),
                           Row(
                             children: [
-                              Icon(iconSelector(widget.attraction.attractionType ?? 'default'), size: 20, color: primaryColor),
+                              Icon(
+                                  iconSelector(
+                                      widget.attraction.attractionType ??
+                                          'default'),
+                                  size: 20,
+                                  color: primaryColor),
                               const SizedBox(width: 6),
                               Text(
-                                "Tipo: ${widget.attraction.attractionType == 'tourist_attraction' ? 'Attrazione Turistica' : widget.attraction.attractionType}",
+                                "Tipo: ${translateType(widget.attraction.attractionType!)}",
                                 style: theme.textTheme.bodyLarge,
                               ),
                             ],
                           ),
                         ],
-
                         if (widget.attraction.expenses != null) ...[
                           const SizedBox(height: 10),
                           Row(
                             children: [
-                              Icon(Icons.attach_money, size: 20, color: primaryColor),
+                              Icon(Icons.attach_money,
+                                  size: 20, color: primaryColor),
                               const SizedBox(width: 6),
                               Text(
                                 "Costo: €${widget.attraction.expenses!.toStringAsFixed(2)}",
@@ -135,8 +159,8 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
                             ],
                           ),
                         ],
-
-                        if (widget.attraction.description != null && widget.attraction.description!.isNotEmpty) ...[
+                        if (widget.attraction.description != null &&
+                            widget.attraction.description!.isNotEmpty) ...[
                           const SizedBox(height: 16),
                           Container(
                             width: double.infinity,
@@ -150,7 +174,8 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
                               children: [
                                 Text(
                                   "Descrizione:",
-                                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                  style: theme.textTheme.titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
@@ -166,32 +191,53 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
                       ],
                     ),
                   ),
-                  crossFadeState:
-                  isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                  crossFadeState: isExpanded
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
                   duration: const Duration(milliseconds: 300),
                 ),
               ],
             ),
           ),
-
           Positioned(
             bottom: ScreenSize.screenHeight(context) * 0.001,
             right: ScreenSize.screenWidth(context) * 0.003,
             child: IconButton(
-              icon: Icon(isExpanded ? Icons.expand_less : Icons.expand_more, color: primaryColor, size: 25,),
+              icon: Icon(
+                isExpanded ? Icons.expand_less : Icons.expand_more,
+                color: primaryColor,
+                size: 25,
+              ),
               onPressed: () => setState(() => isExpanded = !isExpanded),
             ),
           ),
         ],
       ),
     );
-
-
   }
 
-
-
-
+  String translateType(String type) {
+    switch (type) {
+      case 'museum':
+        return 'Museo';
+      case 'restaurant':
+        return 'Ristorante';
+      case 'stadium':
+        return 'Stadio';
+      case 'park':
+        return 'Parco Naturale';
+      case 'zoo':
+        return 'Zoo';
+      case 'church':
+        return 'Chiesa';
+      case 'movie_theater':
+        return 'Cinema';
+      case 'tourist_attraction':
+        return 'Attrazione turistica';
+      default:
+        return 'Sconosciuto';
+    }
+  }
 
   // Scelta icona
   IconData iconSelector(String activityType) {
@@ -217,6 +263,3 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
     }
   }
 }
-
-
-

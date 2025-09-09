@@ -1,7 +1,5 @@
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/models/userModel.dart';
-import 'package:dima_project/utils/screenSize.dart';
-import 'package:dima_project/widgets/components/userProfileCard.dart';
 import 'package:flutter/material.dart';
 import 'package:dima_project/services/databaseService.dart';
 
@@ -384,8 +382,6 @@ class _MedalsPageState extends State<MedalsPage> {
             return const Center(child: Text('Utente non trovato'));
           }
 
-          var playerName = user.username!;
-          var country = user.birthCountry ?? 'unknow';
           var countriesVisited = listCountry.length;
           var levelList = [
             "Esploratore Novizio",
@@ -408,8 +404,6 @@ class _MedalsPageState extends State<MedalsPage> {
           } else {
             level = levelList[4];
           }
-          const coverImagePath =
-              'assets/placeholder_landscape.jpg';
 
           final continents = [
             'Mondo',
@@ -633,7 +627,7 @@ class _MedalsPageState extends State<MedalsPage> {
                         fontSize: 13,
                         fontWeight:
                             isAchieved ? FontWeight.w600 : FontWeight.normal,
-                        color: isAchieved ? Colors.black87 : Colors.grey,
+                        color: isAchieved ? Colors.amber : Colors.grey,
                       ),
                     ),
                   ],

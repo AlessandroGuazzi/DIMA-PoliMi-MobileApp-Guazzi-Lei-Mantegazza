@@ -88,7 +88,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(MyAppBar), findsOneWidget);
-    expect(find.text('Simply Travel'), findsOneWidget);
+    expect(find.text('simplyTravel'), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(MyAppBar), // look inside MyAppBar

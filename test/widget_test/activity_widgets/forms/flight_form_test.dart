@@ -156,8 +156,6 @@ void main() {
       await tester.enterText(costField, '-10');
 
       // Compila il campo obbligatorio per triggare la validazione
-      //final locationField = find.widgetWithText(TextFormField, 'Dove?');
-      //await tester.tap(locationField);
       await tester.pumpAndSettle();
 
       final buttonFinder = find.widgetWithText(ElevatedButton, 'Aggiungi volo');

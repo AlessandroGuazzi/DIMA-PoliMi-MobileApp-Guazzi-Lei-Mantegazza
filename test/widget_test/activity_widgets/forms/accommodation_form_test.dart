@@ -185,20 +185,15 @@ void main() {
     testWidgets('tapping on check-in and check-out time field opens time picker and selects time', (WidgetTester tester) async {
       await pumpTestableWidget(tester);
 
-      // Trova il campo dell’orario di partenza
       final checkInTimeField = find.widgetWithText(TextFormField, 'Check-in');
       expect(checkInTimeField, findsOneWidget);
 
-      // Tap per aprire il TimePicker
       await tester.tap(checkInTimeField);
       await tester.pumpAndSettle();
 
-      // Verifica che il TimePicker sia visibile
-      // Il testo dipende dal locale, ma 'OK' è spesso presente
+
       expect(find.text('OK'), findsOneWidget);
 
-      // Facoltativo: seleziona un orario. Il TimePicker nativo è difficile da manipolare nei test widget.
-      // In genere si salta questo passaggio e si conferma direttamente.
 
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
@@ -206,12 +201,9 @@ void main() {
       final checkOutTimeField = find.widgetWithText(TextFormField, 'Check-in');
       expect(checkOutTimeField, findsOneWidget);
 
-      // Tap per aprire il TimePicker
       await tester.tap(checkOutTimeField);
       await tester.pumpAndSettle();
 
-      // Verifica che il TimePicker sia visibile
-      // Il testo dipende dal locale, ma 'OK' è spesso presente
       expect(find.text('OK'), findsOneWidget);
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();

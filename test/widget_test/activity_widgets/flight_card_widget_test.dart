@@ -35,11 +35,6 @@ void main() {
     //expect(find.byType(activityDivider), findsOneWidget);
     expect(find.byIcon(Icons.flight), findsOneWidget);
 
-    //Dettagli extra NON visibili prima dell'espansione
-    //expect(find.textContaining('Partenza: Malpensa'), findsNothing);
-    //expect(find.textContaining('Arrivo: Heathrow'), findsNothing);
-    //expect(find.textContaining('Costo: €120.00'), findsNothing);
-
     //Simula click su espansione
     await tester.tap(find.byIcon(Icons.expand_more));
     await tester.pumpAndSettle();
@@ -53,7 +48,5 @@ void main() {
     await tester.tap(find.byIcon(Icons.expand_less));
     await tester.pumpAndSettle();
 
-    //I dettagli extra devono tornare invisibili
-    //expect(find.textContaining('Partenza: Malpensa'), findsNothing);
   });
 }

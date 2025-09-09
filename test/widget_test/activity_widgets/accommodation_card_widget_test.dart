@@ -34,13 +34,6 @@ void main() {
     //expect(find.byType(activityDivider), findsOneWidget);
 
 
-
-    // I dettagli non dovrebbero essere visibili inizialmente
-    //expect(find.text('Dettagli Extra:'), findsNothing);
-    //expect(find.text('Via Nazionale, 1'), findsNothing);
-    //expect(find.text('Costo: €120.00'), findsNothing);
-    //expect(find.text('Contatti:'), findsNothing);
-
     // Espandi il widget
     await tester.tap(find.byIcon(Icons.expand_more));
     await tester.pumpAndSettle();
@@ -56,8 +49,5 @@ void main() {
     //Simula di nuovo il tap per chiudere
     await tester.tap(find.byIcon(Icons.expand_less));
     await tester.pumpAndSettle();
-
-    // I dettagli non dovrebbero essere più visibili
-    //expect(find.text('Via Nazionale, 1'), findsNothing);
   });
 }

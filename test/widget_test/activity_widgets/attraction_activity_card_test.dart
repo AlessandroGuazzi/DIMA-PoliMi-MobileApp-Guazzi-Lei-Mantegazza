@@ -33,11 +33,6 @@ void main() {
       expect(find.byIcon(Icons.expand_more), findsOneWidget);
       expect(find.byIcon(Icons.attractions), findsNWidgets(2));
 
-      // Dettagli extra non visibili all'inizio - REMOVE skipOffstage: true
-      //expect(find.textContaining('Dettagli Extra:'), findsNothing);
-      //expect(find.textContaining('Piazza del Colosseo'), findsNothing);
-      //expect(find.textContaining('€16.50'), findsNothing);
-      //expect(find.textContaining('Visita guidata'), findsNothing);
 
       // Espandi
       await tester.tap(find.byIcon(Icons.expand_more));
@@ -45,7 +40,7 @@ void main() {
 
       // Ora i dettagli devono essere visibili
       expect(find.textContaining('Piazza del Colosseo'), findsOneWidget);
-      expect(find.text('Tipo: Attrazione Turistica'), findsOneWidget);
+      expect(find.text('Tipo: Attrazione turistica'), findsOneWidget);
       expect(find.text('Costo: €16.50'), findsOneWidget);
       expect(find.text('Descrizione:'), findsOneWidget);
       expect(find.text('Visita guidata all\'interno del Colosseo.'), findsOneWidget);
@@ -54,9 +49,6 @@ void main() {
       await tester.tap(find.byIcon(Icons.expand_less));
       await tester.pumpAndSettle();
 
-      // Dettagli extra non visibili nuovamente
-      //expect(find.textContaining('Dettagli Extra:'), findsNothing);
-      //expect(find.textContaining('Piazza del Colosseo'), findsNothing);
     });
   });
 }

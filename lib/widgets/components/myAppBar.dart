@@ -15,7 +15,7 @@ class MyAppBar extends AppBar {
     required VoidCallback rebuildAppBar,
   }) : super(
           title: Text(
-            'Simply Travel',
+            'simplyTravel',
             style: Theme.of(context)
                 .textTheme
                 .titleLarge

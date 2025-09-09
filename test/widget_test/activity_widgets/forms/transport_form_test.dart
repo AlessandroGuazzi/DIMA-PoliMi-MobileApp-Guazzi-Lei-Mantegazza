@@ -176,54 +176,6 @@ void main() {
       expect(find.text('0h 0m'), findsOneWidget);
     });
 
-    // --- Test: Sottomissione del Form (Creazione di un nuovo trasporto) ---
-    /*testWidgets('dovrebbe chiamare createActivity con i dati corretti quando si salva un nuovo trasporto', (WidgetTester tester) async {
-      await pumpTestableWidget(tester);
-
-      // Compila tutti i campi obbligatori
-      await tester.enterText(find.widgetWithText(TextFormField, 'Departure Place'), 'Start City');
-      await tester.enterText(find.widgetWithText(TextFormField, 'Arrival Place'), 'End City');
-
-      // Imposta direttamente data e ora per il test di sottomissione
-      /*final formState = tester.state<StatefulElement>(find.byType(TransportForm)).state as dynamic;
-      formState.setState(() {
-        formState._departureDate = DateTime(2025, 7, 1);
-        formState._departureTime = const TimeOfDay(hour: 9, minute: 0);
-        formState._selectedType = 'Bus';
-      });*/
-      await tester.pumpAndSettle(); // Assicura che gli aggiornamenti di stato siano riflessi
-
-      await tester.enterText(find.widgetWithText(TextFormField, 'Costo'), '75.00');
-      await tester.tap(find.byKey(const Key('currencyDropdown')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('EUR').last);
-      await tester.pumpAndSettle();
-
-      // Imposta una durata
-      /*formState.setState(() {
-        formState._selectedDuration = const Duration(hours: 2, minutes: 15);
-      });*/
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save Transport'));
-      await tester.pumpAndSettle();
-
-      // Verifica che createActivity sia stato chiamato
-      verify(mockDatabaseService.createActivity(captureAny)).called(1);
-
-      // Cattura l'argomento passato e verifica le sue proprietà
-      final capturedTransport = verify(mockDatabaseService.createActivity(captureAny)).captured.first as TransportModel;
-      expect(capturedTransport.tripId, testTrip.id);
-      expect(capturedTransport.departurePlace, 'Start City');
-      expect(capturedTransport.arrivalPlace, 'End City');
-      expect(capturedTransport.departureDate, DateTime(2025, 7, 1, 9, 0));
-      expect(capturedTransport.transportType, 'Bus');
-      // Verifica la conversione del costo (75.00 USD * 0.9 = 67.50 EUR)
-      expect(capturedTransport.expenses, 75.00 * 0.9); // Assicurati che il tasso di cambio mock sia applicato
-      expect(capturedTransport.duration, 135); // 2 ore e 15 minuti in minuti
-      expect(capturedTransport.type, 'transport');
-    });*/
-
     testWidgets('dovrebbe chiamare updateActivity con i dati corretti quando si aggiorna un trasporto esistente', (WidgetTester tester) async {
       await pumpTestableWidget(tester, transport: existingTransport);
 

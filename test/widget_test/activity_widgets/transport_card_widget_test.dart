@@ -30,9 +30,6 @@ void main() {
     //expect(find.byType(activityDivider), findsOneWidget);
     expect(find.byIcon(Icons.train), findsNWidgets(2));
 
-    // Dettagli extra non visibili inizialmente
-    //expect(find.textContaining('Durata'), findsNothing);
-    //expect(find.textContaining('Costo'), findsNothing);
 
     // Espandi i dettagli
     await tester.tap(find.byIcon(Icons.expand_more));
@@ -48,8 +45,5 @@ void main() {
     await tester.tap(find.byIcon(Icons.expand_less));
     await tester.pumpAndSettle();
 
-    // Dettagli extra non visibili inizialmente
-    //expect(find.textContaining('Durata'), findsNothing);
-    //expect(find.textContaining('Costo'), findsNothing);
   });
 }
