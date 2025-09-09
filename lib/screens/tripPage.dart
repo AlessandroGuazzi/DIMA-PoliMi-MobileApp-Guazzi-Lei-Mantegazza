@@ -78,9 +78,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                   controller: _tabController,
                   tabs: const [
                     Tab(text: "Itinerario"),
-                    Tab(
-                      text: 'Generale',
-                    ),
+                    Tab(text: 'Generale',),
                     Tab(key: Key('expensesTab'), text: "Spese"),
                   ],
                 ),

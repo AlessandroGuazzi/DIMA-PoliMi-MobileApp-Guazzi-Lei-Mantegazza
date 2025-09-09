@@ -88,6 +88,9 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
 
         _currencies =
             CountryToCurrency().initializeCurrencies(tripData.nations);
+        if (!_currencies.contains(_selectedCurrency)) {
+          _selectedCurrency = _currencies.isNotEmpty ? _currencies.first : 'EUR';
+        }
 
         //assign only if it's the first time or if widget is updated
         if (!_expensesInitialized || _widgetUpdated) {
@@ -198,7 +201,7 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
     );
   }
 
-  Widget _tabletLayout(Map<String, double> dataMap) {
+  /*Widget _tabletLayout(Map<String, double> dataMap) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -267,7 +270,147 @@ class _TripExpensesWidgetState extends State<TripExpensesWidget> {
         ),
       ],
     );
+  }*/
+
+  Widget _tabletLayout(Map<String, double> dataMap) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // tablet verticale => Column
+        if (constraints.maxWidth < 600) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              PieChart(
+                dataMap: dataMap,
+                chartRadius: 200,
+                centerWidget: Text(
+                  "${formatNumber(totalCost)} $_selectedCurrency",
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                chartType: ChartType.ring,
+                colorList: colorList,
+                ringStrokeWidth: 35,
+                legendOptions: const LegendOptions(showLegends: false),
+                chartValuesOptions: const ChartValuesOptions(showChartValues: false),
+              ),
+              const SizedBox(height: 25),
+              SizedBox(
+                width: 350,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: List.generate(dataMap.length, (index) {
+                    final entry = dataMap.entries.elementAt(index);
+                    final color = colorList[index];
+                    final label = entry.key;
+                    final value = entry.value;
+
+                    int percentage =
+                    (totalCost > 0 ? (value / totalCost) * 100 : 0).round();
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
+                      child: Row(
+                        children: [
+                          Icon(_getIconForLabel(label), color: color),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              label,
+                              style: const TextStyle(fontSize: 16),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                '${formatNumber(value)} $_selectedCurrency ($percentage%)',
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
+          );
+        }
+
+        // tablet orizzontale => Row
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            PieChart(
+              dataMap: dataMap,
+              chartRadius: 200,
+              centerWidget: Text(
+                "${formatNumber(totalCost)} $_selectedCurrency",
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              chartType: ChartType.ring,
+              colorList: colorList,
+              ringStrokeWidth: 35,
+              legendOptions: const LegendOptions(showLegends: false),
+              chartValuesOptions: const ChartValuesOptions(showChartValues: false),
+            ),
+            const SizedBox(width: 25),
+            SizedBox(
+              width: 350,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: List.generate(dataMap.length, (index) {
+                  final entry = dataMap.entries.elementAt(index);
+                  final color = colorList[index];
+                  final label = entry.key;
+                  final value = entry.value;
+
+                  int percentage =
+                  (totalCost > 0 ? (value / totalCost) * 100 : 0).round();
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
+                    child: Row(
+                      children: [
+                        Icon(_getIconForLabel(label), color: color),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            label,
+                            style: const TextStyle(fontSize: 16),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              '${formatNumber(value)} $_selectedCurrency ($percentage%)',
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
+
 
   Widget _mobileLayout(Map<String, double> dataMap) {
     return Column(
