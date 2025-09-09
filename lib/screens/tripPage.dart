@@ -46,11 +46,9 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(covariant TripPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.trip != widget.trip) {
       setState(() {
         _trip = widget.trip;
       });
-    }
   }
 
   @override
@@ -193,12 +191,23 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                   );
                   //update ui trip
                   if (result != null) {
+                    if(widget.onTripUpdated != null) {
+                      print('trip updated');
+                      widget.onTripUpdated!(result);
+                    } else {
+                      setState(() {
+                        _trip = result;
+                      });
+                    }
+                    /*
                         setState(() {
                           _trip = result;
                           if(widget.onTripUpdated != null) {
                             widget.onTripUpdated!(result);
                           }
                         });
+
+                     */
                   }
                 },
               ),
@@ -240,7 +249,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                       _trip.isPrivate = newPrivacy;
                     });
                     Navigator.pop(bottomSheetContext);
-                  } on Exception catch (e) {
+                  } on Exception {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
