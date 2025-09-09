@@ -200,16 +200,16 @@ class _AttractionActivityCardState extends State<AttractionActivityCard> {
         return Icons.museum;
       case 'restaurant':
         return Icons.restaurant;
-      case 'concert':
-        return Icons.music_note;
       case 'stadium':
         return Icons.stadium;
       case 'park':
         return Icons.park;
-      case 'monument':
-        return Icons.account_balance;
-      case 'mountain':
-        return Icons.terrain;
+      case 'zoo':
+        return Icons.pets;
+      case 'church':
+        return Icons.church;
+      case 'movie_theater':
+        return Icons.movie;
       case 'tourist_attraction':
         return Icons.attractions;
       default:

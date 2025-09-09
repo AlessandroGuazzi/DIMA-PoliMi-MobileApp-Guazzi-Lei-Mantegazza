@@ -1,6 +1,5 @@
 import 'package:dima_project/utils/CountryToCurrency.dart';
 import 'package:dima_project/utils/PlacesType.dart';
-import 'package:dima_project/utils/screenSize.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +11,6 @@ import '../../../services/CurrencyService.dart';
 import '../../search_bottom_sheets/placesSearchWidget.dart';
 
 
-//TODO: gestire valuta in modifica
 class AttractionForm extends StatefulWidget {
   final TripModel trip;
   final AttractionModel? attraction; //per la modifica
@@ -413,7 +411,7 @@ class _AttractionFormState extends State<AttractionForm> {
       final updatedAttraction = AttractionModel(
         name: locationController.text,
         tripId: widget.trip.id,
-        attractionType: _selectedType.name ?? '',
+        attractionType: _selectedType.name,
         address:
             addressController.text.isNotEmpty ? addressController.text : null,
         expenses: cost != null ? double.parse(cost!.toStringAsFixed(2)) : null,
@@ -457,8 +455,6 @@ class _AttractionFormState extends State<AttractionForm> {
         return Icons.museum;
       case 'ristorante':
         return Icons.restaurant;
-      case 'concerto':
-        return Icons.music_note;
       case 'stadio':
         return Icons.stadium;
       case 'parco naturale':

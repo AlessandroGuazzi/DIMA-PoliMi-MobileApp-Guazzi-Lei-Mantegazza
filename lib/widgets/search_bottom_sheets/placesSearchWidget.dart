@@ -1,7 +1,6 @@
 import 'package:dima_project/utils/PlacesType.dart';
 import 'package:flutter/material.dart';
 import '../../services/googlePlacesService.dart';
-import 'package:country_picker/country_picker.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../../utils/screenSize.dart';
@@ -128,6 +127,8 @@ class PlacesSearchWidgetState extends State<PlacesSearchWidget> {
                         String placeType = widget.type.name;
                         //this is needed due to how google places api treat cities call
                         if (placeType == 'cities') placeType = '(cities)';
+                        //let search everything
+                        if (placeType == 'tourist_attraction') {placeType = '';}
                         places = await widget.googlePlacesService
                             .searchAutocomplete(
                                 query, widget.selectedCountryCodes, placeType);
