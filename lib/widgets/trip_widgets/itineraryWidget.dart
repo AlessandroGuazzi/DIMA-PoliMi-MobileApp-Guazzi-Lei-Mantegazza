@@ -31,14 +31,12 @@ class ItineraryWidget extends StatefulWidget {
 }
 
 class _ItineraryWidgetState extends State<ItineraryWidget> {
-  late Future<List<ActivityModel>> _futureActivities;
+  late Stream<List<ActivityModel>> _activitiesStream;
 
   @override
   void initState() {
     super.initState();
-    //trip = widget.trip; // Initialize with passed data
-    //_isEmpty = true;
-    _futureActivities = widget.databaseService.getTripActivities(widget.trip);
+    _activitiesStream = widget.databaseService.streamTripActivities(widget.trip);
   }
 
   /*
@@ -50,29 +48,16 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
   @override
   void didUpdateWidget(covariant ItineraryWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.trip.id != widget.trip.id) {
-      refreshTrips();
-    }
+    _activitiesStream = widget.databaseService.streamTripActivities(widget.trip);
+
   }
 
-  void refreshTrips() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {
-          _futureActivities =
-              widget.databaseService.getTripActivities(widget.trip);
-        });
-      }
-    });
-  }
-
-  void _goToNewItineraryPage(String type) {
-    Navigator.push(
+  Future<void> _goToNewItineraryPage(String type) async {
+    await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    CreateActivityPage(type: type, trip: widget.trip, databaseService: widget.databaseService,)))
-        .then((value) => refreshTrips());
+                    CreateActivityPage(type: type, trip: widget.trip, databaseService: widget.databaseService,)));
   }
 
   Widget _buildTripProgressBarWithButton() {
@@ -118,8 +103,8 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      FutureBuilder(
-          future: _futureActivities,
+      StreamBuilder<List<ActivityModel>>(
+          stream: _activitiesStream,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -230,7 +215,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
                                                 ),
                                               ),
                                             );
-                                            refreshTrips();
+                                            //refreshTrips();
                                           } else if (value == 2) {
                                             // Azione Elimina
                                             _showDeleteConfirmationDialog(
@@ -338,7 +323,7 @@ class _ItineraryWidgetState extends State<ItineraryWidget> {
               onPressed: () {
                 widget.databaseService.deleteActivity(activity);
                 Navigator.of(context).pop(); // Chiude il popup
-                refreshTrips();
+                //refreshTrips();
               },
               child:
                   const Text("Conferma", style: TextStyle(color: Colors.red)),

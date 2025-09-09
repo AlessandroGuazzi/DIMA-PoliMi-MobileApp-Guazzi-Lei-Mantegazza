@@ -3,7 +3,6 @@ import 'package:dima_project/models/flightModel.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/screens/mapPage.dart';
 import 'package:dima_project/screens/tripPage.dart';
-import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -20,8 +19,8 @@ void main() {
     mockNavigatorObserver = MockNavigatorObserver();
     //mockGooglePlacesService = MockGooglePlacesService();
     //when(mockGooglePlacesService.getImageUrl(any)).thenReturn('some_image_url');)
-    when(mockDatabaseService.getTripActivities(any))
-        .thenAnswer((_) async => [FlightModel(type: 'flight'), AttractionModel(type: 'attraction')]);
+    when(mockDatabaseService.streamTripActivities(any))
+        .thenAnswer((_) => Stream.value([FlightModel(type: 'flight'), AttractionModel(type: 'attraction')]));
   });
 
   Future<void> pumpTestableWidget(WidgetTester tester, trip, isMyTrip) async {

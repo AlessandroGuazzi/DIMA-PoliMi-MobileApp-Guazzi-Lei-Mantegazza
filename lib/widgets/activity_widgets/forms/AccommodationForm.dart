@@ -302,9 +302,10 @@ class _AccommodationFormState extends State<AccommodationForm> {
   }
 
   void _onSelected(Map<String, String> accommodation) {
-    titleController.text = accommodation['name'] ?? '';
-    addressController.text = accommodation['other_info'] ?? '';
-    setState(() {});
+    setState(() {
+      titleController.text = accommodation['name'] ?? '';
+      addressController.text = accommodation['other_info'] ?? '';
+    });
   }
 
   void _submitForm() async {
@@ -333,15 +334,16 @@ class _AccommodationFormState extends State<AccommodationForm> {
           return;
         }
       }
+      print('Name after: ${titleController.text}');
 
       final updatedAccommodation = AccommodationModel(
+        id: widget.accommodation?.id,
         name: titleController.text,
         tripId: widget.trip.id,
         checkIn: combineDateAndTime(_startDate!, _checkInTime),
         checkOut: combineDateAndTime(_endDate!, _checkOutTime),
         address:
             addressController.text.isNotEmpty ? addressController.text : null,
-        // Se vuoto, lascia null,
         expenses: cost != null ? double.parse(cost!.toStringAsFixed(2)) : null,
         contacts: null,
         type: 'accommodation',

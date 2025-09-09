@@ -337,8 +337,8 @@ void main() {
         await tester.pumpAndSettle();
 
         //stub trip page
-        when(mockDatabaseService.getTripActivities(any))
-            .thenAnswer((_) async => []);
+        when(mockDatabaseService.streamTripActivities(any))
+            .thenAnswer((_) => Stream.value([]));
 
         await tester.tap(find.byType(TripCardWidget).first);
         await tester.pumpAndSettle();

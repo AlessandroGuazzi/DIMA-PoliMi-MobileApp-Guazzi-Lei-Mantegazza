@@ -1,20 +1,19 @@
 import 'package:dima_project/utils/responsive.dart';
 import 'package:flutter/material.dart';
-import 'package:dima_project/screens/upsertTripPage.dart';
 import 'package:dima_project/widgets/trip_widgets/tripCardWidget.dart';
 import 'package:dima_project/models/tripModel.dart';
 import 'package:dima_project/services/databaseService.dart';
 import 'package:dima_project/screens/tripPage.dart';
 
 class MyTripsPage extends StatefulWidget {
-
   final DatabaseService databaseService;
 
   //constructor with injection for mocking
   MyTripsPage({
     super.key,
     DatabaseService? databaseService,
-  })  : databaseService = databaseService ?? DatabaseService();
+  }) : databaseService = databaseService ?? DatabaseService();
+
   @override
   State<MyTripsPage> createState() => _MyTripsPageState();
 }
@@ -28,12 +27,13 @@ class _MyTripsPageState extends State<MyTripsPage> {
     super.initState();
     _futureTrips = widget.databaseService.getHomePageTrips();
   }
+
   @override
   void didUpdateWidget(covariant MyTripsPage oldWidget) {
+    print('mytripspage didupdatewidget');
     super.didUpdateWidget(oldWidget);
     //reassign future on widget update
     _futureTrips = widget.databaseService.getHomePageTrips();
-
   }
 
   @override
@@ -82,8 +82,8 @@ class _MyTripsPageState extends State<MyTripsPage> {
             labelStyle: Theme.of(context).textTheme.titleMedium,
             unselectedLabelStyle: Theme.of(context).textTheme.bodySmall,
             tabs: const [
-              Tab(text: 'I tuoi viaggi'),     // Upcoming Trips
-              Tab(text: 'Viaggi passati'),   // Past Trips
+              Tab(text: 'I tuoi viaggi'), // Upcoming Trips
+              Tab(text: 'Viaggi passati'), // Past Trips
             ],
           ),
           Expanded(
@@ -93,35 +93,37 @@ class _MyTripsPageState extends State<MyTripsPage> {
                 (futureTrips == null || futureTrips.isEmpty)
                     ? const Center(child: Text('Nessun viaggio in programma.'))
                     : ListView.builder(
-                  itemCount: futureTrips.length,
-                  itemBuilder: (context, index) {
-                    final trip = futureTrips[index];
-                    return Material(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      child: InkWell(
-                        onTap: () => onTileTap(trip),
-                        child: TripCardWidget(trip, false, (isSaved, id) {}, true),
+                        itemCount: futureTrips.length,
+                        itemBuilder: (context, index) {
+                          final trip = futureTrips[index];
+                          return Material(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            child: InkWell(
+                              onTap: () => onTileTap(trip),
+                              child: TripCardWidget(
+                                  trip, false, (isSaved, id) {}, true),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
 
                 // Past Trips
                 (pastTrips == null || pastTrips.isEmpty)
                     ? const Center(child: Text('Nessun viaggio passato.'))
                     : ListView.builder(
-                  itemCount: pastTrips.length,
-                  itemBuilder: (context, index) {
-                    final trip = pastTrips[index];
-                    return Material(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      child: InkWell(
-                        onTap: () => onTileTap(trip),
-                        child: TripCardWidget(trip, false, (isSaved, id) {}, true),
+                        itemCount: pastTrips.length,
+                        itemBuilder: (context, index) {
+                          final trip = pastTrips[index];
+                          return Material(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            child: InkWell(
+                              onTap: () => onTileTap(trip),
+                              child: TripCardWidget(
+                                  trip, false, (isSaved, id) {}, true),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ],
             ),
           ),
@@ -131,12 +133,13 @@ class _MyTripsPageState extends State<MyTripsPage> {
   }
 
   Map<String, List<TripModel>> splitPastFutureTrips(List<TripModel> trips) {
+    final pastTrips = trips
+        .where((trip) =>
+            trip.endDate != null && trip.endDate!.isBefore(DateTime.now()))
+        .toList();
 
-    final pastTrips = trips.where((trip) =>
-    trip.endDate != null && trip.endDate!.isBefore(DateTime.now())
-    ).toList();
-
-    final List<TripModel> futureTrips = trips.toSet().difference(pastTrips.toSet()).toList();
+    final List<TripModel> futureTrips =
+        trips.toSet().difference(pastTrips.toSet()).toList();
 
     return {
       'pastTrips': pastTrips,
@@ -180,7 +183,13 @@ class _MyTripsPageState extends State<MyTripsPage> {
         Expanded(
           flex: 3,
           child: _selectedTrip != null
-              ? TripPage(trip: _selectedTrip!, isMyTrip: true, databaseService: widget.databaseService, onTripDeleted: () => refreshTrips(),)
+              ? TripPage(
+                  trip: _selectedTrip!,
+                  isMyTrip: true,
+                  databaseService: widget.databaseService,
+                  onTripDeleted: () => refreshTrips(),
+                  onTripUpdated: (updatedTrip) => refreshWithoutUnselecting(updatedTrip),
+                )
               : const Center(child: Text('Seleziona un viaggio')),
         ),
       ],
@@ -194,9 +203,10 @@ class _MyTripsPageState extends State<MyTripsPage> {
     });
   }
 
-  void _goToNewTripPage() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => UpsertTripPage()))
-        .then((value) => refreshTrips());
+  Future<void> refreshWithoutUnselecting(TripModel updatedTrip) async {
+    setState(() {
+      _futureTrips = widget.databaseService.getHomePageTrips();
+      _selectedTrip = updatedTrip;
+    });
   }
 }

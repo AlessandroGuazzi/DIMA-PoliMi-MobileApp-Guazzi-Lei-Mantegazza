@@ -14,14 +14,16 @@ import '../widgets/components/myConfirmDialog.dart';
 class TripPage extends StatefulWidget {
   final DatabaseService databaseService;
   final VoidCallback? onTripDeleted;
+  final void Function(TripModel)? onTripUpdated;
 
-  TripPage(
-      {super.key,
-      required this.trip,
-      required this.isMyTrip,
-      databaseService,
-      this.onTripDeleted})
-      : databaseService = databaseService ?? DatabaseService();
+  TripPage({
+    super.key,
+    required this.trip,
+    required this.isMyTrip,
+    databaseService,
+    this.onTripDeleted,
+    this.onTripUpdated,
+  }) : databaseService = databaseService ?? DatabaseService();
 
   final TripModel trip;
   final bool isMyTrip;
@@ -78,7 +80,9 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                   controller: _tabController,
                   tabs: const [
                     Tab(text: "Itinerario"),
-                    Tab(text: 'Generale',),
+                    Tab(
+                      text: 'Generale',
+                    ),
                     Tab(key: Key('expensesTab'), text: "Spese"),
                   ],
                 ),
@@ -172,7 +176,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
             children: [
               //handle
               const MyBottomSheetHandle(),
-          
+
               ListTile(
                 leading: const Icon(Icons.edit),
                 title: const Text('Modifica'),
@@ -189,13 +193,12 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                   );
                   //update ui trip
                   if (result != null) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) {
                         setState(() {
                           _trip = result;
+                          if(widget.onTripUpdated != null) {
+                            widget.onTripUpdated!(result);
+                          }
                         });
-                      }
-                    });
                   }
                 },
               ),
@@ -204,7 +207,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                 title: const Text('Elimina'),
                 onTap: () => _handleDeleteTrip(context, bottomSheetContext),
               ),
-          
+
               ListTile(
                 leading: const Icon(Icons.map_outlined),
                 title: const Text('Apri mappa'),
@@ -218,7 +221,7 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
                   );
                 },
               ),
-          
+
               ListTile(
                 leading: _trip.isPrivate ?? true
                     ? const Icon(Icons.share)
@@ -302,4 +305,5 @@ class _TripPageState extends State<TripPage> with TickerProviderStateMixin {
       }
     }
   }
+
 }

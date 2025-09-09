@@ -33,6 +33,7 @@ import 'package:mockito/src/dummies.dart' as _i10;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
+// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeFirebaseFirestore_0 extends _i1.SmartFake
     implements _i2.FirebaseFirestore {
@@ -271,15 +272,15 @@ class MockDatabaseService extends _i1.Mock implements _i4.DatabaseService {
       ) as _i8.Future<dynamic>);
 
   @override
-  _i8.Future<List<_i7.ActivityModel>> getTripActivities(_i6.TripModel? trip) =>
+  _i8.Stream<List<_i7.ActivityModel>> streamTripActivities(
+          _i6.TripModel? trip) =>
       (super.noSuchMethod(
         Invocation.method(
-          #getTripActivities,
+          #streamTripActivities,
           [trip],
         ),
-        returnValue:
-            _i8.Future<List<_i7.ActivityModel>>.value(<_i7.ActivityModel>[]),
-      ) as _i8.Future<List<_i7.ActivityModel>>);
+        returnValue: _i8.Stream<List<_i7.ActivityModel>>.empty(),
+      ) as _i8.Stream<List<_i7.ActivityModel>>);
 
   @override
   _i8.Future<void> createTrip(_i6.TripModel? trip) => (super.noSuchMethod(

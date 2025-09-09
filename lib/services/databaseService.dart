@@ -178,23 +178,13 @@ class DatabaseService {
     return await tripCollection.doc(trip.id).update(trip.toFirestore());
   }
 
-  Future<List<ActivityModel>> getTripActivities(TripModel trip) async {
-    List<ActivityModel> activities = [];
-
-    try {
-      QuerySnapshot<ActivityModel> querySnapshot =
-          await activityCollection.where("tripId", isEqualTo: trip.id).get();
-
-      print("Successfully completed");
-
-      for (var docSnapshot in querySnapshot.docs) {
-        activities.add(docSnapshot.data());
-      }
-    } catch (e) {
-      print("Error completing: $e");
-    }
-
-    return activities;
+  Stream<List<ActivityModel>> streamTripActivities(TripModel trip) {
+    return activityCollection
+        .where("tripId", isEqualTo: trip.id)
+        .snapshots()
+        .map((querySnapshot) {
+      return querySnapshot.docs.map((docSnapshot) => docSnapshot.data()).toList();
+    });
   }
 
   //updated method assign id to the trip and add it to the user that created it

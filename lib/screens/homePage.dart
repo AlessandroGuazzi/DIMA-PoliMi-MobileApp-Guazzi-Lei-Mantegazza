@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          extendBody: true,
+          //extendBody: true,
           appBar: MyAppBar(
             user: user,
             context: context,

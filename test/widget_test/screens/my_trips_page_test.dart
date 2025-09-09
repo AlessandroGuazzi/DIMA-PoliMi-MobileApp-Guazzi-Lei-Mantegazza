@@ -215,8 +215,8 @@ void main() {
 
       when(mockDatabaseService.getHomePageTrips())
           .thenAnswer((_) async => trips);
-      when(mockDatabaseService.getTripActivities(any))
-          .thenAnswer((_) async => activities);
+      when(mockDatabaseService.streamTripActivities(any))
+          .thenAnswer((_) => Stream.value(activities));
       when(mockDatabaseService.loadTrip(any))
           .thenAnswer((_) async => trips[0]);
 
