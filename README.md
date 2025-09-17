@@ -1,4 +1,4 @@
-# Desgin and Implementation of Mobile Applications' Project
+# Design and Implementation of Mobile Applications' Project
 
 **Creators:** Alessandro Guazzi, Leonardo Lei, Niccolò Mantegazza  
 
