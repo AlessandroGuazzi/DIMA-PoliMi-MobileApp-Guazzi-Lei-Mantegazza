@@ -1,4 +1,4 @@
-# Design and Implementation of Mobile Applications' Project
+# Design and Implementation of Mobile Applications' Project - A.Y. 2024-2025
 
 **Creators:** Alessandro Guazzi, Leonardo Lei, Niccolò Mantegazza  
 
